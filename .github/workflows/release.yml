@@ -44,7 +44,7 @@ jobs:
       - name: zip を作る
         run: |
           VER=$(cat /tmp/ver.txt)
-          zip -qr "sekigae_${VER}.zip" index.html script.js style.css changelog.js plugins LICENSE
+          zip -qr "sekigae_${VER}.zip" index.html script.js style.css changelog.js manifest.webmanifest sw.js icons plugins LICENSE
           ls -la "sekigae_${VER}.zip"
 
       - name: Releases に公開する

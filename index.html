@@ -1745,6 +1745,17 @@
     </div>
 
     <div data-plugin="animextra" id="galleryDock" class="gallery-dock" role="region" aria-label="一覧" hidden></div>
+    <script>
+    // PWA：https で開いたときだけ、インストールとオフラインの仕組みを入れます（file:// では、何もしません）
+    (function () {
+        try {
+            if (!/^https?:$/.test(location.protocol)) return;
+            var l = document.createElement("link"); l.rel = "manifest"; l.href = "manifest.webmanifest"; document.head.appendChild(l);
+            var m = document.createElement("meta"); m.name = "theme-color"; m.content = "#2563eb"; document.head.appendChild(m);
+            if ("serviceWorker" in navigator) window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
+        } catch (e) {}
+    })();
+    </script>
     <script src="script.js"></script>
     <script src="changelog.js"></script>
     <script src="plugins/ui-parts.js"></script>
