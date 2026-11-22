@@ -471,10 +471,31 @@ const UIS_PICO = {
     gift: "<rect x='3' y='8' width='18' height='4' rx='1'/><path d='M5 12v9h14v-9M12 8v13M12 8c-2-4-6-4-5-1.5 1 2 5 1.5 5 1.5zM12 8c2-4 6-4 5-1.5-1 2-5 1.5-5 1.5z'/>",
     map: "<path d='M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z'/><path d='M9 4v14M15 6v14'/>",
     chair: "<path d='M7 3h10v8H7z'/><path d='M5 11h14v3H5zM8 14l-1 7M16 14l1 7'/>",
-    target: "<circle cx='12' cy='12' r='9'/><circle cx='12' cy='12' r='5'/><path d='M12 12v.01'/>"
+    target: "<circle cx='12' cy='12' r='9'/><circle cx='12' cy='12' r='5'/><path d='M12 12v.01'/>",
+    bellOff: "<path d='M8.7 3A6 6 0 0 1 18 8c0 3 .6 5 1.5 6.5M6 8c0 7-3 9-3 9h13'/><path d='M10.3 21a1.9 1.9 0 0 0 3.4 0M2 2l20 20'/>",
+    skipfwd: "<path d='M5 5v14l11-7zM19 5v14'/>",
+    speaker: "<path d='M4 10v4h4l5 4V6l-5 4z'/>",
+    calendar: "<rect x='3' y='5' width='18' height='16' rx='2'/><path d='M3 10h18M8 3v4M16 3v4'/>",
+    cap: "<path d='M2 9l10-5 10 5-10 5z'/><path d='M6 11v5c3 2.5 9 2.5 12 0v-5'/>",
+    share: "<circle cx='6' cy='12' r='2.5'/><circle cx='18' cy='6' r='2.5'/><circle cx='18' cy='18' r='2.5'/><path d='m8.2 10.8 7.6-3.6M8.2 13.2l7.6 3.6'/>",
+    school: "<path d='M3 21V9l9-6 9 6v12z'/><path d='M9 21v-6h6v6'/>"
 };
 // タイマーやルーレットなど、文字が切り替わるボタンに付けるアイコン（ボタンごとに、文字から選びます）
 const UIS_BTN_ICO = [
+    { sel: "#backupReminderBar button", map: [[/バックアップ/, "save"], [/あとで/, "clock"], [/しない/, "bellOff"]] },
+    { sel: "#musicPrevBtn", map: [[/./, "skipback"]] },
+    { sel: "#musicPlayBtn", map: [[/⏸/, "pause"], [/./, "play"]] },
+    { sel: "#musicNextBtn", map: [[/./, "skipfwd"]] },
+    { sel: ".music-vol > span", map: [[/🔈/, "speaker"], [/🔊/, "volume"]] },
+    { sel: "#stickyModeBar", map: [[/^📝/, "edit"]] },
+    { sel: ".sched-head", map: [[/^📅/, "calendar"]] },
+    { sel: ".room-panel-head", map: [[/^🏫/, "school"]] },
+    { sel: "#btnPromoteGo", map: [[/^🎓/, "cap"]] },
+    { sel: "#shareNativeBtn", map: [[/^📲/, "share"]] },
+    { sel: "#luckUndoBtn", map: [[/^↩/, "undo"]] },
+    { sel: "#sjPlay", map: [[/^▶/, "play"]] },
+    { sel: ".nom-progress-reset", map: [[/^🔁/, "repeat"]] },
+    { sel: ".room-del", map: [[/^🗑/, "trash"]] },
     { sel: ".btn-giant-mode", map: [[/./, "expand"]] },
     { sel: "#timerStartBtn, #giantTimerStartBtn", map: [[/一時停止/, "pause"], [/./, "play"]] },
     { sel: "#timerPanel .btn-delete, #giantTimeOverlay .btn-delete", map: [[/リセット/, "reset"]] },
@@ -494,7 +515,7 @@ const UIS_BTN_ICO = [
     { sel: "#rouletteOverlay .btn-secondary, #rouletteEditModal .btn-secondary", map: [[/^[＋+]\s*ボタンを追加/, "plus"]] }
 ];
 // 文字の先頭に付いている、絵文字や記号（アイコンにするので取り除きます）
-const UIS_BTN_LEAD = /^[\s✕⏱⏳⏸▶🔇🎡🥋🕒＋+]+/u;
+const UIS_BTN_LEAD = /^[\s✕⏱⏳⏸▶⏮⏭🔈🔊💾🔕📝📅🏫🎓📲↩🗑🔁\ufe0f🔇🎡🥋🕒＋+]+/u;
 // ボタンの先頭の絵文字と、線のアイコンの対応
 const UIS_ICO_MAP = {
     "👥": "users", "🧪": "flask", "📄": "file", "📝": "edit", "🔍": "search", "🔎": "search", "➕": "plus", "🔄": "refresh", "♻": "refresh",
@@ -1767,7 +1788,7 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.19",
+    version: "3.20",
     description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",
