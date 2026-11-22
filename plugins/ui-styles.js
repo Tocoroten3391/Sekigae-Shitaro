@@ -88,6 +88,7 @@ ${S} #musicPanel .music-x:hover { background: ${t.soft2}; }
 ${S} #musicPanel button:not(.music-chip):not(.music-x):not(.music-play):not(.music-cover) { border-color: ${t.line}; }
 ${S} #timerPanel { background: ${t.surf}; color: ${t.text}; border: ${t.border}; border-radius: ${t.radius}; box-shadow: ${t.shadow}; backdrop-filter: none; }
 ${S} #timerPanel #timerDisplay { color: ${t.text}; font-weight: 700; }
+${S} #timerPanel button { text-align: center; justify-content: center; }
 ${S} #timerPanel button { background: ${t.soft} !important; color: ${t.keyText} !important; border: 1px solid ${t.line} !important; border-radius: 8px !important; box-shadow: none !important; font-weight: 700 !important; }
 ${S} #timerPanel button:hover { background: ${t.soft2} !important; }
 ${S} #timerPanel button:focus-visible { outline: 3px solid ${t.focus}; }
@@ -132,10 +133,11 @@ body.ui-style-a #timerPanel .uis-rb-main { display: grid; grid-template-columns:
 body.ui-style-a #timerPanel .uis-rb-main > * { grid-column: 1 / -1; margin: 0; }
 body.ui-style-a #timerPanel .uis-rb-main .timer-panel-header { grid-column: 1 / -1; grid-row: 5; margin: 0; }
 body.ui-style-a #timerPanel .uis-rb-main .timer-panel-header > button { flex: 1; white-space: nowrap; }
+body.ui-style-a #timerPanel .uis-rb-main :is(#timerModeSwitchBtn, .timer-panel-header > button) { display: inline-flex; align-items: center; justify-content: center; text-align: center; }
 body.ui-style-a #timerPanel .uis-rb-main #timerModeSwitchBtn { grid-column: 1 / -1; grid-row: 4; margin: 0 !important; padding: 8px 4px !important; font-size: 12px; white-space: nowrap; }
 body.ui-style-a #timerPanel .uis-rb-main #timerIcon { display: none; }
 body.ui-style-a #timerPanel .uis-rb-main .btn-giant-mode, .btn-clock-mode { padding: 8px 12px !important; font-size: 13px !important; }
-body.ui-style-a #timerPanel #timerDisplay { font-size: 36px; line-height: 1.1; margin: 0; text-align: left; }
+body.ui-style-a #timerPanel #timerDisplay { font-size: 36px; line-height: 1.1; margin: 0; text-align: center; }
 body.ui-style-a #timerPanel .timer-mini-bar { margin: 0; }
 body.ui-style-a #timerPanel .timer-btn-row button { padding: 9px 0 !important; }
 body.ui-style-a #timerPanel .quick-preset-row { display: grid; grid-template-columns: repeat(2, 72px); gap: 6px; }
@@ -161,10 +163,11 @@ body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #time
 body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .uis-rb-main > * { grid-column: 1 / -1; margin: 0; }
 body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .uis-rb-main .timer-panel-header { grid-column: 1 / -1; grid-row: 5; margin: 0; }
 body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .uis-rb-main .timer-panel-header > button { flex: 1; white-space: nowrap; }
+body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .uis-rb-main :is(#timerModeSwitchBtn, .timer-panel-header > button) { display: inline-flex; align-items: center; justify-content: center; text-align: center; }
 body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .uis-rb-main #timerModeSwitchBtn { grid-column: 1 / -1; grid-row: 4; margin: 0 !important; padding: 8px 4px !important; font-size: 12px; white-space: nowrap; }
 body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .uis-rb-main #timerIcon { display: none; }
 body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .uis-rb-main .btn-giant-mode, .btn-clock-mode { padding: 8px 12px !important; font-size: 13px !important; }
-body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel #timerDisplay { font-size: 36px; line-height: 1.1; margin: 0; text-align: left; }
+body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel #timerDisplay { font-size: 36px; line-height: 1.1; margin: 0; text-align: center; }
 body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .timer-mini-bar { margin: 0; }
 body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .timer-btn-row button { padding: 9px 0 !important; }
 body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .quick-preset-row { display: grid; grid-template-columns: repeat(2, 72px); gap: 6px; }
@@ -1792,7 +1795,7 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.21",
+    version: "3.22",
     description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",
