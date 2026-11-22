@@ -1,0 +1,80 @@
+# タグ（v4.53.4 など）を付けると、次を自動で行います。
+#   1. zip を作って、Releases に公開する（説明は changelog.js の、その版の本文）
+#   2. Sekigae-Shitaro_Updates-info の changelog.json を、changelog.js の履歴で更新する
+# 何度でも、やり直せます（同じタグで、再実行しても壊れません）。
+name: リリースと更新情報
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.ref_name }}
+      HAS_TOKEN: ${{ secrets.CHANGELOG_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 版と本文を取り出す
+        run: |
+          node - <<'EOF_JS'
+          const fs = require("fs"), vm = require("vm");
+          const ver = process.env.TAG.replace(/^v/i, "");
+          const app = fs.readFileSync("script.js", "utf8").match(/const APP_VERSION = "([^"]+)"/)[1];
+          if (app !== ver) { console.error("タグ " + ver + " と、script.js の版 " + app + " が違います"); process.exit(1); }
+          const ctx = {};
+          vm.runInNewContext(fs.readFileSync("changelog.js", "utf8").replace(/^const /m, "var "), ctx);
+          const list = ctx.LOCAL_CHANGELOG || [];
+          const e = list.find(x => x.version === ver);
+          if (!e) { console.error("changelog.js に Ver." + ver + " がありません"); process.exit(1); }
+          fs.writeFileSync("/tmp/notes.txt", e.notes + "\n");
+          fs.writeFileSync("/tmp/ver.txt", ver);
+          fs.writeFileSync("/tmp/all.json", JSON.stringify(list, null, 2) + "\n");
+          EOF_JS
+
+      - name: zip を作る
+        run: |
+          VER=$(cat /tmp/ver.txt)
+          zip -qr "sekigae_${VER}.zip" index.html script.js style.css changelog.js plugins LICENSE
+          ls -la "sekigae_${VER}.zip"
+
+      - name: Releases に公開する
+        run: |
+          VER=$(cat /tmp/ver.txt)
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "sekigae_${VER}.zip" --clobber
+            gh release edit "$TAG" --title "Ver.${VER}" --notes-file /tmp/notes.txt
+          else
+            gh release create "$TAG" "sekigae_${VER}.zip" --title "Ver.${VER}" --notes-file /tmp/notes.txt
+          fi
+
+      - name: 更新情報のリポジトリを取得
+        if: ${{ env.HAS_TOKEN == 'true' }}
+        uses: actions/checkout@v4
+        with:
+          repository: Tocoroten3391/Sekigae-Shitaro_Updates-info
+          token: ${{ secrets.CHANGELOG_TOKEN }}
+          path: info
+
+      - name: changelog.json を更新して保存する
+        if: ${{ env.HAS_TOKEN == 'true' }}
+        run: |
+          cp /tmp/all.json info/changelog.json
+          cd info
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add changelog.json
+          git diff --cached --quiet && echo "変更なし" && exit 0
+          git commit -m "更新情報: ${TAG}"
+          git push
+
+      - name: トークン未設定の知らせ
+        if: ${{ env.HAS_TOKEN != 'true' }}
+        run: echo "::warning::CHANGELOG_TOKEN が未設定のため、changelog.json は更新していません。設定してから、このワークフローを再実行してください。"

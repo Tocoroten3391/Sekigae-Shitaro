@@ -2,8 +2,8 @@ const $id = id => document.getElementById(id);
 
 // アプリのバージョン。ここを更新すれば設定メニューの表示にも自動で反映される。
 // SemVer（メジャー.マイナー.パッチ）方式：メジャー=大きな仕様変更、マイナー=新機能、パッチ=不具合修正。
-const APP_VERSION = "4.53.3";
-const LATEST_VERSION_URL = "https://github.com/tocoroten3391/Sekigae-Shitaro_Updates-info/releases/latest";
+const APP_VERSION = "4.53.4";
+const LATEST_VERSION_URL = "https://github.com/Tocoroten3391/Sekigae-Shitaro_Apps/releases/latest";
 // 自前で更新情報を配信するときのURL。空の間は、下のGASを使います。
 // GitHub なら、changelog.json のURL（末尾が .json）を書きます。server/updates.php のURLでも使えます。
 const CHANGELOG_JSON_URL = "https://tocoroten3391.github.io/Sekigae-Shitaro_Updates-info/changelog.json";
