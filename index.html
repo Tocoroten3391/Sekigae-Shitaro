@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>席替えし太郎</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%232563eb'/%3E%3Crect%20x='8.5'%20y='8.5'%20width='13'%20height='13'%20rx='3'%20fill='%23ffffff'/%3E%3Crect%20x='26.0'%20y='8.5'%20width='13'%20height='13'%20rx='3'%20fill='%23ffffff'/%3E%3Crect%20x='43.5'%20y='8.5'%20width='13'%20height='13'%20rx='3'%20fill='%23ffffff'/%3E%3Crect%20x='8.5'%20y='26.0'%20width='13'%20height='13'%20rx='3'%20fill='%23ffffff'/%3E%3Crect%20x='26.0'%20y='26.0'%20width='13'%20height='13'%20rx='3'%20fill='%23fbbf24'/%3E%3Crect%20x='43.5'%20y='26.0'%20width='13'%20height='13'%20rx='3'%20fill='%23ffffff'/%3E%3Crect%20x='8.5'%20y='43.5'%20width='13'%20height='13'%20rx='3'%20fill='%23ffffff'/%3E%3Crect%20x='26.0'%20y='43.5'%20width='13'%20height='13'%20rx='3'%20fill='%23ffffff'/%3E%3Crect%20x='43.5'%20y='43.5'%20width='13'%20height='13'%20rx='3'%20fill='%23ffffff'/%3E%3C/svg%3E">
+    <script>
+    /* 起動の最初の瞬間から、選んだテーマで描く（ダークモードで、いったん白く光るのを防ぐ） */
+    (function () {
+        try {
+            var themes = ["theme-default", "theme-dark", "theme-sakura", "theme-summer", "theme-halloween", "theme-christmas", "theme-334", "theme-miku", "theme-kaizuka", "theme-paper", "theme-blackboard", "theme-game", "theme-winter", "theme-autumn", "theme-spring"];
+            var t = localStorage.getItem("app_theme");
+            if (t === "theme-auto") {
+                var now = new Date(), mo = now.getMonth() + 1, da = now.getDate();
+                t = (mo === 10 && da >= 25) ? "theme-halloween" : mo === 12 ? "theme-christmas" : (mo === 1 || mo === 2) ? "theme-winter" : mo === 3 ? "theme-sakura" : (mo === 4 || mo === 5) ? "theme-spring" : (mo >= 6 && mo <= 8) ? "theme-summer" : "theme-autumn";
+            }
+            var cls = themes.indexOf(t) >= 0 ? t : "theme-default";
+            var follow = localStorage.getItem("follow_system_dark") === "1";
+            if (follow && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) cls = "theme-dark";
+            window.__bootThemeClass = cls;
+            if (cls === "theme-dark") document.documentElement.classList.add("boot-dark");
+        } catch (e) { /* 読めない時は、いつもの表示で始める */ }
+    })();
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-default">
+    <script>
+    (function () {
+        var c = window.__bootThemeClass;
+        if (c && c !== "theme-default") { document.body.classList.remove("theme-default"); document.body.classList.add(c); }
+        document.body.classList.add("no-theme-transition");
+    })();
+    </script>
+    <button onclick="exitNominationMode()" class="btn-exit-blackboard" id="btnExitNomination" style="background: #3a3a3c; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">✕ 授業モードに戻る</button>
+
+    <div id="toastContainer"></div>
+    <div id="backupReminderBar" class="backup-reminder" role="status" hidden>
+        <div class="backup-reminder-text">
+            <strong>バックアップのお知らせ</strong>
+            <span id="backupReminderMsg"></span>
+        </div>
+        <div class="backup-reminder-actions">
+            <button type="button" id="backupReminderPrimaryBtn" class="br-btn br-primary" onclick="backupReminderBackupNow()">💾 バックアップする</button>
+            <button type="button" class="br-btn" onclick="backupReminderLater()">⏳ あとで</button>
+            <button type="button" class="br-link" onclick="backupReminderStop()">🔕 お知らせをしない</button>
+        </div>
+    </div>
+    <button onclick="toggleConfigMenu()" class="btn-config-toggle" id="configMenuBtn">⚙️ 設定</button>
+
+    <div id="topBarContainer">
+        <h1 class="app-title" id="appTitle"><span class="app-title-text" id="appTitleText">席替えし太郎</span></h1>
+        <button class="btn-secondary btn-rounded-box" onclick="onLockButton()" id="btnLock" style="padding: 8px 12px;">ロック</button>
+        <button class="btn-secondary btn-rounded-box" onclick="toggleFullScreen()" id="btnTopFullscreen" style="padding: 8px 12px;">全画面表示</button>
+        
+        <div id="smartTimerBox">
+            <button class="realtime-clock" onclick="onClockClick()">
+                <span data-plugin="timer" id="compactTimerStartBtn" onclick="event.stopPropagation(); toggleTimer();" title="パネルを開かずにスタート/停止">▶</span>
+                <span id="realtimeClock">--:--:--</span>
+            </button>
+            <div data-plugin="timer" id="compactTimerBar" class="timer-mini-bar timer-mini-bar-compact" data-state="ok" hidden><div id="compactTimerBarFill" class="timer-mini-fill"></div></div>
+            <div data-plugin="timer" id="compactEndTimeDisplay" style="display: none;"></div>
+            
+            <div id="timerPanel" style="display: none;">
+                <div class="timer-panel-header">
+                    <span data-plugin="timer" id="timerIcon"></span>
+                    <button data-plugin="timer" class="btn-secondary btn-giant-mode" onclick="toggleGiantTimeMode('timer')">巨大表示</button>
+                </div>
+                <div data-plugin="timer" id="timerDisplay" style="font-weight: 400;">00:00.00</div>
+                <div data-plugin="timer" id="timerMiniBar" class="timer-mini-bar" data-state="ok" hidden><div id="timerMiniBarFill" class="timer-mini-fill"></div></div>
+                
+                <div data-plugin="timer" class="timer-btn-row">
+                    <button id="timerStartBtn" class="btn-connect" onclick="toggleTimer()">スタート</button>
+                    <button class="btn-delete" onclick="resetTimer()">リセット</button>
+                </div>
+                
+                <button data-plugin="timer" id="timerModeSwitchBtn" class="btn-secondary mode-switch-btn" onclick="switchTimerMode()">ストップウォッチに切替</button>
+                
+                <div class="timer-section-label">クイック・プリセット</div>
+                <div data-plugin="timer" class="quick-preset-row" id="quickPresetRow"></div>
+
+                <div class="timer-section-label">手動で追加・セット</div>
+                <div data-plugin="timer" class="quick-add-row" id="quickAddRow"></div>
+                <div class="custom-time-row">
+                    <input type="number" id="customMinInput" min="0" placeholder="分"> 分 
+                    <input type="number" id="customSecInput" min="0" placeholder="秒"> 秒 
+                    <button data-plugin="timer" class="btn-secondary" onclick="handleCustomTimeSet('customMinInput', 'customSecInput')">セット</button>
+                </div>
+
+                <div class="timer-section-label" style="color: var(--lbl-sky);">時刻を指定して鳴らす</div>
+                <div class="clock-target-row">
+                    <input type="time" id="clockTargetInput">
+                    <button data-plugin="timer" class="btn-connect" onclick="setTimerToClockTime('clockTargetInput')">この時刻に鳴らす</button>
+                </div>
+
+                <div class="timer-section-label" style="color: var(--lbl-purple);">保存できるステップタイマー</div>
+                <div data-plugin="timer" class="routine-row step-set-row">
+                    <select id="stepSetSelect"></select>
+                    <button class="btn-connect" onclick="startStepSet()">開始</button>
+                </div>
+                <div data-plugin="timer" class="routine-row step-set-row" style="margin-top: 6px;">
+                    <button class="btn-secondary" onclick="openStepSetModal()">作成・編集</button>
+                    <button class="btn-secondary" id="stepNextBtn" onclick="advanceStep()" style="display: none;">次のステップへ</button>
+                </div>
+                <div class="switch-container step-auto-row">
+                    <label class="switch"><input type="checkbox" id="stepAutoToggle" checked onchange="localStorage.setItem('step_auto_advance', this.checked)"><span class="slider"></span></label>
+                    <span class="switch-label">時間になったら自動で次へ進む</span>
+                </div>
+                <div data-plugin="timer" id="stepProgress" class="step-progress" style="display: none;"></div>
+            </div>
+        </div>
+
+        <div id="classStatusBar" class="class-status-bar" hidden>
+            <span id="classStatusText"></span>
+            <button type="button" id="classStatusBtn" class="class-status-btn" onclick="endTrialFromBar()" hidden>サンプルを終わる</button>
+        </div>
+        <div id="statusBadge" class="status-badge status-unconnected">
+            <div class="status-dot"></div><span id="statusText">未接続</span>
+        </div>
+    </div>
+
+    <div id="giantTimeOverlay" style="display: none;">
+        <button data-plugin="timer" class="btn-close-giant" onclick="closeGiantTimeMode()">✕ 閉じる</button>
+        <div data-plugin="timer" id="giantClockDisplay" style="display: none;"></div>
+        
+        <div id="giantTimerContainer">
+            <div data-plugin="timer" id="giantPhaseLabel" style="display: none; font-size: calc(var(--gu) * 3); font-weight: bold; color: #10b981; margin-bottom: calc(var(--gu) * 0.8); letter-spacing: 2px;"></div>
+            
+            <svg data-plugin="timer" id="giantCircleGauge" viewBox="0 0 100 100" style="display: none;">
+                <circle cx="50" cy="50" r="45" class="circle-bg" />
+                <circle id="giantCircleInner" cx="50" cy="50" r="45" class="circle-fg" />
+            </svg>
+
+            <div data-plugin="timer" id="giantTimerDisplay" style="font-weight: 400;">00:00.00</div>
+            <div data-plugin="timer" id="giantEndTimeDisplay" style="display: none;"></div>
+            
+            <div data-plugin="timer" id="giantProgressBar" style="display: none;">
+                <div id="giantProgressInner"></div>
+            </div>
+
+            <div data-plugin="timer" id="lapContainer" style="display: none; position: absolute; right: calc(var(--gu) * -25); top: 0; width: calc(var(--gu) * 20); max-height: 60vh; overflow-y: auto; text-align: left; background: rgba(255,255,255,0.1); border-radius: 12px; padding: calc(var(--gu) * 1.2); border: 1px solid rgba(255,255,255,0.2);">
+                <h4 style="margin: 0 0 calc(var(--gu) * 0.8) 0; font-size: calc(var(--gu) * 1.5); border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px;">⏱ ラップ記録</h4>
+                <div id="lapListContainer" style="display: flex; flex-direction: column; gap: calc(var(--gu) * 0.6); font-size: calc(var(--gu) * 1.2); font-variant-numeric: tabular-nums;"></div>
+            </div>
+
+            <div data-plugin="timer" class="giant-timer-btn-row">
+                <button id="giantTimerStartBtn" class="btn-connect" onclick="toggleTimer()">スタート</button>
+                <button id="giantLapBtn" class="btn-secondary" style="display: none;" onclick="recordLap()">⏱ ラップ</button>
+                <button class="btn-delete" onclick="resetTimer()">リセット</button>
+            </div>
+
+            <div class="giant-add-wrap">
+                <div data-plugin="timer" class="giant-quick-add-row" id="giantQuickAddRow"></div>
+                <div class="giant-custom-time-row">
+                    <input type="number" id="giantCustomMinInput" min="0" placeholder="分"> 分 
+                    <input type="number" id="giantCustomSecInput" min="0" placeholder="秒"> 秒 
+                    <button data-plugin="timer" class="btn-secondary" onclick="handleCustomTimeSet('giantCustomMinInput', 'giantCustomSecInput')">セット</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="rouletteOverlay" style="display: none;">
+        <button data-plugin="roulette" class="btn-close-giant" onclick="closeRouletteMode()" style="z-index: 3600;">✕ 閉じる</button>
+        <div data-plugin="roulette" class="roulette-wrapper">
+            <div id="roulettePointer">▼</div>
+            <canvas id="rouletteCanvas" width="600" height="600"></canvas>
+        </div>
+        <div style="margin-top: 30px; display: flex; gap: 20px;">
+            <button data-plugin="roulette" class="btn-main" id="btnSpinRoulette" style="display: inline-block; font-size: 24px; padding: 15px 40px; margin: 0; border-radius: 50px;" onclick="spinRoulette()">スピン！</button>
+            <button class="btn-secondary" id="btnRouletteUndo" style="display: none; font-size: 18px; padding: 15px 28px; margin: 0; border-radius: 50px;" onclick="undoLastNomination()">直前の当選を取り消す</button>
+        </div>
+    </div>
+
+    <div class="config-container" id="configContainer">
+        <div class="config-search">
+            <input type="search" id="configSearchInput" placeholder="設定をさがす　例：音、班、ロック" oninput="onConfigSearch()" aria-label="設定をさがす" autocomplete="off">
+            <button type="button" id="btnConfigWide" class="btn-config-wide" onclick="toggleConfigWide()" aria-pressed="false" title="メニューを広げて、見やすくします">⛶ 拡大</button>
+        </div>
+        <p id="configSearchEmpty" class="config-search-empty" hidden>見つかりませんでした。別の言葉で試してください。</p>
+        <div class="config-group-title" data-group="クラスと席">クラスと席</div>
+        <div class="config-section config-section-roster" data-sec="class" data-group="クラスと席" data-kw="クラス 名簿 切り替え 保存 削除 プリセット 欠席 休み 今日の欠席者 1年A組">
+            <h3>クラスと名簿</h3>
+            <div id="presetRadioContainer" class="preset-radio-list"></div>
+            <div class="input-group-row">
+                <input type="text" id="presetNameInput" placeholder="例: 1年A組">
+                <div class="btn-mini-row">
+                    <button onclick="savePreset()" class="btn-connect-mini">保存</button>
+                    <button onclick="deletePreset()" class="btn-delete-mini">削除</button>
+                </div>
+            </div>
+            <button data-plugin="absent" onclick="openAbsentModal()" class="btn-secondary btn-tint-amber" style="margin-top: 10px; background-color: #d97706; color: white;">今日の欠席者をまとめて選ぶ</button>
+        </div>
+        <div class="config-section" data-sec="rosterio" data-group="クラスと席" data-kw="名簿 生徒 作る 直す 貼り付け 読み込み csv txt ファイル クイック生成 人数 書き出し ふりがな 番号">
+            <h3>名簿の入力・書き出し</h3>
+            <button data-plugin="roster" onclick="openRosterEditor()" class="btn-secondary">名簿を作る・直す</button>
+            <button data-plugin="roster" onclick="openRosterPasteModal()" class="btn-secondary">名簿を貼り付ける</button>
+            <button onclick="document.getElementById('offlineFileInput').click()" class="btn-secondary">CSV・TXTの名簿ファイルを読み込む</button>
+            <input type="file" id="offlineFileInput" accept=".txt,.csv" style="display: none;" onchange="importOfflineFile(this)">
+            <div class="quick-generate-box">
+                <label for="quickCountInput">番号名簿をクイック生成 :</label>
+                <div class="input-group-row">
+                    <input type="number" id="quickCountInput" min="1" max="100" placeholder="人数">
+                    <button onclick="generateNumbersOnlyList()" class="btn-unlock-mini">生成</button>
+                </div>
+            </div>
+            <div class="pop-wrap pop-wrap-block">
+                <button type="button" class="btn-secondary" id="btnRosterExportMenu" aria-haspopup="true" aria-expanded="false" style="margin:0;" onclick="togglePopMenu('rosterExportMenu', event)">名簿を書き出す ▾</button>
+                <div class="pop-menu" id="rosterExportMenu" hidden>
+                    <button type="button" onclick="closePopMenus(); exportRosterFile('csv')" class="pop-item pop-item-gray">CSVで書き出す</button>
+                    <button type="button" onclick="closePopMenus(); exportRosterFile('txt')" class="pop-item pop-item-gray">TXTで書き出す</button>
+                </div>
+            </div>
+            <button data-plugin="furigana" onclick="openFuriganaModal()" class="btn-secondary btn-tint-purple" style="margin-top: 10px; background-color: #7c3aed; color: white;">ふりがなの設定</button>
+        </div>
+        <div class="config-section" data-sec="year" data-group="クラスと席" data-kw="進級 新学年 クラス替え 去年度 年度 年間 記録 書き出し 1年間">
+            <h3>進級・年度</h3>
+            <button type="button" onclick="openPromoteModal()" class="btn-secondary" id="btnPromote" style="margin-top: 10px;">進級の切り替え</button>
+            <p class="config-note">新しい学年になった時に、新しいクラスを作ります。前の学年のクラスと記録は、そのまま残ります。</p>
+            <button type="button" onclick="toggleArchiveSelectedClass()" class="btn-secondary" id="btnArchiveClass" style="margin-top: 10px;">選んだクラスを、去年度にする</button>
+            <button type="button" onclick="exportSelectedClassYearCsv()" class="btn-secondary" id="btnExportYearCsv" style="margin-top: 10px;">選んだクラスの、1年間の記録を書き出す</button>
+            <p class="config-note">去年度にしたクラスは、一覧の下の「去年度のクラス」にまとまります。記録は消えません。年度の終わりに、1年間の指名や席の記録を、表計算ソフトで開けるファイルに書き出せます。</p>
+        </div>
+        <div class="config-section" data-sec="layout" data-group="クラスと席" data-kw="座席 空席 列 行 レイアウト 固定 出席番号順 リセット 教室の配置">
+            <h3>座席のレイアウト</h3>
+            <div class="layout-grid-fields">
+                <div>
+                    <label class="input-label" for="columnSelect">横の列数 :</label>
+                    <select id="columnSelect" onchange="onLayoutChange()">
+                        <option value="4">4列</option><option value="5">5列</option><option value="6" selected>6列</option><option value="7">7列</option><option value="8">8列</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="input-label" for="rowSelect">縦の行数 :</label>
+                    <select id="rowSelect" onchange="onLayoutChange()">
+                        <option value="4">4行</option><option value="5">5行</option><option value="6" selected>6行</option><option value="7">7行</option><option value="8">8行</option><option value="9">9行</option><option value="10">10行</option><option value="11">11行</option><option value="12">12行</option>
+                    </select>
+                </div>
+            </div>
+            <label class="input-label" for="emptySeatsInput">固定で空席にする座席 :</label>
+            <input type="text" id="emptySeatsInput" placeholder="例: A1, B3" oninput="onEmptySeatsInput()" style="text-transform: uppercase;">
+            <button onclick="resetToNumberOrder()" class="btn-secondary">出席番号順にリセット</button>
+            <div data-plugin-slot="settings-seat"></div>
+        </div>
+        <div class="config-section" data-sec="seatview" data-group="クラスと席" data-kw="座席 ズーム 拡大 縮小 文字 大きさ 番号 巨大 電子黒板 付箋 着せ替え 映画館 電車">
+            <h3>座席の見え方</h3>
+            <div class="switch-container">
+                <label class="switch"><input type="checkbox" id="numberOnlyToggle" onchange="applyAccessibilitySettings(); renderClassroom()"><span class="slider"></span></label>
+                <span class="switch-label">座席を番号のみで巨大表示する</span>
+            </div>
+            <div class="slider-control-group">
+                <div class="slider-top-row">
+                    <label style="font-size:13px; font-weight:bold; color:var(--text-main);">座席のズーム</label>
+                    <span id="zoomValueText" class="slider-value-text">1.00x</span>
+                </div>
+                <input type="range" id="zoomSlider" min="0.5" max="1.5" step="0.05" value="1" onchange="updateZoom()" oninput="updateZoom()">
+                <div class="slider-bottom-row">
+                    <button class="btn-icon" onclick="adjustSlider('zoomSlider', -0.05)">－</button>
+                    <button class="btn-icon" onclick="adjustSlider('zoomSlider', 0.05)">＋</button>
+                </div>
+            </div>
+            <label class="input-label" for="seatTextScaleSelect">座席の文字の大きさ :</label>
+            <select id="seatTextScaleSelect" onchange="onSeatTextScaleChange()">
+                <option value="1" selected>ふつう</option>
+                <option value="1.2">大きめ</option>
+                <option value="1.4">とても大きい</option>
+            </select>
+            <p class="config-note">電子黒板で遠くから見る時に使います。文字の大きさは、「ふつう」の1.2倍と1.4倍になります。座席の横幅は変わらないので、長い名前は、2行に分けて表示します。「座席を番号のみで巨大表示する」をオンにした時は、この設定に関わらず、座席の横幅はそのままで、数字がいちばん大きくなります。</p>
+            <div data-plugin-slot="settings-seatview"></div>
+        </div>
+        <div class="config-section" data-sec="rules" data-group="クラスと席" data-kw="席替え 条件 離す 近くに置く 座席設定 わがまま 運の貯金 ルール">
+            <h3>席替えのルール</h3>
+            <button onclick="openSeatSettingsModal()" class="btn-secondary btn-tint-gray" style="margin-top: 10px; background-color: #6b7280; color: white;">座席設定</button>
+            <p class="config-note">席替えで、離す人と近くに置く人などを決めます。</p>
+            <div data-plugin-slot="settings-rules"></div>
+        </div>
+        <div class="config-group-title" data-group="班・グループ">班・グループ</div>
+        <div class="config-section" data-sec="groups" data-group="班・グループ" data-kw="班 グループ 班分け 班の数 班の組み方 縦 横 順番 右上 左上">
+            <h3>班のしくみ</h3>
+            <label class="input-label" for="groupCountSelect" style="color: var(--lbl-green);">班の数 :</label>
+            <select id="groupCountSelect" onchange="onGroupCountChange()" class="green-select">
+                <option value="2">2班</option>
+                <option value="3">3班</option>
+                <option value="4">4班</option>
+                <option value="5">5班</option>
+                <option value="6">6班</option>
+                <option value="7">7班</option>
+                <option value="8" selected>8班</option>
+            </select>
+            <label class="input-label" for="groupTypeSelect" style="color: var(--lbl-green);">班の組み方 自動演算 :</label>
+            <select id="groupTypeSelect" onchange="onGroupTypeChange()" class="green-select">
+                <option value="column" selected>縦の列ごと</option><option value="row">横の行ごと</option><option value="block">2×2の塊ごと</option><option value="manual">✨ 自由に手動で色付け</option>
+            </select>
+            <label class="input-label" for="groupOrderSelect" style="color: var(--lbl-green);">班の番号の順番 :</label>
+            <select id="groupOrderSelect" onchange="onGroupOrderChange()" class="green-select">
+                <option value="rtl" selected>右上から下へ進む</option>
+                <option value="ltr">左上から右へ進む</option>
+            </select>
+            <p class="config-note">「縦の列ごと」と「2×2の塊ごと」の、班の番号の数え方です。右上から下へ進むと、1班は右上の列から始まります。</p>
+        </div>
+        <div class="config-section" data-sec="groupview" data-group="班・グループ" data-kw="班 色 模様 番号 班分けカラー 班の名前 色塗り 色を設定 パレット 見分け">
+            <h3>班の表示と色</h3>
+            <div class="switch-container">
+                <label class="switch"><input type="checkbox" id="groupColorToggle" checked onchange="renderClassroom()"><span class="slider slider-green"></span></label>
+                <span class="switch-label" style="color: var(--lbl-green); font-weight: bold;">班分けカラーを表示する</span>
+            </div>
+            <div class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="groupMarkToggle" onchange="onGroupMarkToggle()"><span class="slider slider-green"></span></label>
+                <span class="switch-label" style="color: var(--lbl-green); font-weight: bold;">班の番号と模様も表示する</span>
+            </div>
+            <p class="config-note">色が見分けにくい人にも、班が伝わります。班分けカラーを表示している時に使えます。</p>
+            <label for="groupMarkScopeSelect" class="input-label" style="margin-top: 8px;">班の番号と模様を出す場所：</label>
+            <select id="groupMarkScopeSelect" onchange="onGroupMarkScopeChange()">
+                <option value="all" selected>座席表、プレビュー、発表モード、印刷と画像保存</option>
+                <option value="announce">座席表、プレビュー、発表モード</option>
+                <option value="seat">座席表だけ</option>
+            </select>
+            <p class="config-note">座席表には、黒板モードと指名モードも入ります。印刷と画像保存は、画面で入れるかどうかを、その場でも変えられます。</p>
+            <div id="groupNamesCustomWrapper" style="margin-top: 8px;">
+                <label style="font-size: 12px; font-weight: bold; color: var(--lbl-green); display: block; margin-bottom: 4px;">班の名前と色を編集：</label>
+                <div id="groupNamesFieldsContainer" class="group-names-scroll-box"></div>
+                <button onclick="resetGroupColors()" class="btn-secondary btn-compact" style="width: auto; padding: 6px 10px; font-size: 12px; margin-top: 6px;">色をデフォルトに戻す</button>
+            </div>
+            <div class="switch-container">
+                <label class="switch"><input type="checkbox" id="groupColorModeToggle" onchange="toggleGroupColorMode()"><span class="slider slider-green"></span></label>
+                <span class="switch-label" style="color: var(--lbl-green); font-weight: bold;">班の色を設定するモード</span>
+            </div>
+            <div id="groupColorModePanel" style="display: none; margin-top: 8px;">
+                <label style="font-size: 12px; font-weight: bold; color: var(--lbl-green); display: block; margin-bottom: 6px;">塗りたい班を選んで、座席表の座席をクリック。</label>
+                <div id="groupColorPaletteContainer" class="group-color-palette"></div>
+            </div>
+        </div>
+        <div class="config-group-title" data-group="席替え・指名">席替え・指名</div>
+        <div class="config-section" data-sec="anim" data-group="席替え・指名" data-kw="席替え 演出 アニメ 効果音 スロット ドラムロール 速さ お気に入り マイ演出 ランダム 試す 一覧">
+            <h3>席替えの演出</h3>
+            <label class="input-label" for="animationSelect">席替え時の演出 :</label>
+            <select id="animationSelect" class="orange-select" onchange="onShuffleAnimationChange()">
+                <optgroup label="✨ 基本・定番" data-scope="basic">
+                    <option value="slot">🎰 1. スロット</option>
+                    <option value="drumroll" selected>🥁 2. ドラムロール</option>
+                    <option value="initial">✨ 3. 通常ポップ</option>
+                    <option value="fade">🌫️ 4. フェード</option>
+                    <option value="deal">🃏 5. カードディール</option>
+                    <option value="glide">🚶 6. 前の席から移動</option>
+                    <option value="curtain">🎬 7. カーテン</option>
+                    <option value="scan">📡 8. スキャン</option>
+                    <option value="slotstop">🕹️ 9. 自分で止めるスロット</option>
+                </optgroup>
+                <optgroup label="🌪️ 激しい・ダイナミック" data-scope="intense">
+                    <option value="pop">💥 10. グリッドポップ</option>
+                    <option value="typhoon">🌀 11. タイフーン</option>
+                    <option value="laser">⚡ 12. サイバーレーザー</option>
+                    <option value="meteor">🌠 13. メテオポップ</option>
+                    <option value="bigbang">💥 14. ビッグバン</option>
+                    <option value="hurricane">🌪️ 15. ハリケーン</option>
+                    <option value="thunder">⚡ 16. サンダーストライク</option>
+                    <option value="firework">🎆 17. 花火</option>
+                    <option value="bounce">⚽ 18. バウンド</option>
+                    <option value="stamp">🔖 19. スタンプ</option>
+                    <option value="warp">🚀 20. ワープ</option>
+                </optgroup>
+                <optgroup label="🌌 個性的・特殊" data-scope="unique">
+                    <option value="roulette">🎲 21. ルーレット</option>
+                    <option value="flip">🎭 22. フェードフリップ</option>
+                    <option value="skydive">🛬 23. スカイダイブ</option>
+                    <option value="galaxy">🌌 24. ギャラクシー</option>
+                    <option value="leaf">🍃 25. リーフフォール</option>
+                    <option value="wave">🌊 26. ウェーブ</option>
+                    <option value="domino">🧱 27. ドミノ</option>
+                    <option value="spiral">🐚 28. うずまき</option>
+                    <option value="bubble">💭 29. シャボン玉</option>
+                    <option value="pendulum">🕰️ 30. 振り子</option>
+                    <option value="coin">🪙 31. コイン</option>
+                    <option value="ice">🧊 32. 氷</option>
+                    <option value="rainbow">🌈 33. レインボー</option>
+                    <option value="glitch">👾 34. グリッチ</option>
+                    <option value="stardust">⭐ 35. スターダスト</option>
+                    <option value="jelly">🍮 36. ゼリー</option>
+                    <option value="gacha">🎁 37. ガチャ</option>
+                </optgroup>
+                <optgroup label="🛑 その他">
+                    <option value="random">🎲 毎回ランダム</option>
+                    <option value="none">🛑 演出なし</option>
+                </optgroup>
+            </select>
+            <button type="button" onclick="previewShuffleAnimation()" class="btn-secondary btn-compact" style="margin-top: 8px;">席順を変えずに演出を試す</button>
+            <button data-plugin="animextra" type="button" onclick="toggleAnimGallery()" class="btn-secondary btn-compact" style="margin-top: 8px;">演出を一覧で試す</button>
+            <div class="anim-extra-box">
+                <div data-plugin="animextra" class="anim-extra-row">
+                    <label class="input-label" for="animSpeedSelect" style="margin: 0;">演出の速さ：</label>
+                    <select id="animSpeedSelect" onchange="onAnimSpeedChange()">
+                        <option value="1.3">ゆっくり</option>
+                        <option value="1" selected>ふつう</option>
+                        <option value="0.7">はやい</option>
+                    </select>
+                </div>
+                <p class="anim-extra-note">速さは、スロット・ドラムロール・自分で止めるスロット以外の演出に効きます。どの速さでも、最長5秒以内に終わります。</p>
+            </div>
+            <div class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="shuffleSoundToggle" checked onchange="toggleShuffleSound()"><span class="slider"></span></label>
+                <span class="switch-label">演出に効果音をつける</span>
+            </div>
+            <details class="adv-box" data-adv="s3">
+                <summary><span class="adv-title">くわしい設定</span><span class="adv-hint">お気に入りの演出、マイ演出、ランダムで選ぶ範囲</span></summary>
+                <div class="adv-body">
+            <div class="anim-extra-box" style="margin-top: 0;">
+                <label class="input-label" for="randomScopeSelect" style="margin: 0 0 6px;">毎回ランダムで選ぶ範囲</label>
+                <select id="randomScopeSelect" onchange="onRandomScopeChange()">
+                    <option value="all" selected>すべての演出</option>
+                    <option value="basic">基本・定番だけ</option>
+                    <option value="intense">激しい・ダイナミックだけ</option>
+                    <option value="unique">個性的・特殊だけ</option>
+                </select>
+                <p class="anim-extra-note">お気に入りを選んでいる時は、お気に入りの中から選びます。「自分で止めるスロット」は、ランダムには出ません。</p>
+                <div class="divider-line" style="margin: 10px 0;"></div>
+                <button data-plugin="animextra" type="button" id="animFavToggleBtn" onclick="toggleFavAnim()" class="btn-secondary btn-compact">選んでいる演出をお気に入りにする</button>
+                <p data-plugin="animextra" id="animFavSummary" class="anim-extra-note"></p>
+                <button data-plugin="animextra" type="button" id="animFavClearBtn" onclick="clearFavAnims()" class="btn-secondary btn-compact" style="display: none;">お気に入りをすべて外す</button>
+                <div class="divider-line" style="margin: 10px 0;"></div>
+                <label data-plugin="animextra" class="input-label" for="myAnimSelect" style="margin: 0 0 6px;">演出・速さ・効果音をまとめて保存</label>
+                <select data-plugin="animextra" id="myAnimSelect" onchange="applyMyAnim()"></select>
+                <div data-plugin="animextra" class="anim-extra-row" style="margin-top: 8px;">
+                    <input type="text" id="myAnimName" maxlength="20" placeholder="例：金曜はスロット" style="flex: 1; min-width: 0;">
+                    <button type="button" onclick="saveMyAnim()" class="btn-secondary btn-compact">保存</button>
+                </div>
+                <button data-plugin="animextra" type="button" id="myAnimDeleteBtn" onclick="deleteMyAnim()" class="btn-secondary btn-compact" style="display: none; margin-top: 6px;">選んでいるマイ演出を削除</button>
+            </div>
+                </div>
+            </details>
+        </div>
+        <div class="config-section" data-sec="nominate" data-group="席替え・指名" data-kw="当てる 当たった 指名 ルーレット 重複 除外 焦らし 履歴 リセット 名前だけ">
+            <h3>指名モード</h3>
+            <div class="switch-container">
+                <label class="switch"><input type="checkbox" id="nominateExcludeToggle" onchange="handleExcludeToggle()"><span class="slider slider-purple"></span></label>
+                <span class="switch-label" style="color: var(--lbl-purple); font-weight: bold;">一度当たった人を重複させない</span>
+            </div>
+            <div class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="nominateFavorRecentToggle" onchange="toggleFavorLongNotNominated()"><span class="slider slider-purple"></span></label>
+                <span class="switch-label" style="color: var(--lbl-purple); font-weight: bold;">最近当たっていない人を当たりやすく</span>
+            </div>
+            <div class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="nominateSpecificExcludeToggle" onchange="toggleSpecificExclude()"><span class="slider slider-purple"></span></label>
+                <span class="switch-label" style="color: var(--lbl-purple); font-weight: bold;">特定者を指名対象から除外</span>
+            </div>
+            <div id="nominateSpecificExcludePanel" class="nominate-exclude-panel" hidden>
+                <div class="nominate-exclude-help">指名しない人を選択してください</div>
+                <div id="nominateSpecificExcludeList" class="nominate-exclude-list"></div>
+            </div>
+            <details class="adv-box" data-adv="s4">
+                <summary><span class="adv-title">くわしい設定</span><span class="adv-hint">焦らし演出、ルーレットを飛ばす、座席を隠す、履歴のリセット</span></summary>
+                <div class="adv-body">
+            <div class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="nominateTeaseToggle" checked><span class="slider slider-purple"></span></label>
+                <span class="switch-label" style="color: var(--lbl-purple); font-weight: bold;">「次は君かも？」焦らし演出ON</span>
+            </div>
+            <div class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="nominateSkipAnimToggle"><span class="slider slider-purple"></span></label>
+                <span class="switch-label" style="color: var(--lbl-purple); font-weight: bold;">ルーレット演出を飛ばして、すぐ決める</span>
+            </div>
+            <div class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="nominateTextOnlyToggle" onchange="toggleTextOnlyMode()"><span class="slider slider-purple"></span></label>
+                <span class="switch-label" style="color: var(--lbl-purple); font-weight: bold;">座席を隠して名前だけ表示</span>
+            </div>
+            <button onclick="resetNominatedHistory()" class="btn-secondary btn-tint-purple" style="margin-top: 12px; background-color: #8b5cf6; color: white;">グレーアウト・指名履歴をリセット</button>
+                </div>
+            </details>
+        </div>
+        <div class="config-section" data-sec="records" data-group="席替え・指名" data-kw="記録 統計 履歴 わがまま 指定 解除 公平 偏り 発言 回数 レポート">
+            <h3>記録・統計</h3>
+            <button onclick="openStatsModal()" class="btn-connect btn-tint-emerald" style="background-color: #059669; margin-top: 10px;">記録・統計を見る</button>
+            <button data-plugin="reasons" onclick="openWagamamaModal()" class="btn-connect btn-tint-sky" style="background-color: #0ea5e9; margin-top: 10px;">わがまま指定の一覧・解除</button>
+            <div data-plugin-slot="settings-records"></div>
+        </div>
+        <div class="config-group-title" data-group="見た目・画面">見た目・画面</div>
+        <div class="config-section" data-sec="title" data-group="見た目・画面" data-kw="タイトル 題名 クラス名 表示 非表示 電子黒板">
+            <h3>画面のタイトル</h3>
+            <label class="input-label" for="appTitleInput">画面の上のタイトル :</label>
+            <input type="text" id="appTitleInput" maxlength="24" placeholder="席替えし太郎" autocomplete="off" oninput="onAppTitleInput()">
+            <div class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="appTitleShowToggle" checked onchange="onAppTitleShowToggle()"><span class="slider"></span></label>
+                <span class="switch-label">タイトルを表示する</span>
+            </div>
+            <p class="config-note">空にすると、「席替えし太郎」に戻ります。電子黒板に映す時は、「3年2組 席替え」のように、クラス名を入れて使えます。長いタイトルは、入りきらないときに、左右にゆっくり動いて、全部見えます。</p>
+        </div>
+        <div class="config-section" data-sec="theme" data-group="見た目・画面" data-kw="テーマ 着せ替え 季節 おまかせ 雪 落ち葉 桜 ダーク ダークモード 背景 飾り 見た目">
+            <h3>テーマと背景</h3>
+            <label class="input-label" style="color: var(--lbl-blue);">アプリ着せ替えテーマ:</label>
+            <select id="themeSelect" class="orange-select" onchange="changeTheme()">
+                <optgroup label="✨ 基本">
+                    <option value="theme-default" selected>💎 デフォルト</option>
+                    <option value="theme-dark">🌙 ダークモード</option>
+                </optgroup>
+                <optgroup label="🌸 季節">
+                    <option value="theme-sakura">🌸 サクラ</option>
+                    <option value="theme-spring">🌷 新学期</option>
+                    <option value="theme-summer">🌊 サマー</option>
+                    <option value="theme-autumn">🍂 オータム</option>
+                    <option value="theme-winter">⛄ ウィンター</option>
+                    <option value="theme-halloween">🎃 ハロウィン</option>
+                    <option value="theme-christmas">🎄 クリスマス</option>
+                    <option value="theme-auto">🗓️ 季節おまかせ</option>
+                </optgroup>
+                <optgroup label="📒 文具・画面風">
+                    <option value="theme-paper">📄 ペーパー</option>
+                    <option value="theme-blackboard">🖍️ 黒板</option>
+                    <option value="theme-game">🎮 ゲーム画面風</option>
+                </optgroup>
+                <optgroup label="🐯 オリジナル">
+                    <option value="theme-334">🐯 33-4</option>
+                    <option value="theme-miku">🌱 ネギ </option>
+                    <option value="theme-kaizuka">🌲 カイヅカ</option>
+                </optgroup>
+            </select>
+            <p class="config-note">「季節おまかせ」を選ぶと、日付に合わせて、テーマが自動で変わります。3月はサクラ、4月と5月は新学期、6月から8月はサマー、9月から10月はオータム、10月の終わりはハロウィン、12月はクリスマス、1月と2月はウィンターです。</p>
+            <button data-plugin="animextra" type="button" onclick="toggleThemeGallery()" class="btn-secondary btn-compact" style="margin-top: 8px;">テーマを一覧で見る</button>
+            <div class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="seasonDecoToggle" onchange="onSeasonDecoToggle()"><span class="slider"></span></label>
+                <span class="switch-label">季節の飾りを、背景に舞わせる</span>
+            </div>
+            <p class="config-note">サクラと新学期は花びら、サマーはあわ、オータムとハロウィンは落ち葉、ウィンターとクリスマスは雪が、背景にゆっくり舞います。座席や文字の上には出ません。「季節おまかせ」では、はじめからONです。全体アニメーションをOFFにしている時は、出ません。</p>
+            <div class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="followSystemDarkToggle" onchange="onFollowSystemDarkToggle()"><span class="slider"></span></label>
+                <span class="switch-label">端末がダークモードの時は、自動でダークモードにする</span>
+            </div>
+            <p class="config-note">ONにすると、端末がダークモードの間だけ、選んだテーマの代わりにダークモードで表示します。端末がふつうの表示に戻ると、選んだテーマに戻ります。</p>
+        </div>
+        <div class="config-section" data-sec="display" data-group="見た目・画面" data-kw="全画面 全画面表示 電卓 ボタン 表示">
+            <h3>表示モードと画面の部品</h3>
+            <button id="btnFullscreen" onclick="toggleFullScreen()" class="btn-secondary">全画面表示</button>
+            <div data-plugin-slot="settings-display"></div>
+        </div>
+        <div class="config-section" data-sec="perf" data-group="見た目・画面" data-kw="軽い 重い もっさり 軽量 アニメーション 全体 動作 診断 遅い 速度">
+            <h3>動作の軽さ</h3>
+            <div class="switch-container">
+                <label class="switch"><input type="checkbox" id="smoothAnimToggle" checked onchange="toggleSmoothAnimation()"><span class="slider"></span></label>
+                <span class="switch-label">全体アニメーション演出ON</span>
+            </div>
+            <div class="switch-container">
+                <label class="switch"><input type="checkbox" id="liteModeToggle" onchange="toggleLiteMode()"><span class="slider"></span></label>
+                <span class="switch-label" id="liteModeLabel">軽量モード</span>
+            </div>
+            <div data-plugin-slot="settings-perf"></div>
+        </div>
+        <div class="config-group-title" data-group="タイマー・音">タイマー・音</div>
+        <div class="config-section" data-sec="timerview" data-group="タイマー・音" data-kw="タイマー 巨大 帯 バー ゲージ 円 横棒 時間 表示 形式 12時間 警告 色 100分の1秒 時間切れ">
+            <h3 style="color: var(--lbl-heading);">タイマーの表示</h3>
+            <label data-plugin="timer" class="input-label" for="gaugeTypeSelect">巨大表示のビジュアル :</label>
+            <select data-plugin="timer" id="gaugeTypeSelect" class="orange-select" onchange="updateGaugeType()">
+                <option value="bar" selected>➖ 横棒</option>
+                <option value="circle">⭕ 円形ゲージ</option>
+                <option value="none">表示しない</option>
+            </select>
+            <div data-plugin="timer" class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="timerGaugeBoldToggle" checked onchange="onTimerVisualToggle()"><span class="slider"></span></label>
+                <span class="switch-label">巨大表示の帯と円を、大きく目立たせる</span>
+            </div>
+            <div data-plugin="timer" class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="timerMiniBarToggle" checked onchange="onTimerVisualToggle()"><span class="slider"></span></label>
+                <span class="switch-label">タイマーの画面と上のバーにも、残り時間の帯を出す</span>
+            </div>
+            <p data-plugin="timer" class="config-note">帯は、残りが少なくなると黄色に、時間を過ぎると赤になります。黄色になる残り時間は、下の警告の設定で変えられます。</p>
+            <div data-plugin="timer" class="switch-container">
+                <label class="switch"><input type="checkbox" id="msToggle" checked onchange="toggleMsDisplay()"><span class="slider"></span></label>
+                <span class="switch-label">100分の1秒まで表示する</span>
+            </div>
+            <div data-plugin="timer" class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="hoursFormatToggle" onchange="toggleHoursDisplay()"><span class="slider"></span></label>
+                <span class="switch-label">60分を超えたら「時:分:秒」で表示する</span>
+            </div>
+            <div class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="clock12hToggle" onchange="toggle12HourClock()"><span class="slider"></span></label>
+                <span class="switch-label">時刻を12時間制で表示する</span>
+            </div>
+            <div class="switch-container" id="clock12hAmPmRow" style="margin-top: 8px; margin-left: 20px; display: none;">
+                <label class="switch"><input type="checkbox" id="clock12hAmPmToggle" onchange="toggle12HourAmPm()"><span class="slider"></span></label>
+                <span class="switch-label">└ 午前/午後ではなく AM/PM で表示する</span>
+            </div>
+            <div data-plugin="timer" class="input-group-row" style="margin-top: 10px; justify-content: space-between;">
+                <label style="font-size:13px; font-weight:bold; color: var(--lbl-orange);">残り何％で警告の色にするか:</label>
+                <input type="number" id="warningPctInput" value="20" min="1" max="99" style="width: 70px !important; text-align: right;" onchange="updateWarningPct()">
+            </div>
+            <label class="input-label" for="timerEndAnimSelect" style="margin-top: 10px;">時間切れ時の文字アニメーション :</label>
+            <select id="timerEndAnimSelect" class="orange-select" onchange="updateTimerEndAnim()">
+                <option value="flash" selected>⚠️ はっきり点滅</option>
+                <option value="pulse">💡 優しく点滅</option>
+                <option value="colorOnly">🔴 色変化のみ</option>
+            </select>
+        </div>
+        <div class="config-section" data-sec="alarm" data-group="タイマー・音" data-kw="アラーム 音 音量 ベル チャイム 予鈴 プログラムタイマー 時間割 サイレント 鳴らし続ける 半分 残り1分">
+            <h3 style="color: var(--lbl-heading);">アラームとチャイム</h3>
+            <label data-plugin="timer" class="input-label" for="alarmSoundSelect" style="margin-top: 10px;">アラーム音の種類 :</label>
+            <select data-plugin="timer" id="alarmSoundSelect" class="orange-select" onchange="updateAlarmSettings()">
+                <option value="beep" selected>🔔 定番ビープ音</option>
+                <option value="digital">⏰ デジタル目覚まし</option>
+                <option value="chime">🏫 学校のチャイム風</option>
+                <option value="mellow">🎐 やさしい音</option>
+                <option value="warning">🚨 警告アラート</option>
+                <option value="bell">🛎️ ベルの音</option>
+            </select>
+            <div class="slider-control-group">
+                <div class="slider-top-row">
+                    <label style="font-size:13px; font-weight:bold; color:var(--text-main);">アラーム音量</label>
+                    <span id="volumeValueText" class="slider-value-text">50%</span>
+                </div>
+                <input type="range" id="alarmVolumeSlider" min="0" max="1" step="0.1" value="0.5" onchange="updateAlarmSettings()" oninput="updateVolumeUI()">
+                <div class="slider-bottom-row">
+                    <button class="btn-icon" onclick="adjustSlider('alarmVolumeSlider', -0.1)">－</button>
+                    <button class="btn-icon" onclick="adjustSlider('alarmVolumeSlider', 0.1)">＋</button>
+                </div>
+            </div>
+            <div data-plugin="timer" class="switch-container" style="margin-top: 10px;">
+                <label class="switch"><input type="checkbox" id="continuousAlarmToggle" onchange="toggleContinuousAlarm()"><span class="slider"></span></label>
+                <span class="switch-label">音を止めるまで鳴らし続ける</span>
+            </div>
+            <div data-plugin="timer" class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="intervalBellToggle"><span class="slider"></span></label>
+                <span class="switch-label">半分と残り1分でチャイムを鳴らす</span>
+            </div>
+            <div data-plugin="timer" class="switch-container">
+                <label class="switch"><input type="checkbox" id="silentTestModeToggle" onchange="toggleSilentTestMode()"><span class="slider slider-purple"></span></label>
+                <span class="switch-label" style="color: var(--lbl-purple); font-weight: bold;">完全サイレント・テストモード</span>
+            </div>
+            <div data-plugin-slot="settings-timer"></div>
+        </div>
+        <div class="config-section" data-sec="timerx" data-group="タイマー・音" data-kw="集中 フォーカス 隠す プリセット ボタン 手動 追加 クイック" data-plugin="timer">
+            <h3 style="color: var(--lbl-heading);">タイマーの特別機能</h3>
+            <div data-plugin="timer" class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="focusModeToggle"><span class="slider slider-purple"></span></label>
+                <span class="switch-label" style="color: var(--lbl-purple); font-weight: bold;">超・集中フォーカスモード</span>
+            </div>
+            <div data-plugin="timer" class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="blindTimerToggle"><span class="slider slider-purple"></span></label>
+                <span class="switch-label" style="color: var(--lbl-purple); font-weight: bold;">3秒後に隠す</span>
+            </div>
+            <button data-plugin="timer" class="btn-secondary" onclick="openTimerBtnModal('preset')" style="margin-bottom: 8px;">クイック・プリセット設定</button>
+            <button data-plugin="timer" class="btn-secondary" onclick="openTimerBtnModal('add')">手動追加ボタン設定</button>
+        </div>
+        <div class="config-group-title" data-group="保存・書き出し">保存・書き出し</div>
+        <div class="config-section" data-sec="backup" data-group="保存・書き出し" data-kw="バックアップ 復元 履歴 キャッシュ 書き出し 設定 記録 ファイル 端末">
+            <h3>バックアップ・復元</h3>
+            <button data-plugin="cloud" onclick="openHistoryModal()" class="btn-connect btn-tint-purple" style="background-color: #7c3aed; margin-top: 10px;">履歴から復元</button>
+            <button onclick="openCacheRestoreModal()" class="btn-connect btn-tint-amber" style="background-color: #d97706; margin-top: 10px;">キャッシュから復元</button>
+            <button onclick="openBackupModal()" class="btn-secondary btn-tint-cyan" style="background-color: #0891b2; color: white;">設定・記録のバックアップ／復元</button>
+            <div id="backupHealthMain" class="backup-health"></div>
+        </div>
+        <div class="config-section" data-sec="cloud" data-group="保存・書き出し" data-kw="クラウド スプレッドシート シート gas 同期 自動保存 自動 他の端末 オフライン 通信 接続">
+            <h3>スプレッドシート連携</h3>
+            <label class="input-label">▼ GASスプレッドシート連携</label>
+            <input type="text" id="gasUrlInput" placeholder="GASのウェブアプリURLを貼り付け">
+            <button id="connectGasBtn" onclick="saveAndConnectGas()" class="btn-connect">GASに接続・更新</button>
+            <button id="connectOnlyGasBtn" onclick="connectGasOnly()" class="btn-secondary">GASに接続</button>
+            <div class="divider-line"></div>
+            <div class="layout-grid-fields" style="margin-top: 10px;">
+                <button id="saveSpreadsheetBtn" onclick="saveResultToSpreadsheet()" class="btn-save" style="margin:0;">シートに保存</button>
+                <button id="loadSpreadsheetBtn" onclick="loadResultFromSpreadsheet()" class="btn-load" style="margin:0;">前回を復元</button>
+            </div>
+            <details class="adv-box" data-adv="s5">
+                <summary><span class="adv-title">くわしい設定</span><span class="adv-hint">席替え後の自動保存、他の端末との同期</span></summary>
+                <div class="adv-body">
+            <div class="switch-container" style="margin-top: 10px;">
+                <label class="switch"><input type="checkbox" id="autoUploadAfterShuffleToggle" onchange="toggleAutoUploadAfterShuffle()"><span class="slider"></span></label>
+                <span class="switch-label">席替え後に自動でシートへ保存する</span>
+            </div>
+            <div data-plugin="cloud" class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="autoSyncToggle" onchange="toggleAutoSync()"><span class="slider slider-green"></span></label>
+                <span class="switch-label" style="color: var(--lbl-green); font-weight: bold;">他の端末の変更を自動で取り込む</span>
+            </div>
+            <p style="font-size: 12px; color: var(--text-sub); margin: 4px 0 0; line-height: 1.5;">ONにすると、約8秒おきにシートを確認し、先生のタブレットなど、他の端末が保存した最新の座席を自動で表示に反映します。電子黒板をこのモードにしておくのがおすすめです。</p>
+                </div>
+            </details>
+            <div class="switch-container">
+                <label class="switch"><input type="checkbox" id="offlineModeToggle" onchange="toggleOfflineMode()"><span class="slider"></span></label>
+                <span class="switch-label" style="color: #f43f5e;">完全オフラインモード</span>
+            </div>
+        </div>
+        <div class="config-section" data-sec="export" data-group="保存・書き出し" data-kw="印刷 画像 共有 書き出し csv 発表 発表モード 座席表 qr">
+            <h3>印刷・共有・書き出し</h3>
+            <button data-plugin="print" onclick="openChartExportModal()" class="btn-secondary" style="margin-top: 10px;">座席表を印刷・画像保存</button>
+            <button onclick="downloadAsCSV()" class="btn-csv" style="margin-top: 10px;">現在の座席をCSV書き出し</button>
+            <button data-plugin="announce" onclick="openAnnounce()" class="btn-secondary" style="margin-top: 10px;">今の座席を発表モードで見せる</button>
+            <div data-plugin-slot="settings-export"></div>
+        </div>
+        <div class="config-group-title" data-group="しくみ">しくみ</div>
+        <div class="config-section" data-sec="plugins" data-group="しくみ" data-kw="プラグイン 拡張 機能 オン オフ 構成 プリセット かんたん 更新履歴 バージョン 新機能">
+            <h3>機能・プラグイン</h3>
+            <button type="button" class="btn-secondary" id="btnPluginMenu" onclick="openPluginModal()" style="margin-top: 10px;">プラグインの設定</button>
+            <button data-plugin="updateinfo" id="updateInfoOpenBtn" onclick="openUpdateInfoModal(true)" class="btn-secondary btn-tint-cyan" style="background-color: #0891b2; color: white;">更新履歴を見る</button>
+            <div data-plugin-slot="settings-system"></div>
+        </div>
+        <div class="config-section" data-sec="lock" data-group="しくみ" data-kw="ロック 暗証番号 パスワード 管理者 自動ロック 解除 認証">
+            <h3>ロックと管理</h3>
+            <button onclick="openLockModal('settings')" class="btn-secondary">ロックの設定</button>
+            <div class="switch-container">
+                <label class="switch"><input type="checkbox" id="adminToggle" onchange="handleAdminToggle()"><span class="slider"></span></label>
+                <span class="switch-label">管理者ロック解除</span>
+            </div>
+            <div id="passwordArea" class="password-area" style="display: none;">
+                <input type="password" id="passwordInput" placeholder="パスワード">
+                <button onclick="checkPassword()" class="btn-unlock">認証</button>
+            </div>
+        </div>
+        <div class="config-section" data-sec="keypad" data-group="しくみ" data-kw="テンキー 数字 キーボード 電子黒板 暗証番号 バラバラ 入力" data-plugin="softkeypad">
+            <h3>入力の補助</h3>
+            <div data-plugin="softkeypad" class="switch-container" style="margin-top: 8px;">
+                <label class="switch"><input type="checkbox" id="softKeypadToggle" onchange="onSoftKeypadToggle()"><span class="slider"></span></label>
+                <span class="switch-label">数字を入れる欄で、画面のテンキーを使う</span>
+            </div>
+            <p data-plugin="softkeypad" class="config-note">分、秒、人数、暗証番号などの欄を押すと、画面の下にテンキーが出ます。キーボードのない電子黒板などで使えます。ふつうのキーボードも、そのまま使えます。スマホでは、OSのキーボードの代わりに、このテンキーが出ます。</p>
+            <div data-plugin="softkeypad" class="input-group-row" style="margin-top: 8px; justify-content: space-between;">
+                <label for="softKeypadShuffleSelect" style="font-size:13px; font-weight:bold;">テンキーの数字をバラバラにする:</label>
+                <select id="softKeypadShuffleSelect" onchange="onSoftKeypadShuffleChange()" style="width: auto;">
+                    <option value="off">しない</option>
+                    <option value="pin">暗証番号のときだけ</option>
+                    <option value="all">いつも</option>
+                </select>
+            </div>
+            <p data-plugin="softkeypad" class="config-note">開くたびに、数字の並びが入れ替わります。後ろから見ている人に、暗証番号を覚えられにくくなります。</p>
+        </div>
+
+        <div class="config-section usage-section" id="usageSection">
+            <h3>使い方</h3>
+            <p class="usage-lead">気になる項目をタップすると、説明が開きます。</p>
+            <input type="search" id="usageSearchInput" class="usage-search" placeholder="説明をさがす　例：ロック、欠席、バックアップ" oninput="onUsageSearch()" aria-label="説明をさがす" autocomplete="off">
+            <p id="usageSearchEmpty" class="usage-lead" hidden>見つかりませんでした。別の言葉で試してください。</p>
+            <div class="usage-guide">
+                <div class="usage-group">
+                    <div class="usage-group-title">はじめに</div>
+                    <details open>
+                        <summary>最初の3ステップ</summary>
+                        <ol>
+                            <li><strong>名簿を用意します。</strong>最初は、画面の「人数だけで始める」か「サンプルのクラスで試す」が手軽です。本物の名簿は、「クラスと名簿」と「名簿の入力・書き出し」で用意します。</li>
+                            <li><strong>席替えをします。</strong>「席替えスタート！」を押すと、席が決まります。列数と行数は、「座席のレイアウト」で変えられます。</li>
+                            <li><strong>授業で指名します。</strong>「指名する」を押して、「通常指名モード」か「巨大ルーレット」を選びます。</li>
+                        </ol>
+                        <p>設定が見つからない時は、設定の一番上の「設定をさがす」を使ってください。「⛶ 拡大」を押すと、メニューが広がり、左にセクションの一覧、右に選んだセクションの設定が大きく出ます。もう一度押すと、元の幅に戻ります。よく使う設定は、スイッチやボタンの右にある星を押すと、設定の一番上の「よく使う設定」にも出ます。元の場所にも、そのまま残ります。もう一度星を押すと、上から外れます。たまにしか使わない設定は、各項目の「くわしい設定」の中にあります。</p>
+                        <p>設定の「テーマと背景」で、着せ替えテーマを選べます。「季節おまかせ」を選ぶと、日付に合わせて、テーマが自動で変わります。サクラ、新学期、サマー、オータム、ハロウィン、ウィンター、クリスマスでは、「季節の飾りを、背景に舞わせる」で、花びらや落ち葉、雪が、背景にゆっくり舞います。</p>
+                        <p>オンとオフの切り替えには、2種類あります。つまみのスイッチは、押すとすぐに設定が変わり、そのまま保存されます。四角いチェックは、「保存する」や「この名簿にする」のようなボタンを押した時に、はじめて決まります。画面を閉じれば、取り消せます。</p>
+                        <p>記録がたまってきたら、「設定・記録のバックアップ／復元」で、ファイルに書き出しておくと安心です。</p>
+                    </details>
+                </div>
+
+                <div class="usage-group">
+                    <div class="usage-group-title">毎日使う操作</div>
+                    <details>
+                        <summary>席替え</summary>
+                        <ul>
+                            <li>「席替えスタート！」で、固定やわがまま指定を守りながら、席を決め直します。</li>
+                            <li>席替えの後は、「戻す」で、1つ前の席順に戻せます。最大5回前までです。</li>
+                            <li>席は、ドラッグ＆ドロップで入れ替えられます。席をタップすると、固定・空席・お休みなどを選べます。</li>
+                            <li>「⋯ ほかの操作」の「プレビュー」を押すと、結果を3案作って見比べられます。気に入った案を選ぶと、その席順になります。「作り直す」で、別の3案も出せます。</li>
+                            <li>「⋯ ほかの操作」の「発表モードで席替え」を押すと、席替えをして、電子黒板いっぱいに「？」の席が並びます。「▶ 次の人」か、スペースキー、画面タップで、1人ずつ「○○さんは B3 の席です」と発表できます。発表の順番と効果音は、画面の下で選べます。</li>
+                            <li>発表モードの画面の下で、「📣 ふつうに発表」と「☁️ 天気予報風に発表」を選べます。天気予報風にすると、席の位置に合わせて、天気の絵文字と「おしゃべり注意報」つきの予報が出ます。全員の発表が終わったら、「🍀 ラッキー席」を押すと、今日のラッキー席が1つ選ばれ、大吉とラッキーアイテムが出ます。</li>
+                            <li>席替えをせずに、今の座席を発表したい時は、「印刷・共有・書き出し」の「今の座席を発表モードで見せる」を使います。</li>
+                            <li>席替えのあとに、「⋯ ほかの操作」の「前回と比べる」を押すと、前の席から動いた人がひと目で分かります。</li>
+                            <li>「⋯ ほかの操作」の「結果のチェック」で、前回と同じ席や同じ隣、何度も隣になった組、離す設定と近くに置く設定、わがまま指定、2回続けて前や後ろの列の人をまとめて確かめます。気になる点があると、「ほかの操作」のボタンに ⚠️ の印が付いて、メニューの中に「注意」の件数が出ます。「もう一度席替えする」で、その場でやり直せます。「この席替えの決め方」では、何通りの席を作って選んだか、どの条件を使ったかが分かります。守れなかった条件があると、その場で優先順位を選び直せます。</li>
+                            <li>欠席の人は、席の設定で「お休み」にします。席替えや指名の対象から外れます。</li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary>指名</summary>
+                        <ul>
+                            <li>「指名する」を押すと、2つの方法を選べます。「通常指名モード」は、座席表の上でランダムに1人を指名します。「巨大ルーレット」は、大きなルーレットで1人を決めます。</li>
+                                                        <li>間違えて指名したときは、「指名する」のメニューの「直前の指名を取り消す」を押します。指名モードの「直前の指名を取り消す」（「次を指名する！」の右隣です）や、巨大ルーレットの「直前の当選を取り消す」でも、同じです。指名済みの印と、指名の回数が、指名する前に戻ります。押すたびに、ひとつ前の指名へ戻れます。席替えをしたときや、重複させない設定を切り替えたときは、取り消せなくなります。</li>
+                            <li>「指名モード」で、条件を選べます。
+                                <ul>
+                                    <li>一度当たった人を重複させない。オンにすると、「指名の進み具合」が出て、何人に回ったか、あと何人で全員に回るかが分かります。全員に回ると、次の指名から最初から数えます。「最初から数える」で、いつでも数え直せます</li>
+                                    <li>特定の人を指名対象から除外</li>
+                                    <li>最近当たっていない人を当たりやすくします。記録をもとに、当たっていない人ほど選ばれやすくなります。通常の指名のみ対象です</li>
+                                    <li>焦らし演出、ルーレット演出のスキップ、座席を隠して名前だけ表示</li>
+                                    <li>指名のあとに、結果を記録するボタンを出す</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </details>
+                    <details data-plugin="timer">
+                        <summary>タイマー</summary>
+                        <ul>
+                            <li>画面上部の時計をタップすると、タイマーのパネルが開きます。</li>
+                            <li>プリセット・手動の追加ボタン・分と秒の入力で時間をセットし、「▶ スタート」を押します。</li>
+                            <li>「時刻を指定して鳴らす」では、目覚ましのように、「10:45」と決めると、10:45:00ちょうどに鳴ります。それまでの残り時間も、カウントダウンで見られます。</li>
+                            <li>「ステップタイマー」は、名前と時間の組み合わせを保存して、いつでも呼び出せます。「作成・編集」で作ります。時間になったら自動で次へ進むか、ボタンで進めるかを選べます。</li>
+                            <li>「巨大表示」で、大きく映せます。アラーム音の種類と音量は、「アラームとチャイム」で変えられます。</li>
+                            <li>「表示モードと画面の部品」の「全画面表示」で、全画面に切り替えられます。画面上部の「ロック」の右にも、「全画面表示」のボタンがあります。ロック中は、「ロックの設定」の「ロック中に使えるもの」で、全画面表示を使えるかを選べます。</li>
+                            <li>「機能・プラグイン」の「プラグインの設定」を押すと、設定の画面が開きます。電卓などの機能を、グループごとに、使うかどうか選べます。切り替えたあとは、「今すぐ再読み込みする」を押すと反映されます。使わない機能をオフにすると、画面がすっきりします。</li>
+                            <li>カウントダウン中は、残り時間の帯が出ます。タイマーのパネルと、画面上部の時計の下に出ます。残りが少なくなると黄色に、時間を過ぎると赤になります。巨大表示の帯や円も、同じ色で変わります。「タイマーの表示」で、帯の出し方や大きさを変えられます。</li>
+                        </ul>
+                    </details>
+                    <div data-plugin-slot="guide-tools"></div>
+                    <details data-plugin="softkeypad">
+                        <summary>テンキー</summary>
+                        <ul>
+                            <li>数字を入れる欄を押すと、画面の下にテンキーが出ます。キーボードのない電子黒板やタブレットで使えます。「入力の補助」の「数字を入れる欄で、画面のテンキーを使う」で、オンとオフを切り替えられます。</li>
+                            <li>「テンキーの数字をバラバラにする」を選ぶと、テンキーを開くたびに、数字の並びが変わります。暗証番号のときだけにもできます。後ろから見ている人に、暗証番号を覚えられにくくなります。</li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary>ロック</summary>
+                        <ul>
+                            <li>右上の「ロック」を押すと、席替え・座席の移動・設定メニューなどが使えなくなります。解除には、決めた4〜8桁の数字の暗証番号が必要です。ロックは、ページを読み込み直しても続きます。</li>
+                            <li>最初に「ロック」を押した時に、暗証番号を決めます。「ロックと管理」の「ロックの設定」で、「ロック中に使えるもの」と「自動ロック」を変えられます。使えるものは、タイマー、指名・ルーレット、全画面表示から選べます。自動ロックは、何も操作がない時に、自動でロックします。</li>
+                            <li>暗証番号を5回続けて間違えると、30秒間は試せなくなります。</li>
+                            <li>暗証番号を忘れた時は、このブラウザのサイトデータを消すと解除できます。ただし、座席表のキャッシュや記録も消えるので、先に「シートに保存」や、「設定・記録のバックアップ／復元」で書き出しておくのがおすすめです。</li>
+                        </ul>
+                    </details>
+                </div>
+
+                <div class="usage-group">
+                    <div class="usage-group-title">クラスと席の設定</div>
+                    <details>
+                        <summary>名簿</summary>
+                        <ul>
+                            <li>名簿は「1.田中」「2.佐藤」のように、番号と名前を「.」でつなぐと、番号つきで表示されます。</li>
+                            <li data-plugin="roster">「名簿を作る・直す」で、番号、名前、ふりがなを、表の形で入れたり、いまの名簿を直したりできます。行の入れ替え、番号のつけ直し、ふりがな順の並べ替えができます。間違えたときは、「元に戻す」と「やり直す」が使えます。表計算ソフトの列は、名前の欄に貼り付けると、まとめて入ります。「ひな形をダウンロード」で、表計算ソフトで書き込めるひな形も手に入ります。ふりがなの列も、読み込みと書き出しに使えます。学校の名簿のように、列がたくさんある表のファイルを読み込むと、番号、名前、ふりがなの列を選ぶ画面が開きます。Excelで保存した、Shift_JISのCSVも読めます。選んだ列は覚えておき、同じ見出しのファイルでは、次から自動で使います。</li>
+                            <li data-plugin="roster">「名簿を貼り付ける」で、表計算ソフトの列やメモの名簿を、そのまま貼り付けられます。貼り付けると、読み取った人数のほか、同じ名前、同じ番号、飛んでいる番号、名前に空白が入っている行を、その場で教えてくれます。「CSV・TXTの名簿ファイルを読み込む」でも、注意があれば知らせます。</li>
+                            <li>「CSV・TXTの名簿ファイルを読み込む」で、ファイルから読み込めます。</li>
+                            <li>「番号名簿をクイック生成」に人数を入れて「生成」を押すと、番号だけの名簿ができます。番号名簿の時は、自動で、座席が番号のみの表示になります。</li>
+                            <li>クラス名を入れて「保存」を押すと、クラスとして保存できます。保存したクラスは、選ぶだけで呼び出せます。クラウドへは自動接続しません。</li>
+                            <li>新しい学年になったら、「進級の切り替え」を押します。新しいクラスの名前を入れ、クラス替えがあるかを選ぶと、新しいクラスができます。前の学年のクラスと、その記録は、そのまま残ります。新しいクラスの記録は、まっさらから始まります。</li>
+                            <li>「選んだクラスを、去年度にする」を押すと、そのクラスが、一覧の下の「去年度のクラス」にまとまります。進級の切り替えで新しいクラスを作ると、前のクラスを、自動でまとめることもできます。記録は消えません。「選んだクラスの、1年間の記録を書き出す」では、そのクラスの指名回数、結果、よく座る席を、表計算ソフトで開けるファイルに保存できます。</li>
+                            <li>「サンプルのクラスで試す」は、お試し専用です。試している間の席替えや指名の記録は、本物のクラスには入らず、お試しをやめると消えます。</li>
+                            <li data-plugin="absent">「今日の欠席者をまとめて選ぶ」で、お休みの人をタップして赤くし、「反映する」を押すと、まとめて欠席になります。席替えの後でも、今の席のまま反映され、「戻す」で元に戻せます。</li>
+                            <li>「スプレッドシート連携」で、GASのURLを入れて「GASに接続・更新」を押すと、クラウドの名簿を取り込みます。「GASに接続」は、接続できるかを確かめるだけで、座席表は変わりません。</li>
+                            <li>「名簿の入力・書き出し」には、次のものもあります。
+                                <ul>
+                                    <li>「📤 名簿を書き出す」を押すと出るメニューで、CSVかTXTを選んで、今の名簿をファイルに保存できます。保存したファイルは、そのまま読み込み直せます。「名簿を作る・直す」の画面からも、同じ書き出しができます。</li>
+                                    <li data-plugin="furigana">「ふりがなの設定」で、名前ごとにふりがなを入れると、座席表・発表モード・プレビュー・印刷／画像保存で、名前の上に小さく表示されます。「名前,ふりがな」を1行ずつ貼り付けて、まとめて入れることもできます。GASの名簿にあるC列のフリガナは、読み込む時に自動で取り込まれ、手で直したものは上書きされません。表示は、「ほかの操作」の「ふりがなを表示する」で、すぐに切り替えられます。大きさは、「ふりがなの設定」で、小さめ・ふつう・大きめから選べます。</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary>席の指定と並べ方</summary>
+                        <p>座席をタップして、生徒を選ぶと「席のわがまま指定」を決められます。</p>
+                        <ul>
+                            <li><strong>絶対固定</strong>：その席に固定します。</li>
+                            <li><strong>行／列</strong>：その行・列の中でランダムに座ります。</li>
+                            <li><strong>優先席</strong>：「前から○行目まで」「後ろから○行目まで」の中に座ります。視力・身長などに便利です。</li>
+                            <li><strong>カスタム</strong>：行・列を複数選ぶか、座席を1席ずつ選んで、その中でランダムに座ります。</li>
+                        </ul>
+                        <p>指定した行・列・座席は、座席表にオレンジの囲み線で表示されます。固定理由はメモに残せ、「わがまま指定の一覧・解除」で確認や解除ができます。</p>
+                        <ul>
+                            <li>「座席設定」の「前回までと同じ席・同じ隣を避ける」をONにすると、席替えの履歴をもとに、前と同じ席や、前に隣だった人と、また隣になるのをできるだけ避けます。隣は上下左右です。名簿で席を指定した人は、動かせないので対象外です。</li>
+                            <li>「座席設定」の「近くに置く設定」で2人を登録すると、席替えのたびに、その2人がなるべく、斜めも含めて隣になります。支援が必要な子と頼れる子、見えにくい子と前の席の子などに使えます。席の指定がある人は動かせないので、近くにできないこともあります。</li>
+                            <li>離す設定、近くに置く設定、前回と同じ席や隣を避ける設定が、すべては守れないときは、「座席設定」の「条件がぶつかったときに、先に守るもの」で、どれを優先するかを選べます。</li>
+                            <li>「離す設定」で2人を登録すると、席替えのたびに、その2人がなるべく隣にならないようにします。「近くに置く設定」と同じ2人は、登録できません。</li>
+                        </ul>
+                    </details>
+                </div>
+
+                <div class="usage-group">
+                    <div class="usage-group-title">見た目と演出</div>
+                    <details>
+                        <summary>テーマと見やすさ</summary>
+                        <ul>
+                            <li>着せ替えテーマは、基本、季節、文具・画面風、オリジナルの4つの種類に分かれています。「テーマを一覧で見る」を押すと、色の見本つきで並べて見比べられます。選ぶと、すぐに変わります。</li>
+                            <li>説明が長い項目には、「ⓘ」のマークが付いています。マウスを重ねるか、タップすると、補足の説明が出ます。</li>
+                            <li>「班のしくみ」の「班の番号の順番」で、縦の列ごとと2×2の塊ごとの班の番号の数え方を選べます。「右上から下へ進む」では、1班は右上から始まり、下まで行くと左へ進みます。「左上から右へ進む」では、左上から始まります。</li>
+                            <li>「班の表示と色」の「班の番号と模様も表示する」をONにすると、班分けカラーの座席に、班の番号と模様が付きます。色が見分けにくい人にも、班が伝わります。出す場所は、「班の番号と模様を出す場所」で選べます。座席表のほか、プレビュー、発表モード、印刷・画像保存にも入れられます。印刷・画像保存の画面では、「班の色、番号、模様を入れる」で、その場でも切り替えられます。</li>
+                            <li>「座席の見え方」の「座席の文字の大きさ」で、座席の文字を、大きめやとても大きいに変えられます。電子黒板で遠くから見る時に使います。文字の大きさは、「ふつう」の1.2倍と1.4倍になります。座席の横幅は変わらないので、長い名前は、2行に分けて表示します。「座席を番号のみで巨大表示する」をオンにした時は、この設定に関わらず、座席の横幅はそのままで、数字がいちばん大きくなります。</li>
+                            <li>「テーマと背景」の「端末がダークモードの時は、自動でダークモードにする」をONにすると、端末がダークモードの間は、選んだテーマの代わりにダークモードで表示します。端末が元に戻ると、選んだテーマに戻ります。</li>
+                            <li>「座席のズーム」を使うと、座席全体を大きくしたり、小さくしたりできます。</li>
+                            <li>画面の上のタイトルは、「画面のタイトル」の「画面の上のタイトル」で、好きな言葉に変えられます。空にすると「席替えし太郎」に戻ります。長いタイトルは、入りきらないときに、左右にゆっくり動いて、全部読めます。「タイトルを表示する」をOFFにすると、タイトルが消えて、座席表の場所が広がります。</li>
+                            <li>座席の大きさは、画面に合わせて自動で決まります。画面の幅が900px以上のパソコンや電子黒板では、余っている場所に合わせて、座席と文字が大きくなります。狭い画面では、座席が小さくなって、全体が収まります。</li>
+                            <li>スマホなど、狭い画面では、上のボタンが折り返して並びます。座席表も、画面の幅に合わせて小さくなります。</li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary>席替えの演出</summary>
+                        <ul>
+                            <li>「演出を一覧で試す」を押すと、画面の下に、37種類の演出が一覧で出ます。押すとその演出を試せ、選ぶとそのまま使えます。星を押すと、お気に入りに入れられます。</li>
+                            <li>「席替え時の演出」は、全部で37種類あります。どの演出も、始まってから終わるまで最長で5秒以内に収まります。人数が多いときは、順番はそのままで、間隔を縮めて5秒に合わせます。ただし「自分で止めるスロット」だけは、自分で止める時間をとるため、最長30秒です。</li>
+                            <li>「自分で止めるスロット」は、列ごとにバラバラの速さで回り続けます。座席表の下の赤いボタンを押した列だけが止まります。押さなくても、30秒以内に残りの列が左から自動で止まります。キーボードで、列の文字キーを押しても止められます。この演出は、「毎回ランダム」には入りません。</li>
+                            <li>「▶ 席順を変えずに演出を試す」を押すと、席順を変えずに、選んだ演出だけを確かめられます。演出の効果音は、「演出に効果音をつける」で切り替えられます。「完全サイレントモード」がONの間は、鳴りません。選んだ演出は、次に開いた時も覚えています。</li>
+                            <li>「席替えの演出」の「くわしい設定」で、「お気に入り」に演出を入れると、「毎回ランダム」が「お気に入りからランダム」に変わります。「マイ演出」には、演出・速さ・効果音をまとめて、名前を付けて保存できます。</li>
+                            <li>「毎回ランダムで選ぶ範囲」で、「基本・定番だけ」「激しい・ダイナミックだけ」「個性的・特殊だけ」を選べます。</li>
+                            <li>「毎回ランダム」は、前回と同じ演出が続けて出ません。端末の「視差効果を減らす」設定がONの場合は、どの演出も短いフェードになります。</li>
+                            <li>「スロット」は、全体が回って、左の列から1列ずつ止まります。「ドラムロール」は、だんだん加速して、一瞬の静けさのあと、ドン！と一斉に決まります。「バウンド」はボールのようにはずみ、「振り子」は上の辺から揺れて止まります。「コイン」はくるくる回って止まり、「カーテン」は中央から左右へ開きます。「スキャン」は上から下へ光が走り、「氷」は震えてとけて現れます。「レインボー」は虹色に光りながら現れます。</li>
+                            <li>「前の席から移動」は、名前が前の席から新しい席へ滑って移動します。「うずまき」は中心から渦を巻いて現れ、「シャボン玉」はふわふわ浮かんで弾けます。「カードディール」はカードを配るように飛んできて、「花火」は下から打ち上がって開きます。「ドミノ」はドミノのように立ち上がります。</li>
+                        </ul>
+                    </details>
+                </div>
+
+                <div class="usage-group">
+                    <div class="usage-group-title">記録と保存</div>
+                    <details>
+                        <summary>記録・統計</summary>
+                        <ul>
+                            <li>「記録・統計を見る」で、指名回数やよく座る席を確認できます。席替え・指名のたびに自動で記録されます。</li>
+                            <li>記録はクラスごとに分けて残ります。クラスを切り替えると、そのクラスの記録に切り替わります。どのクラスの記録かは、記録・統計の画面の上に表示されます。</li>
+                            <li><strong>表</strong>：名前ごとの指名回数と、最後に指名した時期です。</li>
+                            <li><strong>グラフ</strong>：指名回数の棒グラフと、座席ごとの利用回数です。</li>
+                            <li><strong>傾向</strong>：最近当たっていない順に並びます。指名の偏りを確かめられます。</li>
+                            <li data-plugin-slot="guide-stats" hidden></li>
+                            <li><strong>席替え履歴</strong>：学期や月ごとに、過去の席替えを見返して、その席に戻せます。</li>
+                            <li><strong>学期アーカイブ</strong>：学期の終わりに記録を保存し、新しい学期用にリセットできます。</li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary>保存とバックアップ</summary>
+                        <ul>
+                            <li>「シートに保存」で、座席表をクラウドに保存します。「前回を復元」「履歴から復元」で呼び戻せます。</li>
+                            <li>座席を操作すると、ブラウザにも自動で保存されます。間違ってリロードしても、開き直した時に復元されます。「キャッシュから復元」で、少し前の状態にも戻せます。</li>
+                            <li>キャッシュから復元した、まだクラウドに保存していない座席表は、自動同期や読み込みで勝手に上書きされません。手動で読み込む時は、確認が出ます。</li>
+                            <li data-plugin="print">「座席表を印刷・画像保存」で、座席表をきれいな印刷用の形に整えます。そのまま印刷するか、PNG画像で保存できます。タイトルや名前の表示方法も選べます。「見る向き」で先生の側から見た向きにすると、座席表が上下左右反転して、黒板が下に来ます。「名前の大きさ」と、用紙のA4とA3、縦と横も選べます。</li>
+                            <li>「スプレッドシート連携」の「くわしい設定」には、「席替え後に自動でシートへ保存する」「他の端末の変更を自動で取り込む」があります。「現在の座席をCSV書き出し」は、「印刷・共有・書き出し」にあります。</li>
+                            <li>「バックアップ・復元」の「設定・記録のバックアップ／復元」で、クラスプリセット、指名や座席の記録、席替えの履歴、離す・近くに置く設定、ふりがな、タイマーなどの設定を、1つのファイルに書き出せます。端末を替える時や、サイトデータを消す前に使ってください。復元すると、今の保存内容は上書きされます。ロックの暗証番号と、座席表の自動保存は含まれません。</li>
+                            <li>バックアップのファイルを選ぶと、復元する前に、バックアップの内容と、いまの端末の内容が並んで出ます。減る項目や、消えるクラスは、赤や黄色で知らせます。「復元の前に、いまの内容を書き出す」を押すと、いまの内容を、先に保存できます。</li>
+                            <li>ChromeやEdgeでは、「設定・記録のバックアップ／復元」の「自動バックアップ」で、保存先のフォルダと間隔を決められます。アプリを開いた時に、間隔がたっていれば、自動でファイルを保存します。新しい10個だけを残します。ブラウザが書き込みの許可を忘れた時は、お知らせの帯のボタンを押すと保存できます。「保存先を確認する」を押すと、フォルダの中を実際に開いて、ファイルがあるか、中身が読めるかを確かめます。バックアップの画面と、設定の画面には、最後のバックアップが何日前かを、色つきで出します。</li>
+                            <li>記録は、このブラウザの中にだけ保存されています。前回のバックアップから時間がたつと、「バックアップのお知らせ」が画面の下に出ます。間隔は、バックアップの画面で、2週間・1か月・2か月・3か月から選べます。「お知らせしない」も選べます。学期アーカイブを作った時にも、案内が出ます。</li>
+                            <li>バックアップには、すべてのクラスの記録が入ります。お試しの記録は入りません。</li>
+                        </ul>
+                    </details>
+                </div>
+
+                <div class="usage-group">
+                    <div class="usage-group-title">困った時</div>
+                    <details>
+                        <summary>こんな時は</summary>
+                        <ul data-plugin-slot="guide-faq">
+                            <li><strong>設定が見つからない</strong>：設定の一番上の「設定をさがす」に言葉を入れてください。「くわしい設定」の中もさがします。</li>
+                            <li><strong>席が思い通りに動かない</strong>：「わがまま指定の一覧・解除」で、指定が重なっていないか確認してください。指定した範囲が狭いと、席が足りなくなります。</li>
+                            <li><strong>間違えて席替えした</strong>：「戻す」を押してください。リロードした後は、「キャッシュから復元」が使えます。</li>
+                            <li><strong>記録が消えてしまった</strong>：記録は、このブラウザの中にだけ保存されています。サイトデータを消したり、端末を替えたりすると、なくなります。「設定・記録のバックアップ／復元」で書き出したファイルがあれば、復元できます。</li>
+                            <li><strong>別のクラスの記録が混ざってしまった</strong>：記録はクラスごとに分かれています。名簿を読み込んだだけで、クラスとして保存していない間は、前に使っていたクラスの記録に入ります。席替えの前に「保存」でクラス名をつけてください。お試しの記録は、本物のクラスには入りません。</li>
+                            <li><strong>バックアップのお知らせを止めたい</strong>：「設定・記録のバックアップ／復元」の画面で、「お知らせしない」を選んでください。</li>
+                            <li><strong>音が出ない</strong>：「アラームとチャイム」で、サイレントモードがOFFか、音量が0になっていないかを確認してください。</li>
+                            <li><strong>キーボードがなくて、数字を入れられない</strong>：数字を入れる欄を押すと、画面のテンキーが出ます。出ない時は、「入力の補助」のスイッチを確かめてください。</li>
+                            <li><strong>暗証番号を忘れた</strong>：「ロック」の説明を見てください。</li>
+                            <li><strong>新しい機能を知りたい</strong>：「機能・プラグイン」の「更新履歴を見る」を開いてください。</li>
+                        </ul>
+                    </details>
+                </div>
+            </div>
+        </div>
+
+        <div class="config-section" id="adminSection" style="display: none;">
+            <h3>管理者用の生データ</h3>
+            <textarea id="studentInput" rows="5"></textarea>
+        </div>
+
+        <div class="config-credit">
+            <span id="appVersionText">席替えし太郎</span><br>
+            制作: Souta Kunihira / Tocoroten3391<br>
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a>
+        </div>
+    </div>
+    
+    <div class="main-btn-wrapper">
+        <button onclick="shuffleSeats()" class="btn-main" id="btnMainShuffle">席替えスタート！</button>
+        <button onclick="undoSeatArrangement()" class="btn-secondary btn-rounded-box" id="btnUndo" style="display: none; padding: 16px 24px; font-size: 16px; margin-left: 10px;">戻す</button>
+        <button onclick="redoSeatArrangement()" class="btn-secondary btn-rounded-box" id="btnRedo" style="display: none; padding: 16px 24px; font-size: 16px; margin-left: 10px;">やり直す</button>
+        <div class="pop-wrap" id="nominateMenuWrap">
+            <button type="button" class="btn-nominate" id="btnNominateMenu" aria-haspopup="true" aria-expanded="false" onclick="togglePopMenu('nominateMenu', event)">指名する ▾</button>
+            <div class="pop-menu" id="nominateMenu" hidden>
+                <button type="button" onclick="closePopMenus(); enterNominationMode()" class="pop-item pop-item-purple" id="btnMainNominate">通常指名モード</button>
+                <button data-plugin="roulette" type="button" onclick="closePopMenus(); openRouletteMode()" class="pop-item pop-item-yellow btn-tint-yellow" id="btnMegaRoulette">巨大ルーレット</button>
+                <button type="button" onclick="undoLastNomination()" class="pop-item pop-item-gray" id="btnNominateUndoMenu" disabled>直前の指名を取り消す</button>
+            </div>
+        </div>
+        <div class="pop-wrap" id="moreMenuWrap">
+            <button type="button" class="btn-secondary btn-rounded-box" id="btnMoreMenu" aria-haspopup="true" aria-expanded="false" style="display: none; padding: 16px 24px; font-size: 16px;" onclick="togglePopMenu('moreMenu', event)">ほかの操作 ▾</button>
+            <div class="pop-menu" id="moreMenu" hidden>
+                <button data-plugin="preview" type="button" onclick="closePopMenus(); openShufflePreview()" class="pop-item pop-item-gray" id="btnPreviewShuffle" style="display: none;">プレビュー</button>
+                <button data-plugin="announce" type="button" onclick="closePopMenus(); shuffleAndAnnounce()" class="pop-item pop-item-gray" id="btnAnnounceShuffle" style="display: none;">発表モードで席替え</button>
+                <button data-plugin="compare" type="button" onclick="closePopMenus(); toggleCompare()" class="pop-item pop-item-gray" id="btnCompare" style="display: none;">前回と比べる</button>
+                <button data-plugin="seatcheck" type="button" onclick="closePopMenus(); openSeatCheck()" class="pop-item pop-item-gray" id="btnSeatCheck" style="display: none;">結果のチェック</button>
+                <button data-plugin="furigana" type="button" onclick="closePopMenus(); toggleFuriganaFromMenu()" class="pop-item pop-item-gray" id="btnFuriToggle">ふりがなを表示する</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="nomProgress" class="nom-progress" style="display: none;">
+        <span class="nom-progress-label">指名の進み具合</span>
+        <span class="nom-progress-count" id="nomProgressCount"></span>
+        <span class="nom-progress-bar"><i id="nomProgressFill"></i></span>
+        <button type="button" class="nom-progress-reset" onclick="resetNominatedHistory()">🔁 最初から数える</button>
+    </div>
+
+    <div data-plugin="compare" id="compareSummary" class="compare-summary" style="display: none;"></div>
+    <div id="classroom"></div>
+
+    <div id="nomProgressMode" class="nom-progress-mode">
+        <span id="nomProgressModeText"></span>
+        <span class="nom-progress-bar"><i id="nomProgressModeFill"></i></span>
+    </div>
+
+    <div id="nominateDisplayArea" class="nominate-display-area">
+        <div id="nominateNameDisplay" class="nominate-name-display">誰に当たるでしょうか？</div>
+        <div class="nom-main-row">
+            <div class="nom-giant-wrap">
+                <button onclick="pickRandomStudent()" class="btn-nominate-giant" id="btnGiantNominate">次を指名する！</button>
+                <button type="button" onclick="undoLastNomination()" class="nom-record-toggle" id="btnNominateUndoMode" style="display: none;">直前の指名を取り消す</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="seatModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h4 id="modalTitle">座席の設定</h4>
+            <div style="margin-bottom: 16px;">
+                <label class="input-label">① 座席の簡易指定：</label>
+                <button id="modalEmptyBtn" onclick="toggleEmptyFromModal()" class="btn-delete">この場所を空席にする</button>
+            </div>
+            <div style="border-top: 1px solid var(--seat-border); padding-top: 12px; margin-bottom: 16px;">
+                <label for="modalStudentSelect" class="input-label">② 生徒を配置：</label>
+                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                    <input type="text" id="modalStudentQuickInput" placeholder="番号 or 名前で検索" style="flex: 1;">
+                    <button onclick="findStudentInModalByQuery()" class="btn-secondary" style="width: auto; flex-shrink: 0; padding: 10px 14px;">🔍 検索</button>
+                </div>
+                <select id="modalStudentSelect"></select>
+            </div>
+            <div id="modalAreaSection" style="border-top: 1px solid var(--seat-border); padding-top: 12px; margin-bottom: 16px;">
+                <label for="modalAreaSelect" class="input-label" style="color: var(--lbl-blue);">③ 席のわがまま指定：</label>
+                <select id="modalAreaSelect" style="font-weight: bold;"></select>
+                <div id="modalCustomRCSection" style="display: none; margin-top: 10px;">
+                    <label class="input-label" style="color: var(--lbl-blue);">範囲に含める行・列を、いくつでも選んでください：</label>
+                    <div class="custom-chip-title">行</div>
+                    <div id="modalCustomRows" class="custom-chip-row"></div>
+                    <div class="custom-chip-title">列</div>
+                    <div id="modalCustomCols" class="custom-chip-row"></div>
+                </div>
+                <div id="modalCustomSeatsSection" style="display: none; margin-top: 10px;">
+                    <label class="input-label" style="color: var(--lbl-blue);">範囲に含める座席を、タップで選んでください。右端がA列です：</label>
+                    <div id="modalCustomSeatGrid" class="custom-seat-grid"></div>
+                </div>
+                <div id="modalPrioritySection" style="display: none; margin-top: 10px;">
+                    <label for="modalPriorityDir" class="input-label" style="color: var(--lbl-blue);">席替えのたびに、この中から選ばれる優先席：</label>
+                    <div class="input-group-row">
+                        <select id="modalPriorityDir" style="font-weight: bold;"><option value="前">前から</option><option value="後">後ろから</option></select>
+                        <select id="modalPriorityRows" style="font-weight: bold;"></select>
+                    </div>
+                </div>
+            </div>
+            <div id="modalYaochoShowFixedSection" style="border-top: 1px solid var(--seat-border); padding-top: 12px; margin-bottom: 16px;">
+                <label class="chart-opt"><input type="checkbox" id="modalYaochoShowFixedToggle"><span style="font-weight: bold; font-size: 13px;">八百長中も指定席として表示</span></label>
+                <p style="font-size: 12px; color: var(--text-sub); margin: 6px 0 0; line-height: 1.6;">この席だけ、八百長モード中でも「固定済み」として表示します。</p>
+            </div>
+            <div id="modalReasonSection" style="border-top: 1px solid var(--seat-border); padding-top: 12px; margin-bottom: 16px; display: none;">
+                <label for="modalReasonInput" class="input-label" style="color: var(--lbl-orange);">固定する理由のメモ：</label>
+                <input type="text" id="modalReasonInput" placeholder="例: 視力が悪いため前列">
+                <div class="custom-chip-row" style="margin-top: 8px;">
+                    <button type="button" class="btn-secondary btn-compact" onclick="fillReasonChip('視力のため')">👓 視力</button>
+                    <button type="button" class="btn-secondary btn-compact" onclick="fillReasonChip('身長のため')">📏 身長</button>
+                    <button type="button" class="btn-secondary btn-compact" onclick="fillReasonChip('聞こえにくいため')">👂 聴覚</button>
+                    <button type="button" class="btn-secondary btn-compact" onclick="fillReasonChip('体調のため')">🤒 体調</button>
+                </div>
+            </div>
+            <div id="modalGroupSection" style="border-top: 1px solid var(--seat-border); padding-top: 12px; margin-bottom: 16px; display: none;">
+                <label for="modalGroupSelect" class="input-label" style="color: var(--lbl-green);">④ 手動で決める所属班：</label>
+                <select id="modalGroupSelect"></select>
+            </div>
+            <div id="modalAbsentSection" style="border-top: 1px solid var(--seat-border); padding-top: 12px; margin-bottom: 16px;">
+                <label class="chart-opt"><input type="checkbox" id="modalAbsentToggle"><span style="color: var(--text-sub); font-weight: bold; font-size: 13px;">😷 この生徒を欠席にする</span></label>
+            </div>
+            <div class="modal-btn-row">
+                <button onclick="closeSeatModal()" class="btn-secondary">閉じる</button>
+                <button onclick="applyStudentFromModal()" class="btn-save">保存する</button>
+            </div>
+        </div>
+    </div>
+
+    <div data-plugin="timer" id="timerBtnModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 340px;">
+            <h4 id="timerBtnModalTitle" style="color: #ea580c;">ボタン設定</h4>
+            <div id="timerBtnListContainer" style="max-height: 250px; overflow-y: auto; margin-bottom: 10px; padding-right: 5px;"></div>
+            <button class="btn-secondary btn-rounded-box" onclick="addTimerBtnRow()" style="width: 100%; margin-bottom: 15px;">＋ ボタンを追加</button>
+            <div class="modal-btn-row">
+                <button onclick="closeTimerBtnModal()" class="btn-secondary">キャンセル</button>
+                <button onclick="saveTimerBtnModal()" class="btn-save">保存する</button>
+            </div>
+        </div>
+    </div>
+
+    <div data-plugin="timer" id="stepSetModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 460px; width: 95%;">
+            <h4 style="color: var(--lbl-purple);">ステップタイマーの作成・編集</h4>
+            <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 12px; line-height: 1.5;">「説明5分 → 作業15分 → まとめ5分」のように、順番に進む時間割を保存できます。</p>
+            <label for="stepSetEditSelect" class="input-label">編集するステップ：</label>
+            <select id="stepSetEditSelect" onchange="selectStepSetForEdit(this.value)"></select>
+            <label for="stepSetNameInput" class="input-label" style="margin-top: 10px;">名前：</label>
+            <input type="text" id="stepSetNameInput" placeholder="例: 授業の流れ">
+            <label class="input-label" style="margin-top: 10px;">上から順に進むステップ：</label>
+            <div id="stepRowsContainer" class="step-rows"></div>
+            <button type="button" class="btn-secondary btn-rounded-box" onclick="addStepRow()" style="width: 100%; margin: 6px 0 12px;">➕ ステップを追加</button>
+            <div class="modal-btn-row">
+                <button type="button" onclick="deleteStepSet()" class="btn-delete-mini" id="stepSetDeleteBtn">削除</button>
+                <button type="button" onclick="closeStepSetModal()" class="btn-secondary">閉じる</button>
+                <button type="button" onclick="saveStepSet()" class="btn-save">保存する</button>
+            </div>
+        </div>
+    </div>
+
+    <div data-plugin="preview" id="shufflePreviewModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 640px; width: 95%;">
+            <h4 style="color: var(--lbl-blue);">席替えプレビュー</h4>
+            <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 12px; line-height: 1.5;">確定する前に、3つの案を見比べられます。気に入った案を選ぶと、座席表がその席順になります。</p>
+            <div class="stats-tabs" id="previewTabs"></div>
+            <div id="previewInfo" class="preview-info"></div>
+            <div id="previewGrid" class="preview-grid"></div>
+            <div class="modal-btn-row">
+                <button type="button" onclick="regenerateShufflePreview()" class="btn-secondary">🔄 作り直す</button>
+                <button type="button" onclick="closeShufflePreview()" class="btn-secondary">閉じる</button>
+                <button type="button" onclick="applyShufflePreview(true)" class="btn-secondary">📣 この案で発表</button>
+                <button type="button" onclick="applyShufflePreview()" class="btn-save">✅ この案にする</button>
+            </div>
+        </div>
+    </div>
+
+    <div data-plugin="print" id="chartExportModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 720px; width: 95%;">
+            <h4 style="color: var(--lbl-green);">座席表の印刷・画像保存</h4>
+            <label for="chartExportTitle" class="input-label">タイトル：</label>
+            <input type="text" id="chartExportTitle" placeholder="例: 1年A組 座席表" oninput="renderChartExportPreview()">
+            <label for="chartOptName" class="input-label" style="margin-top: 10px;">名前の表示：</label>
+            <select id="chartOptName" onchange="renderChartExportPreview()">
+                <option value="both">番号 ＋ 名前</option>
+                <option value="name">名前のみ</option>
+                <option value="number">番号のみ</option>
+            </select>
+            <div class="chart-sel-grid">
+                <label class="chart-sel"><span>見る向き</span>
+                    <select id="chartOptView" onchange="renderChartExportPreview()">
+                        <option value="student">生徒の側から見た向き</option>
+                        <option value="teacher">先生の側から見た向き</option>
+                    </select>
+                </label>
+                <label class="chart-sel"><span>名前の大きさ</span>
+                    <select id="chartOptSize" onchange="renderChartExportPreview()">
+                        <option value="0.85">小さめ</option>
+                        <option value="1" selected>ふつう</option>
+                        <option value="1.25">大きめ</option>
+                        <option value="1.5">とても大きい</option>
+                    </select>
+                </label>
+                <label class="chart-sel"><span>印刷する用紙</span>
+                    <select id="chartOptPaper">
+                        <option value="A4">A4</option>
+                        <option value="A3">A3</option>
+                    </select>
+                </label>
+                <label class="chart-sel"><span>用紙の向き</span>
+                    <select id="chartOptDir">
+                        <option value="auto">座席表に合わせる</option>
+                        <option value="landscape">横</option>
+                        <option value="portrait">縦</option>
+                    </select>
+                </label>
+            </div>
+            <div class="chart-opt-grid">
+                <label class="chart-opt"><input type="checkbox" id="chartOptFront" checked onchange="renderChartExportPreview()"> 「前：黒板」を表示</label>
+                <label class="chart-opt"><input type="checkbox" id="chartOptDate" checked onchange="renderChartExportPreview()"> 日付を表示</label>
+                <label class="chart-opt"><input type="checkbox" id="chartOptLabel" onchange="renderChartExportPreview()"> A1などの座席の記号を表示</label>
+                <label class="chart-opt"><input type="checkbox" id="chartOptAbsent" checked onchange="renderChartExportPreview()"> お休みの人を薄く表示</label>
+                <label class="chart-opt"><input type="checkbox" id="chartOptGroup" onchange="renderChartExportPreview()"> 班の色、番号、模様を入れる</label>
+            </div>
+            <div class="chart-export-preview"><img id="chartExportImg" alt="座席表のプレビュー"></div>
+            <div class="modal-btn-row">
+                <button type="button" onclick="closeChartExportModal()" class="btn-secondary">閉じる</button>
+                <button type="button" onclick="saveChartAsPng()" class="btn-save">🖼️ PNG画像で保存</button>
+                <button type="button" onclick="printSeatChart()" class="btn-connect">🖨️ 印刷</button>
+            </div>
+        </div>
+    </div>
+
+    <div data-plugin="absent" id="absentModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 560px; width: 95%;">
+            <h4 style="color: #d97706;">今日の欠席者を選ぶ</h4>
+            <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 12px; line-height: 1.6;">お休みの人をタップして、赤くしてください。「反映する」を押すと、その人たちが欠席になり、席替えや指名の対象から外れます。席替え後でも、今の席のまま反映できます。</p>
+            <div id="absentGrid" class="absent-grid"></div>
+            <div id="absentCount" class="absent-count"></div>
+            <div class="modal-btn-row">
+                <button type="button" onclick="clearAbsentDraft()" class="btn-secondary">🙋 全員出席にする</button>
+                <button type="button" onclick="closeAbsentModal()" class="btn-secondary">閉じる</button>
+                <button type="button" onclick="applyAbsentModal()" class="btn-save">✅ 反映する</button>
+            </div>
+        </div>
+    </div>
+
+    <div data-plugin="furigana" id="furiganaModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 520px; width: 95%;">
+            <h4 style="color: #7c3aed;">ふりがなの設定</h4>
+            <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 12px; line-height: 1.6;">名前の上に、ふりがなを小さく表示できます。座席表、発表モード、プレビュー、印刷・画像保存に出ます。</p>
+            <p style="font-size: 12px; color: var(--text-sub); margin: -4px 0 10px; line-height: 1.6;">GASのスプレッドシートの名簿にあるC列のフリガナは、読み込むときに自動で取り込みます。ここで手で直したものは、そのまま残ります。</p>
+            <button type="button" onclick="reapplyFuriganaFromRoster()" class="btn-secondary btn-compact" style="width: auto; padding: 6px 12px; font-size: 12px; margin-bottom: 8px;">🔤 名簿のフリガナで入れ直す</button>
+            <label class="chart-opt" style="margin-top: 6px;"><input type="checkbox" id="furiganaShowToggle"><span style="font-weight: bold; font-size: 13px;">ふりがなを表示する</span></label>
+            <div class="furi-size-row" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;"><span style="font-weight: bold; font-size: 13px; white-space: nowrap;">ふりがなの大きさ</span><select id="furiganaSizeSelect" onchange="setFuriganaSize(this.value)" style="width: auto !important; flex: 0 0 auto; padding: 6px 28px 6px 10px;"><option value="s">小さめ</option><option value="m">ふつう</option><option value="l">大きめ</option></select></div>
+            <div id="furiganaCount" class="absent-count" style="margin-top: 10px;"></div>
+            <div id="furiganaRows" class="furi-rows"></div>
+            <details class="furi-bulk">
+                <summary>まとめて貼り付ける</summary>
+                <p style="font-size: 12px; color: var(--text-sub); margin: 6px 0; line-height: 1.5;">1行に1人ずつ、「田中太郎,たなかたろう」のように、名前とふりがなを「,」か空白で区切って貼り付けてください。</p>
+                <textarea id="furiganaBulkInput" rows="4" placeholder="田中太郎,たなかたろう&#10;佐藤花子,さとうはなこ"></textarea>
+                <button type="button" onclick="applyFuriganaBulk()" class="btn-secondary btn-compact" style="width: auto; padding: 6px 12px; font-size: 12px;">⬆️ 上の一覧に入れる</button>
+            </details>
+            <div class="modal-btn-row">
+                <button type="button" onclick="closeFuriganaModal()" class="btn-secondary">閉じる</button>
+                <button type="button" onclick="saveFuriganaModal()" class="btn-save">保存する</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="backupModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 460px; width: 95%;">
+            <h4 style="color: #0891b2;">設定・記録のバックアップ／復元</h4>
+            <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 12px; line-height: 1.6;">クラスプリセット、指名や座席の記録、席替えの履歴、離す・近くに置く設定、ふりがな、タイマーなどの設定を、1つのファイルに書き出せます。端末を替える時や、ブラウザのデータを消す前に使ってください。</p>
+            <div id="backupHealthModal" class="backup-health"></div>
+            <div class="backup-status-box">
+                <div>前回のバックアップ：<strong id="backupLastText">まだありません</strong></div>
+                <div class="backup-remind-row">
+                    <label for="backupRemindSelect">お知らせ：</label>
+                    <select id="backupRemindSelect" onchange="onBackupRemindChange()">
+                        <option value="0">お知らせしない</option>
+                        <option value="14">2週間ごと</option>
+                        <option value="30" selected>1か月ごと</option>
+                        <option value="60">2か月ごと</option>
+                        <option value="90">3か月ごと</option>
+                    </select>
+                </div>
+            </div>
+            <div class="backup-auto-box" id="autoBackupBox">
+                <div class="backup-auto-title">自動バックアップ</div>
+                <p id="autoBackupSupportNote" class="backup-auto-note" hidden>このブラウザでは、フォルダへの自動保存は使えません。ChromeやEdgeでお使いください。ほかのブラウザでは、上のお知らせで、ファイルへの書き出しをお知らせします。</p>
+                <div id="autoBackupControls">
+                    <div class="backup-remind-row">
+                        <label for="autoBackupSelect">間隔：</label>
+                        <select id="autoBackupSelect" onchange="onAutoBackupIntervalChange()">
+                            <option value="0">自動で保存しない</option>
+                            <option value="1">毎日</option>
+                            <option value="7">毎週</option>
+                            <option value="14">2週間ごと</option>
+                        </select>
+                    </div>
+                    <div>保存先：<strong id="autoBackupFolderText">まだ決めていません</strong></div>
+                    <div>前回の自動保存：<strong id="autoBackupLastText">まだありません</strong></div>
+                    <div id="autoBackupCheckResult" class="backup-health" hidden></div>
+                    <div class="backup-auto-btns">
+                        <button type="button" class="btn-secondary btn-compact" onclick="chooseAutoBackupFolder()">📁 保存先のフォルダを選ぶ</button>
+                        <button type="button" class="btn-secondary btn-compact" onclick="autoBackupNowFromModal()">💾 今すぐ自動保存する</button>
+                        <button type="button" class="btn-secondary btn-compact" onclick="checkAutoBackupFolder()">🔎 保存先を確認する</button>
+                        <button type="button" class="btn-secondary btn-compact" id="autoBackupReleaseBtn" onclick="releaseAutoBackupFolder()" hidden>🔓 保存先を解除する</button>
+                    </div>
+                    <p class="backup-auto-note">アプリを開いている時に、決めた間隔で保存します。ファイル名は「seat-shuffler-auto-backup_日付.json」で、新しい10個だけを残します。復元する時は、ここで選んで読み込めます。GASのURLは含めません。</p>
+                </div>
+            </div>
+            <label class="chart-opt" style="margin: 0 0 6px;"><input type="checkbox" id="backupIncludeGas"> GASのURLも含める</label>
+            <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 10px; line-height: 1.5;">URLを知っている人は、シートに接続できてしまいます。ファイルの扱いにご注意ください。ロックの暗証番号と、座席表の自動保存は、含まれません。</p>
+            <button type="button" onclick="exportBackup()" class="btn-save" style="width: 100%; margin: 0 0 14px;">📤 バックアップを書き出す</button>
+            <div style="border-top: 1px solid var(--seat-border); padding-top: 12px;">
+                <label class="input-label" style="margin-top: 0;">バックアップから復元：</label>
+                <input type="file" id="backupFileInput" accept=".json,application/json" onchange="onBackupFileChosen(this)">
+                <div id="backupImportInfo" style="font-size: 12px; color: var(--text-main); line-height: 1.7; margin-top: 8px;"></div>
+                <button type="button" id="backupApplyBtn" onclick="applyBackupImport()" class="btn-connect" style="display: none; width: 100%; margin: 10px 0 0;">♻️ この内容で復元する</button>
+            </div>
+            <div class="modal-btn-row">
+                <button type="button" onclick="closeBackupModal()" class="btn-secondary">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="lockModalOverlay" class="modal-overlay" style="display: none; z-index: 4000;">
+        <div class="modal-content" style="max-width: 400px; width: 95%;">
+            <h4 id="lockModalTitle" style="color: var(--lbl-orange);">ロック</h4>
+            <p id="lockModalDesc" style="font-size: 12px; color: var(--text-sub); margin: -8px 0 12px; line-height: 1.6;"></p>
+            <div id="lockCurrentRow">
+                <label for="lockPinInput" class="input-label">暗証番号：</label>
+                <input type="password" id="lockPinInput" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="4〜8桁の数字">
+            </div>
+            <div id="lockNewRows">
+                <label for="lockNewPinInput" class="input-label" style="margin-top: 10px;">新しい暗証番号：</label>
+                <input type="password" id="lockNewPinInput" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="4〜8桁の数字">
+                <label for="lockConfirmPinInput" class="input-label" style="margin-top: 10px;">もう一度入力：</label>
+                <input type="password" id="lockConfirmPinInput" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="確認のため、もう一度">
+            </div>
+            <div id="lockOptionRows" style="margin-top: 12px;">
+                <label class="input-label">ロック中に使えるもの：</label>
+                <label class="chart-opt" style="margin: 4px 0;"><input type="checkbox" id="lockAllowTimer" checked> タイマー</label>
+                <label class="chart-opt" style="margin: 4px 0;"><input type="checkbox" id="lockAllowNominate" checked> 指名・ルーレット</label>
+                <label class="chart-opt" style="margin: 4px 0;"><input type="checkbox" id="lockAllowFullscreen" checked> 全画面表示</label>
+                <label for="lockAutoMinutes" class="input-label" style="margin-top: 10px;">自動ロック：</label>
+                <select id="lockAutoMinutes">
+                    <option value="0">しない</option>
+                    <option value="1">1分、何も操作がなかったら</option>
+                    <option value="3">3分、何も操作がなかったら</option>
+                    <option value="5">5分、何も操作がなかったら</option>
+                    <option value="10">10分、何も操作がなかったら</option>
+                </select>
+            </div>
+            <p id="lockModalError" style="color: #dc2626; font-size: 12px; min-height: 18px; margin: 10px 0 0; line-height: 1.5;"></p>
+            <div class="modal-btn-row">
+                <button type="button" onclick="closeLockModal()" class="btn-secondary">キャンセル</button>
+                <button type="button" id="lockModalOkBtn" onclick="submitLockModal()" class="btn-save">🔓 解除する</button>
+            </div>
+        </div>
+    </div>
+
+    <div data-plugin="announce" id="announceOverlay" class="announce-overlay" style="display: none;" onclick="announceNext(event)">
+        <div class="announce-top">
+            <div class="announce-title">席替え発表</div>
+            <div id="announceProgress" class="announce-progress"></div>
+            <button type="button" class="announce-icon-btn" onmousedown="event.preventDefault()" onclick="toggleAnnounceFullscreen(event)" title="全画面">全画面</button>
+            <button type="button" class="announce-icon-btn" onmousedown="event.preventDefault()" onclick="closeAnnounce(event)" title="閉じる">✕</button>
+        </div>
+        <div id="announceCaption" class="announce-caption"></div>
+        <div class="announce-board">前：黒板</div>
+        <div id="announceGrid" class="announce-grid"></div>
+        <div class="announce-controls" onclick="event.stopPropagation()">
+            <select id="announceOrder" onchange="announceRestart()" title="発表の順番">
+                <option value="front">前の列から</option>
+                <option value="back">後ろの列から</option>
+                <option value="random">ランダム</option>
+                <option value="number">番号順</option>
+            </select>
+            <select id="announceStyle" onchange="announceRestart()" title="発表のしかた">
+                <option value="normal">📣 ふつうに発表</option>
+                <option value="weather">☁️ 天気予報風に発表</option>
+            </select>
+            <div class="announce-sound">
+                <label class="switch"><input type="checkbox" id="announceSound" checked onchange="announceRestart()"><span class="slider"></span></label>
+                <span>効果音</span>
+            </div>
+            <button type="button" id="announcePrevBtn" class="announce-btn" onmousedown="event.preventDefault()" onclick="announcePrev(event)">◀ 戻る</button>
+            <button type="button" id="announceNextBtn" class="announce-btn announce-btn-main" onmousedown="event.preventDefault()" onclick="announceNext(event)">▶ 発表スタート</button>
+            <button type="button" class="announce-btn" onmousedown="event.preventDefault()" onclick="announceRevealAll(event)">👁️ 全員見せる</button>
+            <button type="button" id="announceLuckyBtn" class="announce-btn" onmousedown="event.preventDefault()" onclick="announceLucky(event)" disabled title="全員の発表が終わると押せます">🍀 ラッキー席</button>
+            <button type="button" class="announce-btn" onmousedown="event.preventDefault()" onclick="announceReset(event)">⏮️ 最初から</button>
+        </div>
+    </div>
+
+    <div data-plugin="print" id="printSheet" aria-hidden="true"><img id="printSheetImg" alt=""></div>
+
+    <div id="wagamamaModalOverlay" class="modal-overlay" style="display: none;">
+        <div data-plugin="reasons" class="modal-content" style="max-width: 480px; width: 95%;">
+            <h4 style="color: #0ea5e9; border-bottom-color: rgba(14, 165, 233, 0.2);">📋 エリアを限定したわがまま指定の一覧</h4>
+            <div style="max-height: 300px; overflow-y: auto; margin-bottom: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <table class="wagamama-table">
+                    <thead><tr><th>生徒名</th><th>指定エリア</th><th>操作</th></tr></thead>
+                    <tbody id="wagamamaTableBody"></tbody>
+                </table>
+            </div>
+            <div class="modal-btn-row">
+                <button onclick="closeWagamamaModal()" class="btn-secondary">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="memoListModalOverlay" class="modal-overlay" style="display: none;">
+        <div data-plugin="reasons" class="modal-content" style="max-width: 460px; width: 95%;">
+            <h4 style="color: #d97706;">固定理由メモの一覧 <span id="memoListCount" style="font-size: 12px; color: var(--text-sub); font-weight: 400;"></span></h4>
+            <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 12px; line-height: 1.5;">座席の固定・わがまま指定に付けたメモです。入力欄を書き換えて確定すると、そのまま保存されます。</p>
+            <div id="memoListBody" class="memo-list-body"></div>
+            <div class="modal-btn-row">
+                <button type="button" onclick="closeMemoListModal()" class="btn-secondary">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="workRestoredModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 460px; width: 95%;">
+            <h4 style="color: #0891b2;">編集内容を復元しました</h4>
+            <div id="workRestoredBody"></div>
+            <div class="modal-btn-row">
+                <button type="button" onclick="discardWorkState()" class="btn-delete">✋ 復元をやめる</button>
+                <button type="button" onclick="closeWorkRestoredModal()" class="btn-save">✅ このまま使う</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cacheRestoreModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 460px; width: 95%;">
+            <h4 style="color: #d97706;">キャッシュから復元</h4>
+            <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 12px; line-height: 1.5;">このブラウザに自動保存された、直近10件の座席表です。選んだ状態に戻せます。戻したあとも、「元に戻す」で今の状態に戻れます。</p>
+            <div id="cacheRestoreBody" class="cache-restore-list"></div>
+            <div class="modal-btn-row">
+                <button type="button" onclick="closeCacheRestoreModal()" class="btn-secondary">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="statsModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 560px; width: 95%;">
+            <h4 style="color: #059669;">記録・統計</h4>
+            <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 12px; line-height: 1.5;">指名回数と、よく座る座席の記録です。指名回数と座席は、席替え・指名のたびに自動で記録されます。</p>
+            <p id="statsClassNote" class="stats-class-note"></p>
+            <div class="stats-tabs">
+                <button type="button" id="statsTabBtn_table" class="stats-tab is-active" onclick="setStatsTab('table')">📋 表</button>
+                <button type="button" id="statsTabBtn_chart" class="stats-tab" onclick="setStatsTab('chart')">📊 グラフ</button>
+                <button type="button" id="statsTabBtn_trend" class="stats-tab" onclick="setStatsTab('trend')">📈 傾向</button>
+                <i data-plugin-slot="stats-tabs" hidden></i>
+                <button type="button" id="statsTabBtn_archive" class="stats-tab" onclick="setStatsTab('archive')">🗄️ 学期アーカイブ</button>
+                <button type="button" id="statsTabBtn_timeline" class="stats-tab" onclick="setStatsTab('timeline')">🕘 席替え履歴</button>
+            </div>
+            <div id="statsSourceRow" style="margin-bottom: 12px;">
+                <label for="statsSourceSelect" class="input-label">表示する記録：</label>
+                <select id="statsSourceSelect" onchange="setStatsViewSource(this.value)"></select>
+            </div>
+
+            <div id="statsPane_table">
+                <div style="max-height: 340px; overflow-y: auto; margin-bottom: 16px; border-radius: 8px; border: 1px solid var(--seat-border);">
+                    <table class="stats-table">
+                        <thead><tr><th>名前</th><th>指名回数</th><th>最終指名</th><th>よく座る席</th></tr></thead>
+                        <tbody id="statsDashboardBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="statsPane_chart" style="display: none;">
+                <label class="input-label">指名回数</label>
+                <div id="statsBarChart" class="stats-bar-chart"></div>
+                <label for="statsHeatmapStudent" class="input-label" style="margin-top: 16px;">座席ごとの利用回数。色が濃いほど、多く座った席です</label>
+                <select id="statsHeatmapStudent" onchange="renderStatsDashboard()" style="margin-bottom: 10px;"></select>
+                <div id="statsHeatmap" class="stats-heatmap"></div>
+            </div>
+
+            <div id="statsPane_trend" style="display: none;">
+                <div id="statsTrendSummary" class="stats-trend-summary"></div>
+                <label class="input-label" style="margin-top: 14px;">最近当たっていない順。上の人ほど、しばらく指名されていません</label>
+                <div id="statsTrendList" class="stats-trend-list"></div>
+            </div>
+
+            <div data-plugin-slot="stats-panes"></div>
+
+            <div id="statsPane_archive" style="display: none;">
+                <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 10px; line-height: 1.6;">指名回数と座席の履歴を、名前を付けて保存します。学期の終わりに保存すると、新しい学期の記録を白紙から始められます。</p>
+                <input type="text" id="statsArchiveName" placeholder="例: 2026年度 2学期" style="margin-bottom: 10px;">
+                <button type="button" onclick="saveStatsArchive()" class="btn-connect" style="width: 100%; margin-bottom: 10px;">🗄️ 今の記録をアーカイブ</button>
+                <label class="chart-opt" style="margin-bottom: 14px;"><input type="checkbox" id="statsArchiveResetToggle" checked><span style="font-size: 13px;">保存後に現在の記録をリセット</span></label>
+                <div id="statsArchiveList" class="stats-archive-list"></div>
+            </div>
+
+            <div data-plugin="history" id="statsPane_timeline" style="display: none;">
+                <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 10px; line-height: 1.6;">席替えをするたびに、座席表を自動で残しています。最新150回分まで残ります。学期や月を選んで、あとから見返したり、その席に戻したりできます。</p>
+                <label for="timelineFilterSelect" class="input-label">表示する期間：</label>
+                <select id="timelineFilterSelect" onchange="setTimelineFilter(this.value)" style="margin-bottom: 8px;"></select>
+                <div id="timelineSummary" class="timeline-summary"></div>
+                <div id="timelineList" class="timeline-list"></div>
+                <button type="button" id="timelineClearBtn" onclick="clearSeatTimeline()" class="btn-delete-mini btn-compact" style="margin-top: 10px;">🗑️ 席替えの履歴をすべて消す</button>
+            </div>
+
+            <div class="modal-btn-row">
+                <button type="button" onclick="downloadStatsCsv()" class="btn-secondary">📥 CSV</button>
+                <button type="button" id="statsResetBtn" onclick="resetHistoryLogs()" class="btn-delete">🔄 記録をリセット</button>
+                <button type="button" onclick="closeStatsModal()" class="btn-secondary">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <div data-plugin="seatcheck" id="seatCheckModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 520px; width: 95%;">
+            <h4 style="color: #059669;">✅ 席替え結果のチェック</h4>
+            <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 12px; line-height: 1.6;">今の座席表を、前回までの席替えや、各種の設定と照らし合わせました。気になる時だけ、席替えをやり直してください。</p>
+            <div id="seatCheckSummary" class="seatcheck-summary"></div>
+            <div id="seatCheckPrioRow" style="display: none; margin: 8px 0;">
+                <label for="seatCheckPrioSelect" class="input-label">条件がぶつかったときに、先に守るもの：</label>
+                <select id="seatCheckPrioSelect" onchange="onSeatCheckPriorityChange()" style="width: 100%;"></select>
+            </div>
+            <div id="seatCheckBody" class="seatcheck-list"></div>
+            <div class="modal-btn-row">
+                <button type="button" id="seatCheckAgainBtn" onclick="reshuffleFromCheck()" class="btn-connect">🎲 もう一度席替えする</button>
+                <button type="button" onclick="closeSeatCheck()" class="btn-secondary">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <div data-plugin="cloud" id="historyModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 460px; width: 95%;">
+            <h4 style="color: #7c3aed;">履歴から復元</h4>
+            <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--seat-border);">
+                <label style="font-size: 12px; font-weight: bold; color: #d97706; display: block; margin-bottom: 6px;">上書きされない特別保存の3枠</label>
+                <div id="specialSlotsBody"></div>
+            </div>
+            <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 14px; line-height: 1.5;">過去に保存した座席表の一覧です。最新30件が残ります。戻したい時点を選んでください。</p>
+            <div id="historyListBody" style="max-height: 260px; overflow-y: auto; margin-bottom: 16px;"></div>
+            <div class="modal-btn-row">
+                <button onclick="closeHistoryModal()" class="btn-secondary">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="slotNameModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 340px; width: 90%;">
+            <h4 data-plugin="cloud" id="slotNameModalTitle" style="color: #d97706;">枠に保存</h4>
+            <div style="margin-bottom: 16px;">
+                <label for="slotNameInput" class="input-label">この保存の名前：</label>
+                <input type="text" id="slotNameInput" placeholder="例: テスト用配置">
+            </div>
+            <div data-plugin="cloud" class="modal-btn-row">
+                <button onclick="closeSlotNameModal()" class="btn-secondary">キャンセル</button>
+                <button onclick="confirmSlotNameAndSave()" class="btn-save">保存する</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="updateInfoModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 460px; width: 95%;">
+            <h4 style="color: #0891b2;">更新情報</h4>
+            <div id="updateInfoBody" style="max-height: 380px; overflow-y: auto; margin-bottom: 16px;"></div>
+            <div data-plugin="updateinfo" class="modal-btn-row">
+                <button onclick="openLatestVersionPage()" class="btn-connect">🆕 最新バージョンはこちら</button>
+                <button onclick="closeUpdateInfoModal()" class="btn-secondary">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <div data-plugin="updateinfo" id="newUpdateModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 480px; width: 95%;">
+            <h4 id="newUpdateTitle" style="color: #0891b2;"></h4>
+            <p style="font-size: 13px; color: var(--text-main); margin: -6px 0 14px; line-height: 1.6;">席替えし太郎の新しいバージョンが利用可能です。</p>
+            <div style="text-align: center; font-size: 15px; font-weight: bold; margin-bottom: 16px; padding: 10px; background: var(--body-bg); border: 1px solid var(--seat-border); border-radius: 8px; color: var(--text-main);">
+                <span id="newUpdateCurrentVer"></span> → <span style="color: #0891b2;" id="newUpdateLatestVer"></span>
+            </div>
+            <div id="newUpdateNotes" style="font-size: 13px; color: var(--text-main); line-height: 1.7; white-space: pre-wrap; margin-bottom: 18px;"></div>
+            <div class="modal-btn-row">
+                <button onclick="openLatestVersionPage()" class="btn-connect">🆕 最新バージョンはこちら</button>
+                <button onclick="closeNewUpdateModal(); openUpdateInfoModal(true);" class="btn-secondary">📜 更新履歴を見る</button>
+                <button onclick="ignoreThisUpdateVersion()" class="btn-secondary">🙈 このバージョンを無視する</button>
+                <button onclick="closeNewUpdateModal()" class="btn-save">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="seatSettingsModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 460px; width: 95%;">
+            <h4 style="color: #d97706;">座席設定</h4>
+
+            <label class="input-label" for="seatPickerSelect">座席を選んで設定：</label>
+            <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+                <select id="seatPickerSelect" style="flex: 1; min-width: 0;"></select>
+                <button onclick="openSeatModalFromPicker()" class="btn-secondary btn-compact" style="width: auto; padding: 6px 8px; font-size: 13px;">📂 開く</button>
+            </div>
+
+            <div style="border-top: 1px solid var(--seat-border); padding-top: 14px;">
+            <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 14px; line-height: 1.5;">事前に座席を仕込んでおくと、「席替え」を押した時に、見た目はいつも通りランダムに見えて、実際は仕込んでおいた結果になります。</p>
+            <div data-plugin="yaocho" class="switch-container" style="margin-bottom: 14px;">
+                <label class="switch"><input type="checkbox" id="yaochoModeToggle" onchange="toggleYaochoMode()"><span class="slider"></span></label>
+                <span class="switch-label" style="color: #d97706; font-weight: bold;">八百長モード</span>
+            </div>
+            <div data-plugin="yaocho" class="switch-container" style="margin-bottom: 6px;">
+                <label class="switch"><input type="checkbox" id="yaochoShowFixedToggle" onchange="toggleYaochoShowFixed()"><span class="slider"></span></label>
+                <span class="switch-label" style="font-weight: bold;">八百長中も指定席を表示</span>
+            </div>
+            <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 14px; line-height: 1.6;">ONにすると、八百長モード中でも、座席メニューや名簿で席を指定した生徒を、その指定席に座らせて「固定済み」として表示します。</p>
+            <p data-plugin="yaocho" id="yaochoStatusText" style="font-size: 13px; color: var(--text-main); font-weight: bold; margin: 0 0 8px;">仕込み結果：未保存</p>
+            <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 14px; line-height: 1.6;">今、座席表に表示されている配置をそのまま仕込み結果として保存します。先に座席をクリックするなどして、仕込みたい配置に整えてから押してください。</p>
+            <button data-plugin="yaocho" onclick="saveYaochoResult()" class="btn-secondary btn-tint-amber" style="width: 100%; padding: 10px 16px; font-size: 13px; border-radius: 8px; margin: 0 0 8px; background-color: #d97706; color: white;">💾 今の配置を仕込み結果として保存</button>
+            <button data-plugin="yaocho" onclick="clearYaochoResult()" class="btn-delete" style="width: 100%; padding: 10px 16px; font-size: 13px; border-radius: 8px; margin: 0 0 14px;">🗑️ 仕込み結果を削除</button>
+            </div>
+
+            <div data-plugin="reasons" style="border-top: 1px solid var(--seat-border); padding-top: 14px; margin-bottom: 14px;">
+                <label style="font-size: 12px; font-weight: bold; color: #d97706; display: block; margin-bottom: 6px;">固定理由メモ</label>
+                <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 10px; line-height: 1.6;">座席の固定やわがまま指定に付けたメモを、まとめて確認・編集できます。</p>
+                <button type="button" onclick="openMemoListModal()" class="btn-secondary btn-compact" style="width: auto; padding: 6px 12px; font-size: 12px; background-color: #d97706;">📒 メモの一覧を開く</button>
+            </div>
+
+            <div style="border-top: 1px solid var(--seat-border); padding-top: 14px;">
+                <label style="font-size: 12px; font-weight: bold; color: #f43f5e; display: block; margin-bottom: 6px;">離す設定</label>
+                <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 10px; line-height: 1.6;">席替えのたびに、この2人が、斜めも含めて隣や同じ班にならないよう自動で調整します。</p>
+                <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 6px;">
+                    <select id="separationSelectA" style="flex: 1; min-width: 0;"></select>
+                    <span style="flex-shrink: 0; font-size: 12px; color: var(--text-sub);">↔</span>
+                    <select id="separationSelectB" style="flex: 1; min-width: 0;"></select>
+                </div>
+                <button onclick="addSeparationPair()" class="btn-secondary btn-compact" style="width: auto; padding: 6px 12px; font-size: 12px; background-color: #f43f5e;">➕ 追加</button>
+                <div id="separationListBody" style="margin-top: 10px; max-height: 220px; overflow-y: auto;"></div>
+            </div>
+
+            <div style="border-top: 1px solid var(--seat-border); padding-top: 14px; margin-top: 14px;">
+                <label style="font-size: 12px; font-weight: bold; color: #16a34a; display: block; margin-bottom: 6px;">近くに置く設定</label>
+                <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 10px; line-height: 1.6;">席替えのたびに、この2人が、斜めも含めて隣になるよう自動で調整します。支援が必要な子と頼れる子、見えにくい子と前の席の子などに使えます。席の指定がある人は動かせないので、近くにできないこともあります。</p>
+                <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 6px;">
+                    <select id="nearSelectA" style="flex: 1; min-width: 0;"></select>
+                    <span style="flex-shrink: 0; font-size: 12px; color: var(--text-sub);">↔</span>
+                    <select id="nearSelectB" style="flex: 1; min-width: 0;"></select>
+                </div>
+                <button onclick="addNearPair()" class="btn-secondary btn-compact" style="width: auto; padding: 6px 12px; font-size: 12px; background-color: #16a34a;">➕ 追加</button>
+                <div id="nearListBody" style="margin-top: 10px; max-height: 220px; overflow-y: auto;"></div>
+            </div>
+
+            <div style="border-top: 1px solid var(--seat-border); padding-top: 14px; margin-top: 14px;">
+                <label style="font-size: 12px; font-weight: bold; color: #0ea5e9; display: block; margin-bottom: 6px;">前回までと同じ席・同じ隣を避ける</label>
+                <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 10px; line-height: 1.6;">席替えの履歴をもとに、できるだけ前と違う席・違う隣になるように調整します。隣は上下左右です。席の都合で避けきれない時は、いちばん重なりが少ない席順を選びます。</p>
+                <div class="switch-container">
+                    <label class="switch"><input type="checkbox" id="avoidSameSeatToggle" onchange="saveAvoidSettings()"><span class="slider"></span></label>
+                    <span class="switch-label">前と同じ席になるのを避ける</span>
+                </div>
+                <div class="switch-container" style="margin-top: 8px;">
+                    <label class="switch"><input type="checkbox" id="avoidNeighborToggle" onchange="saveAvoidSettings()"><span class="slider"></span></label>
+                    <span class="switch-label">前に隣だった人と、また隣になるのを避ける</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+                    <label for="avoidDepthSelect" style="font-size: 12px; color: var(--text-main); flex-shrink: 0;">見る範囲：</label>
+                    <select id="avoidDepthSelect" onchange="saveAvoidSettings()" style="flex: 1; min-width: 0;">
+                        <option value="1">直近1回分</option>
+                        <option value="2" selected>直近2回分</option>
+                        <option value="3">直近3回分</option>
+                        <option value="5">直近5回分</option>
+                    </select>
+                </div>
+                <p id="avoidLayoutInfo" style="font-size: 12px; color: var(--text-sub); margin: 8px 0 8px; line-height: 1.6;"></p>
+                <button type="button" onclick="clearSeatLayoutLog(true)" class="btn-delete-mini btn-compact" style="width: auto; padding: 6px 12px; font-size: 12px;">🗑️ 席替えの履歴を消す</button>
+            </div>
+
+            <div style="border-top: 1px solid var(--seat-border); padding-top: 14px; margin-top: 14px;">
+                <label for="conditionPrioritySelect" style="font-size: 12px; font-weight: bold; color: #7c3aed; display: block; margin-bottom: 6px;">条件がぶつかったときに、先に守るもの</label>
+                <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 10px; line-height: 1.6;">離す設定、近くに置く設定、前回までと同じ席や隣を避ける設定が、すべては守れないときに、どれを優先するかを選びます。守れなかったものは、結果のチェックで知らせます。</p>
+                <select id="conditionPrioritySelect" onchange="onConditionPriorityChange()" style="width: 100%;">
+                    <option value="separate" selected>離す設定を先に守る</option>
+                    <option value="near">近くに置く設定を先に守る</option>
+                    <option value="avoid">前回と同じ席や隣を避けることを先に守る</option>
+                    <option value="equal">どれも同じ重さで扱う</option>
+                </select>
+            </div>
+
+            <div class="modal-btn-row">
+                <button onclick="closeSeatSettingsModal()" class="btn-secondary">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pluginModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 520px; width: 95%;">
+            <h4 style="color: #0891b2;">プラグインの設定</h4>
+            <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 14px; line-height: 1.6;">使いたい機能だけを、オンにできます。切り替えは、再読み込みのあとに反映されます。</p>
+            <div id="pluginList"></div>
+            <div id="pluginMissing"></div>
+            <p class="config-note" id="pluginReloadNote" hidden>切り替えを反映するには、再読み込みが必要です。<button type="button" class="btn-secondary" onclick="SekigaeApp.reloadNow()" style="margin-top: 6px;">🔄 今すぐ再読み込みする</button></p>
+            <div class="modal-btn-row">
+                <button onclick="closePluginModal()" class="btn-secondary">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <div data-plugin="roster" id="rosterMapModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 600px; width: 96%;">
+            <h4 style="color: var(--lbl-blue);">列を指定して取り込む</h4>
+            <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 10px; line-height: 1.6;">表の形のファイルです。どの列が何かを選んでください。姓と名が別の列なら、名前と名前の続きに選ぶと、つなげて取り込みます。選んだ列は覚えておき、同じ見出しのファイルでは、次から自動で使います。</p>
+            <label class="rm-check"><input type="checkbox" id="rmHeader" onchange="onRosterMapHeaderChange()"> 1行目は見出しです</label>
+            <p id="rmMemoNote" class="config-note"></p>
+            <div id="rmSelects" class="rm-selects"></div>
+            <div id="rmSummary" class="rp-summary"></div>
+            <ul id="rmIssues" class="rp-issues"></ul>
+            <div id="rmPreview" class="rp-preview"></div>
+            <p class="config-note" data-keep="1">この名簿にすると、いまの名簿は置き換わります。</p>
+            <div class="modal-btn-row">
+                <button type="button" onclick="closeRosterMapModal()" class="btn-secondary">キャンセル</button>
+                <button type="button" onclick="applyRosterMap()" class="btn-connect-mini" id="btnRosterMapGo" disabled>✅ この名簿にする</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="rosterEditorModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 640px; width: 96%;">
+            <h4 style="color: var(--lbl-blue);">名簿を作る・直す</h4>
+            <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 10px; line-height: 1.6;">表に、番号、名前、ふりがなを入れます。表計算ソフトの列は、名前の欄に、そのまま貼り付けられます。ふりがなは、空でも構いません。</p>
+            <div data-plugin="roster" class="re-tools">
+                <button type="button" class="btn-secondary btn-compact" id="reUndoBtn" onclick="undoRosterEditor()" disabled>元に戻す</button>
+                <button type="button" class="btn-secondary btn-compact" id="reRedoBtn" onclick="redoRosterEditor()" disabled>やり直す</button>
+                <button type="button" class="btn-secondary btn-compact" onclick="addEditorRows(1)">➕ 1行足す</button>
+                <button type="button" class="btn-secondary btn-compact" onclick="addEditorRows(10)">➕ 10行足す</button>
+                <button type="button" class="btn-secondary btn-compact" onclick="renumberEditorRows()">🔢 番号をつけ直す</button>
+                <button type="button" class="btn-secondary btn-compact" onclick="sortEditorRowsByReading()">🔤 ふりがな順に並べる</button>
+                <button type="button" class="btn-secondary btn-compact" onclick="clearEditorRows()">🧽 表を空にする</button>
+            </div>
+            <div class="re-head"><span>番号</span><span>名前</span><span>ふりがな</span><span></span></div>
+            <div data-plugin="roster" id="reRows" class="re-rows"></div>
+            <div data-plugin="roster" id="reSummary" class="rp-summary"></div>
+            <ul data-plugin="roster" id="reIssues" class="rp-issues"></ul>
+            <p data-plugin="roster" class="config-note" data-keep="1">書き出しは、表に入れた内容がそのまま保存されます。「この名簿にする」を押すと、いまの名簿は置き換わります。</p>
+            <div class="re-files">
+                <button data-plugin="roster" type="button" class="btn-secondary btn-compact" onclick="downloadRosterTemplate()">📥 ひな形をダウンロード</button>
+                <div class="pop-wrap">
+                    <button type="button" class="btn-secondary btn-compact" id="btnRosterEditorExportMenu" aria-haspopup="true" aria-expanded="false" onclick="togglePopMenu('rosterEditorExportMenu', event)">名簿を書き出す ▾</button>
+                    <div class="pop-menu pop-menu-up" id="rosterEditorExportMenu" hidden>
+                        <button data-plugin="roster" type="button" onclick="closePopMenus(); exportRosterEditor('csv')" class="pop-item pop-item-gray">CSVで書き出す</button>
+                        <button data-plugin="roster" type="button" onclick="closePopMenus(); exportRosterEditor('txt')" class="pop-item pop-item-gray">TXTで書き出す</button>
+                    </div>
+                </div>
+            </div>
+            <div data-plugin="roster" class="modal-btn-row">
+                <button type="button" onclick="closeRosterEditor()" class="btn-secondary">キャンセル</button>
+                <button type="button" onclick="applyRosterEditor()" class="btn-connect-mini" id="btnRosterEditorGo" disabled>✅ この名簿にする</button>
+            </div>
+        </div>
+    </div>
+
+    <div data-plugin="roster" id="rosterPasteModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 560px; width: 95%;">
+            <h4 style="color: var(--lbl-blue);">名簿を貼り付ける</h4>
+            <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 10px; line-height: 1.6;">表計算ソフトの列や、メモの名簿を、そのまま貼り付けられます。1行に1人ずつ書くか、「,」や「、」で区切ります。「12.田中」「12 田中」「12,田中」のように、番号をつけられます。番号がない人は、並んだ順の番号になります。</p>
+            <textarea id="rosterPasteInput" rows="8" placeholder="1.田中太郎&#10;2.佐藤花子&#10;3.鈴木一郎" oninput="updateRosterPasteCheck()" style="width: 100%; box-sizing: border-box;"></textarea>
+            <div id="rosterPasteSummary" class="rp-summary"></div>
+            <ul id="rosterPasteIssues" class="rp-issues"></ul>
+            <div id="rosterPastePreview" class="rp-preview"></div>
+            <p class="config-note" data-keep="1">この名簿にすると、いまの名簿は置き換わります。</p>
+            <div class="modal-btn-row">
+                <button type="button" onclick="closeRosterPasteModal()" class="btn-secondary">キャンセル</button>
+                <button type="button" onclick="applyRosterPaste()" class="btn-connect-mini" id="btnRosterPasteGo" disabled>✅ この名簿にする</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="promoteModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 460px; width: 95%;">
+            <h4 style="color: var(--lbl-blue);">進級の切り替え</h4>
+            <p id="promoteFromText" style="font-size: 14px; margin: 10px 0; line-height: 1.5;"></p>
+            <label for="promoteNewName" class="input-label">新しいクラスの名前：</label>
+            <input type="text" id="promoteNewName" placeholder="例: 2年A組" oninput="updatePromoteHint()">
+            <p id="promoteNameHint" class="config-note"></p>
+            <div class="input-label" style="margin-top: 10px;">名簿：</div>
+            <label class="chart-opt" style="display: flex; gap: 8px; align-items: flex-start; text-align: left; margin: 6px 0;"><input type="radio" name="promoteRoster" value="reset" checked style="width: auto; margin-top: 4px;"><span>クラス替えがある。名簿は空にして、新しい名簿を入れます。</span></label>
+            <label class="chart-opt" style="display: flex; gap: 8px; align-items: flex-start; text-align: left; margin: 6px 0;"><input type="radio" name="promoteRoster" value="keep" style="width: auto; margin-top: 4px;"><span>クラス替えがない。名簿はそのまま引き継ぎます。</span></label>
+            <label class="chart-opt" style="display: flex; gap: 8px; align-items: flex-start; text-align: left; margin: 10px 0 4px;"><input type="checkbox" id="promoteArchiveOld" checked style="width: auto; margin-top: 4px;"><span>前のクラスを、「去年度のクラス」にまとめます。</span></label>
+            <p class="config-note" data-keep="1">どちらも、新しいクラスの記録は、まっさらから始まります。席の履歴、指名の記録、統計の保存は、前のクラスに残ります。お休みの印と、指名から外す設定は、外します。座席の列数と行数、班の設定は、引き継ぎます。「クラス替えがある」を選ぶと、離す設定、近くに置く設定、班の手動の色分けも消えます。離す設定と近くに置く設定は、クラスごとに分けて持っていないので、前のクラスに戻っても、消えたままです。</p>
+            <div class="modal-btn-row">
+                <button onclick="closePromoteModal()" class="btn-secondary">キャンセル</button>
+                <button onclick="confirmPromote()" class="btn-connect-mini" id="btnPromoteGo">🎓 進級させる</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h4 style="color: #f43f5e; border-bottom-color: rgba(244, 63, 94, 0.2);">⚠️ 削除確認</h4>
+            <p id="deleteModalMessage" style="font-size: 14px; margin: 15px 0; color: #334155; line-height: 1.5;"></p>
+            <div class="modal-btn-row">
+                <button onclick="closeDeleteModal()" class="btn-secondary">キャンセル</button>
+                <button onclick="confirmDeletePresetAction()" class="btn-delete">削除する</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="secretModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h4>🤫 秘密の指定席コマンド</h4>
+            <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 16px; line-height: 1.5;">
+                座席 <span id="secretTargetLabel" style="font-size: 15px; color: var(--text-main);"></span> にこっそり座らせたい生徒の「名前」または「番号」を入力してください。
+            </p>
+            <input type="text" id="secretStudentInput" placeholder="例: 15 または 田中">
+            <div class="modal-btn-row">
+                <button onclick="closeSecretModal()" class="btn-secondary">キャンセル</button>
+                <button onclick="applySecretFromModal()" class="btn-load">こっそりセット</button>
+            </div>
+        </div>
+    </div>
+
+    <div data-plugin="animextra" id="galleryDock" class="gallery-dock" role="region" aria-label="一覧" hidden></div>
+    <script src="script.js"></script>
+    <script src="changelog.js"></script>
+    <script src="plugins/ui-parts.js"></script>
+    <script src="plugins/settings-menu.js"></script>
+    <script src="plugins/appearance.js"></script>
+    <script src="plugins/seat-style.js"></script>
+    <script src="plugins/sound.js"></script>
+    <script src="plugins/lock.js"></script>
+    <script src="plugins/backup.js"></script>
+    <script src="plugins/work-state.js"></script>
+    <script src="plugins/class-records.js"></script>
+    <script src="plugins/class-presets.js"></script>
+    <script src="plugins/roster-io.js"></script>
+    <script src="plugins/spreadsheet.js"></script>
+    <script src="plugins/seat-layout.js"></script>
+    <script src="plugins/groups.js"></script>
+    <script src="plugins/seat-rules.js"></script>
+    <script src="plugins/seat-render.js"></script>
+    <script src="plugins/seat-modal.js"></script>
+    <script src="plugins/seat-edit.js"></script>
+    <script src="plugins/shuffle-engine.js"></script>
+    <script src="plugins/shuffle-anim.js"></script>
+    <script src="plugins/nomination.js"></script>
+    <script src="plugins/stats.js"></script>
+    <script src="plugins/calc.js"></script>
+    <script src="plugins/music.js"></script>
+    <script src="plugins/term.js"></script>
+    <script src="plugins/announce.js"></script>
+    <script src="plugins/print.js"></script>
+    <script src="plugins/preview.js"></script>
+    <script src="plugins/absent.js"></script>
+    <script src="plugins/reasons.js"></script>
+    <script src="plugins/roster.js"></script>
+    <script src="plugins/softkeypad.js"></script>
+    <script src="plugins/seatcheck.js"></script>
+    <script src="plugins/compare.js"></script>
+    <script src="plugins/history.js"></script>
+    <script src="plugins/furigana.js"></script>
+    <script src="plugins/yaocho.js"></script>
+    <script src="plugins/roulette.js"></script>
+    <script src="plugins/updateinfo.js"></script>
+    <script src="plugins/animextra.js"></script>
+    <script src="plugins/cloud.js"></script>
+    <script src="plugins/share.js"></script>
+    <script src="plugins/seatnote.js"></script>
+    <script src="plugins/luckbank.js"></script>
+    <script src="plugins/roomlayout.js"></script>
+    <script src="plugins/envelope.js"></script>
+    <script src="plugins/seatjourney.js"></script>
+    <script src="plugins/seatskin.js"></script>
+    <script src="plugins/fortune.js"></script>
+    <script src="plugins/timer.js"></script>
+    <script src="plugins/program-timer.js"></script>
+    <script src="plugins/plugin-presets.js"></script>
+    <script src="plugins/nomination-balance.js"></script>
+    <script src="plugins/seat-fairness.js"></script>
+    <script src="plugins/diagnostics.js"></script>
+    <script src="plugins/settings-search.js"></script>
+    <script src="plugins/plugin-menu.js"></script>
+    <script src="plugins/settings-extras.js"></script>
+    <script src="plugins/menu-groups.js"></script>
+    <script src="plugins/display-scale.js"></script>
+    <script src="plugins/second-screen.js"></script>
+    <script src="plugins/seat-export.js"></script>
+    <script src="plugins/schedule.js"></script>
+    <script src="plugins/seat-wishes.js"></script>
+    <script src="plugins/ui-styles.js"></script>
+    <script src="plugins/tour.js"></script>
+</body>
+</html>
