@@ -130,10 +130,11 @@ body.ui-style-a #timerPanel .uis-rb-g:last-child { padding-right: 0; }
 body.ui-style-a #timerPanel .timer-section-label { order: 9; margin: auto 0 0; padding-top: 2px; text-align: center; font-size: 12px; white-space: nowrap; }
 body.ui-style-a #timerPanel .uis-rb-main { display: grid; grid-template-columns: 1fr auto; grid-auto-rows: min-content; align-content: start; gap: 8px; width: 276px; }
 body.ui-style-a #timerPanel .uis-rb-main > * { grid-column: 1 / -1; margin: 0; }
-body.ui-style-a #timerPanel .uis-rb-main .timer-panel-header { grid-column: 2; grid-row: 4; margin: 0; }
-body.ui-style-a #timerPanel .uis-rb-main #timerModeSwitchBtn { grid-column: 1; grid-row: 4; margin: 0 !important; padding: 8px 4px !important; font-size: 12px; white-space: nowrap; }
+body.ui-style-a #timerPanel .uis-rb-main .timer-panel-header { grid-column: 1 / -1; grid-row: 5; margin: 0; }
+body.ui-style-a #timerPanel .uis-rb-main .timer-panel-header > button { flex: 1; white-space: nowrap; }
+body.ui-style-a #timerPanel .uis-rb-main #timerModeSwitchBtn { grid-column: 1 / -1; grid-row: 4; margin: 0 !important; padding: 8px 4px !important; font-size: 12px; white-space: nowrap; }
 body.ui-style-a #timerPanel .uis-rb-main #timerIcon { display: none; }
-body.ui-style-a #timerPanel .uis-rb-main .btn-giant-mode { padding: 8px 12px !important; font-size: 13px !important; }
+body.ui-style-a #timerPanel .uis-rb-main .btn-giant-mode, .btn-clock-mode { padding: 8px 12px !important; font-size: 13px !important; }
 body.ui-style-a #timerPanel #timerDisplay { font-size: 36px; line-height: 1.1; margin: 0; text-align: left; }
 body.ui-style-a #timerPanel .timer-mini-bar { margin: 0; }
 body.ui-style-a #timerPanel .timer-btn-row button { padding: 9px 0 !important; }
@@ -158,10 +159,11 @@ body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #time
 body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .timer-section-label { order: 9; margin: auto 0 0; padding-top: 2px; text-align: center; font-size: 12px; white-space: nowrap; }
 body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .uis-rb-main { display: grid; grid-template-columns: 1fr auto; grid-auto-rows: min-content; align-content: start; gap: 8px; width: 276px; }
 body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .uis-rb-main > * { grid-column: 1 / -1; margin: 0; }
-body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .uis-rb-main .timer-panel-header { grid-column: 2; grid-row: 4; margin: 0; }
-body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .uis-rb-main #timerModeSwitchBtn { grid-column: 1; grid-row: 4; margin: 0 !important; padding: 8px 4px !important; font-size: 12px; white-space: nowrap; }
+body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .uis-rb-main .timer-panel-header { grid-column: 1 / -1; grid-row: 5; margin: 0; }
+body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .uis-rb-main .timer-panel-header > button { flex: 1; white-space: nowrap; }
+body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .uis-rb-main #timerModeSwitchBtn { grid-column: 1 / -1; grid-row: 4; margin: 0 !important; padding: 8px 4px !important; font-size: 12px; white-space: nowrap; }
 body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .uis-rb-main #timerIcon { display: none; }
-body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .uis-rb-main .btn-giant-mode { padding: 8px 12px !important; font-size: 13px !important; }
+body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .uis-rb-main .btn-giant-mode, .btn-clock-mode { padding: 8px 12px !important; font-size: 13px !important; }
 body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel #timerDisplay { font-size: 36px; line-height: 1.1; margin: 0; text-align: left; }
 body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .timer-mini-bar { margin: 0; }
 body.ui-style-b.ui-style-b:not(.blackboard-active):not(.nomination-active) #timerPanel .timer-btn-row button { padding: 9px 0 !important; }
@@ -506,6 +508,7 @@ const UIS_BTN_ICO = [
     { sel: "#stepNextBtn", map: [[/./, "next"]] },
     { sel: ".btn-close-giant", map: [[/./, "close"]] },
     { sel: "#giantClockDisplay", at: /🕒\s*/, map: [[/./, "clock"]] },
+    { sel: ".btn-clock-mode", map: [[/./, "clock"]] },
     { sel: "#giantTimeOverlay h4", map: [[/ラップ/, "flag"]] },
     { sel: "#giantEndTimeDisplay, #compactEndTimeDisplay", at: /🏁\s*/, map: [[/./, "flag"]] },
     { sel: "#btnSpinRoulette", map: [[/./, "spin"]] },
@@ -616,6 +619,7 @@ function uisPicoCss() {
     const ic = k => `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'>${UIS_PICO[k]}</svg>")`;
     let c = `body:is(.ui-style-a, .ui-style-b) .pico { font-size: 0; }\nbody:is(.ui-style-a, .ui-style-b) .pico::before { content: ""; display: inline-block; width: 16px; height: 16px; margin-right: 2px; vertical-align: -3px; background: currentColor; }\n`;
     c += `body:is(.ui-style-a, .ui-style-b) #giantTimeOverlay .pico::before { width: 30px; height: 30px; margin-right: 8px; vertical-align: -5px; }\nbody:is(.ui-style-a, .ui-style-b) #giantTimeOverlay #giantClockDisplay .pico::before { width: 56px; height: 56px; margin-right: 14px; vertical-align: 14px; }\nbody:is(.ui-style-a, .ui-style-b) #giantTimeOverlay .btn-close-giant .pico::before { width: 18px; height: 18px; margin-right: 4px; vertical-align: -3px; }\nbody:is(.ui-style-a, .ui-style-b) #giantTimeOverlay #giantEndTimeDisplay .pico::before { width: 44px; height: 44px; margin-right: 12px; vertical-align: -2px; }\nbody:is(.ui-style-a, .ui-style-b) #giantTimeOverlay h4 .pico::before { width: 20px; height: 20px; vertical-align: -3px; }\nbody:is(.ui-style-a, .ui-style-b) #rouletteOverlay .pico::before { width: 22px; height: 22px; margin-right: 6px; vertical-align: -4px; }\n`;
+    c += `body:is(.ui-style-a, .ui-style-b) #giantTimeOverlay.clock-only #giantClockDisplay .pico::before { width: calc(var(--gu) * 9); height: calc(var(--gu) * 9); margin-right: calc(var(--gu) * 1.5); vertical-align: calc(var(--gu) * 0.6); }\n`;
     c += `body:is(.ui-style-a, .ui-style-b) .pico[data-uis-head]::before { width: 18px; height: 18px; margin-right: 6px; vertical-align: -3px; }\n`;
     c += `body:is(.ui-style-a, .ui-style-b) .toast > .pico::before { width: 14px; height: 14px; margin: 0; vertical-align: 0; }\n`;
     c += `body:is(.ui-style-a, .ui-style-b) #btnSpinRoulette .pico::before { width: 26px; height: 26px; margin-right: 6px; vertical-align: -5px; }\n`;
@@ -1788,7 +1792,7 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.20",
+    version: "3.21",
     description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",

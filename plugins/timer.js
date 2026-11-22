@@ -224,8 +224,11 @@ function updateClock() {
 
     if (clockEl) clockEl.innerHTML = `🕒 ${dateStr} ${timeStr}`; 
     if (giantClockEl) {
-        giantClockEl.style.marginTop = "-5vh"; 
-        if (timerMilliseconds > 0 || isStopwatchMode) {
+        const clockOnly = !!$id("giantTimeOverlay") && $id("giantTimeOverlay").classList.contains("clock-only");
+        giantClockEl.style.marginTop = clockOnly ? "0" : "-5vh"; 
+        if (clockOnly) {
+            giantClockEl.innerHTML = `<span style="font-size: 0.4em; opacity: 0.9;">${dateStr}</span><br>🕒 ${timeStr}`;
+        } else if (timerMilliseconds > 0 || isStopwatchMode) {
             giantClockEl.innerHTML = `🕒 ${timeStr}`;
         } else {
             giantClockEl.innerHTML = `<span style="font-size: 0.45em; opacity: 0.9;">${dateStr}</span><br>🕒 ${timeStr}`;
@@ -543,6 +546,7 @@ function toggleGiantTimeMode(mode) {
 
     if (!overlay) return;
     overlay.style.display = "flex";
+    overlay.classList.toggle("clock-only", mode === 'clock');
     if (panel) panel.style.display = "none"; 
 
     if (mode === 'clock') {
@@ -564,7 +568,7 @@ function closeGiantTimeMode() {
     const overlay = $id("giantTimeOverlay");
     if (overlay) {
         overlay.style.display = "none";
-        overlay.classList.remove("focus-active", "focus-peek");
+        overlay.classList.remove("focus-active", "focus-peek", "clock-only");
         clearTimeout(giantPeekTimer);
     }
 }
@@ -1062,7 +1066,7 @@ function updateTimerDisplay(fromTick) {
 SekigaeApp.registerPlugin({
     id: "timer",
     name: "タイマーとアラーム",
-    version: "1.0",
+    version: "1.1",
     description: "タイマー、ストップウォッチ、ステップタイマー、アラームを使えます。",
     stubs: ["applyTimerVisualSettings", "handleCustomTimeSet", "loadStepSets", "renderTimerButtons", "setTimerToClockTime", "updateAlarmSettings", "updateClock", "updateTimerDisplay", "updateWarningPct"]
 });

@@ -99,7 +99,7 @@ body.no-animation * { animation-duration: 0s !important; transition-duration: 0s
 #timerPanel { display: none; position: absolute; top: 45px; right: 0; background: var(--card-bg); backdrop-filter: blur(15px); border: 1px solid var(--seat-border); padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); width: 280px; color: var(--text-main); max-height: calc(100vh - 70px); overflow-y: auto; }
 .timer-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .timer-panel-header span { font-size: 20px; }
-.btn-giant-mode { padding: 4px 8px !important; font-size: 12px !important; border-radius: 8px !important; margin: 0 !important; width: auto !important; }
+.btn-giant-mode, .btn-clock-mode { padding: 4px 8px !important; font-size: 12px !important; border-radius: 8px !important; margin: 0 !important; width: auto !important; }
 #timerDisplay { font-size: 40px; font-weight: 400; margin: 10px 0; font-variant-numeric: tabular-nums; color: var(--text-main); }
 .timer-btn-row { display: flex; gap: 8px; justify-content: center; }
 .timer-btn-row button { flex: 1; padding: 10px 0 !important; border-radius: 8px !important; margin: 0 !important; font-size: 14px; }
@@ -1472,7 +1472,7 @@ body.theme-dark .config-fav h3, body.theme-blackboard .config-fav h3, body.theme
 
 /* ロック中の全画面表示 */
 .timer-panel-header { gap: 8px; }
-.timer-panel-header .btn-giant-mode { white-space: nowrap; }
+.timer-panel-header .btn-giant-mode, .timer-panel-header .btn-clock-mode { white-space: nowrap; }
 body.app-locked:not(.lock-allow-fullscreen) #btnTopFullscreen { display: none !important; }
 
 /* 名簿を作る・直す */
