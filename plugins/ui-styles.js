@@ -92,8 +92,10 @@ ${S} #timerPanel button { text-align: center; justify-content: center; }
 ${S} #timerPanel button { background: ${t.soft} !important; color: ${t.keyText} !important; border: 1px solid ${t.line} !important; border-radius: 8px !important; box-shadow: none !important; font-weight: 700 !important; }
 ${S} #timerPanel button:hover { background: ${t.soft2} !important; }
 ${S} #timerPanel button:focus-visible { outline: 3px solid ${t.focus}; }
-${S} #timerPanel .btn-connect { background: ${k === "a" ? "color-mix(in srgb, var(--accent-color) 86%, #000)" : t.acc} !important; color: ${t.accText} !important; border-color: ${k === "a" ? "color-mix(in srgb, var(--accent-color) 86%, #000)" : t.acc} !important; }
-${S} #timerPanel .btn-connect:hover { filter: brightness(1.08); }
+${S} #timerPanel .btn-connect { background: ${k === "a" ? "var(--uis-acc-btn, var(--accent-color))" : t.acc} !important; color: ${t.accText} !important; border-color: ${k === "a" ? "var(--uis-acc-btn, var(--accent-color))" : t.acc} !important; }
+${S} #timerPanel button.btn-connect:hover { background: ${k === "a" ? "var(--uis-acc-btn, var(--accent-color))" : t.acc} !important; filter: brightness(1.12); }
+${S} #timerPanel button.btn-delete:hover { background: ${t.del} !important; filter: brightness(0.94); }
+${S} #timerPanel button.mode-switch-btn:hover { background: ${t.spec} !important; filter: brightness(0.94); }
 ${S} #timerPanel .btn-delete { background: ${t.del} !important; color: ${t.delText} !important; border-color: transparent !important; }
 ${S} #timerPanel .mode-switch-btn { background: ${t.spec} !important; color: ${k === "a" ? "color-mix(in srgb, " + t.specText + " 55%, var(--text-main))" : t.specText} !important; border: 1px solid ${t.line} !important; }
 ${S} #timerPanel .timer-section-label { color: ${lab} !important; font-weight: 700; }
@@ -1285,7 +1287,10 @@ function uisAccent() {
         let ink = acc, n = 0;
         while (uisContrast(ink, tint) < 4.5 && n++ < 14) ink = uisMix(ink, text, 0.12);
         const d = uisMix(acc, [0, 0, 0], 0.22);
+        let ab = acc, m = 0;
+        while (uisContrast(ab, on) < 4.6 && m++ < 12) ab = uisMix(ab, on === white ? [0, 0, 0] : white, 0.08);
         const st = b.style;
+        st.setProperty("--uis-acc-btn", uisHex(ab));
         st.setProperty("--uis-on-accent", uisHex(on));
         st.setProperty("--uis-ink", uisHex(ink));
         st.setProperty("--uis-accent-d", uisHex(d));
@@ -1802,7 +1807,7 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.24",
+    version: "3.25",
     description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",
