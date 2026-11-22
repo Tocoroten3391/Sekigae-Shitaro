@@ -1,7 +1,8 @@
 # タグ（v4.53.4 など）を付けると、次を自動で行います。
 #   1. zip を作って、Releases に公開する（説明は changelog.js の、その版の本文）
 #   2. Sekigae-Shitaro_Updates-info の changelog.json を、changelog.js の履歴で更新する
-# 何度でも、やり直せます（同じタグで、再実行しても壊れません）。
+# タグを付けなくても、Actions の「Run workflow」を押すと、script.js の版で、同じことを行います。
+# 何度でも、やり直せます（再実行しても壊れません）。
 name: リリースと更新情報
 
 on:
@@ -17,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
-      TAG: ${{ github.ref_name }}
+      TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
       HAS_TOKEN: ${{ secrets.CHANGELOG_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v4
@@ -26,8 +27,8 @@ jobs:
         run: |
           node - <<'EOF_JS'
           const fs = require("fs"), vm = require("vm");
-          const ver = process.env.TAG.replace(/^v/i, "");
           const app = fs.readFileSync("script.js", "utf8").match(/const APP_VERSION = "([^"]+)"/)[1];
+          const ver = process.env.TAG ? process.env.TAG.replace(/^v/i, "") : app;
           if (app !== ver) { console.error("タグ " + ver + " と、script.js の版 " + app + " が違います"); process.exit(1); }
           const ctx = {};
           vm.runInNewContext(fs.readFileSync("changelog.js", "utf8").replace(/^const /m, "var "), ctx);
@@ -36,6 +37,7 @@ jobs:
           if (!e) { console.error("changelog.js に Ver." + ver + " がありません"); process.exit(1); }
           fs.writeFileSync("/tmp/notes.txt", e.notes + "\n");
           fs.writeFileSync("/tmp/ver.txt", ver);
+          fs.writeFileSync("/tmp/tag.txt", "v" + ver);
           fs.writeFileSync("/tmp/all.json", JSON.stringify(list, null, 2) + "\n");
           EOF_JS
 
@@ -47,12 +49,12 @@ jobs:
 
       - name: Releases に公開する
         run: |
-          VER=$(cat /tmp/ver.txt)
+          VER=$(cat /tmp/ver.txt); TAG=$(cat /tmp/tag.txt)
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "sekigae_${VER}.zip" --clobber
             gh release edit "$TAG" --title "Ver.${VER}" --notes-file /tmp/notes.txt
           else
-            gh release create "$TAG" "sekigae_${VER}.zip" --title "Ver.${VER}" --notes-file /tmp/notes.txt
+            gh release create "$TAG" "sekigae_${VER}.zip" --target "$GITHUB_SHA" --title "Ver.${VER}" --notes-file /tmp/notes.txt
           fi
 
       - name: 更新情報のリポジトリを取得
@@ -72,7 +74,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add changelog.json
           git diff --cached --quiet && echo "変更なし" && exit 0
-          git commit -m "更新情報: ${TAG}"
+          git commit -m "更新情報: $(cat /tmp/tag.txt)"
           git push
 
       - name: トークン未設定の知らせ
