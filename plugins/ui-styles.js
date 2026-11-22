@@ -275,6 +275,13 @@ ${mb}:hover { background: var(--uis-b-hover-bg) !important; }
 ${mb}.btn-main, ${mb}.btn-save, ${mb}.btn-connect, ${mb}.btn-connect-mini, ${mb}.btn-nominate, ${mb}.btn-unlock-mini, ${mb}.plugin-fix { background: var(--uis-b-on-bg) !important; color: var(--uis-b-on-fg) !important; border-color: var(--uis-b-on-bg) !important; }
 ${mb}.btn-main:hover, ${mb}.btn-save:hover, ${mb}.btn-connect:hover, ${mb}.btn-connect-mini:hover, ${mb}.btn-nominate:hover, ${mb}.plugin-fix:hover { background: var(--uis-b-on-bg) !important; filter: brightness(1.1); }
 ${mb}.btn-delete, ${mb}.btn-delete-mini { background: ${t.del} !important; color: ${t.delText} !important; border-color: transparent !important; }
+${S} #configContainer :is(button[onclick="savePreset()"], button[onclick="openStatsModal()"], #connectGasBtn, #saveSpreadsheetBtn) { background: var(--uis-b-on-bg) !important; color: var(--uis-b-on-fg) !important; border: 1px solid var(--uis-b-on-bg) !important; box-shadow: none !important; font-weight: 700; }
+${S} #configContainer :is(button[onclick="savePreset()"], button[onclick="openStatsModal()"], #connectGasBtn, #saveSpreadsheetBtn):hover { background: var(--uis-b-on-bg) !important; color: var(--uis-b-on-fg) !important; filter: brightness(1.1); }
+${S} #configContainer :is(#connectOnlyGasBtn, #loadSpreadsheetBtn, button[onclick="downloadAsCSV()"]) { background: var(--uis-b-bg) !important; color: var(--uis-b-fg) !important; border: 1px solid var(--uis-b-line) !important; box-shadow: none !important; font-weight: 700; }
+${S} #configContainer :is(#connectOnlyGasBtn, #loadSpreadsheetBtn, button[onclick="downloadAsCSV()"]):hover { background: var(--uis-b-hover-bg) !important; color: var(--uis-b-fg) !important; border-color: var(--uis-b-hover-line) !important; }
+${S} #configContainer :is(#saveSpreadsheetBtn, #loadSpreadsheetBtn) { white-space: nowrap; padding-left: 10px !important; padding-right: 10px !important; }
+${S} #configContainer button[onclick="deletePreset()"] { background: ${t.del} !important; color: ${t.delText} !important; border: 1px solid transparent !important; box-shadow: none !important; font-weight: 700; }
+${S} #configContainer button[onclick="deletePreset()"]:hover { background: ${t.del} !important; color: ${t.delText} !important; filter: brightness(0.95); }
 ${mb}:focus-visible { outline: 3px solid ${t.focus}; outline-offset: 1px; }
 ${S} :is(button, a[href], input, select, textarea, summary, [tabindex]:not([tabindex="-1"]), .pop-item):focus-visible { outline: 3px solid ${t.focus}; outline-offset: 2px; }
 ${S} input:focus-visible + .slider, ${S} input:focus-visible + .switch-slider { outline: 3px solid ${t.focus}; outline-offset: 2px; }
@@ -1795,7 +1802,7 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.22",
+    version: "3.23",
     description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",
