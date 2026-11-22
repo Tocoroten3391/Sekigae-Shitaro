@@ -28,7 +28,7 @@ function uisToolsCss() {
             fn: "var(--uis-soft2)", op: "var(--uis-tint)", opText: "var(--uis-ink)", eq: "var(--accent-color)", eqText: "var(--uis-on-accent)",
             soft: "var(--uis-soft)", soft2: "var(--uis-soft2)", spec: "var(--uis-tint)", specText: "var(--uis-ink)",
             acc: "var(--accent-color)", accText: "var(--uis-on-accent)", line: "var(--uis-line2)", err: "#DC2626", focus: "var(--accent-color)",
-            del: "color-mix(in srgb, #DC2626 14%, var(--card-bg))", delText: "#B91C1C"
+            del: "color-mix(in srgb, #DC2626 14%, var(--card-bg))", delText: "color-mix(in srgb, #B91C1C 45%, var(--text-main))"
         },
         b: {
             S: "body.ui-style-b.ui-style-b",
@@ -92,10 +92,10 @@ ${S} #timerPanel button { text-align: center; justify-content: center; }
 ${S} #timerPanel button { background: ${t.soft} !important; color: ${t.keyText} !important; border: 1px solid ${t.line} !important; border-radius: 8px !important; box-shadow: none !important; font-weight: 700 !important; }
 ${S} #timerPanel button:hover { background: ${t.soft2} !important; }
 ${S} #timerPanel button:focus-visible { outline: 3px solid ${t.focus}; }
-${S} #timerPanel .btn-connect { background: ${t.acc} !important; color: ${t.accText} !important; border-color: ${t.acc} !important; }
+${S} #timerPanel .btn-connect { background: ${k === "a" ? "color-mix(in srgb, var(--accent-color) 86%, #000)" : t.acc} !important; color: ${t.accText} !important; border-color: ${k === "a" ? "color-mix(in srgb, var(--accent-color) 86%, #000)" : t.acc} !important; }
 ${S} #timerPanel .btn-connect:hover { filter: brightness(1.08); }
 ${S} #timerPanel .btn-delete { background: ${t.del} !important; color: ${t.delText} !important; border-color: transparent !important; }
-${S} #timerPanel .mode-switch-btn { background: ${t.spec} !important; color: ${t.specText} !important; border: 1px solid ${t.line} !important; }
+${S} #timerPanel .mode-switch-btn { background: ${t.spec} !important; color: ${k === "a" ? "color-mix(in srgb, " + t.specText + " 55%, var(--text-main))" : t.specText} !important; border: 1px solid ${t.line} !important; }
 ${S} #timerPanel .timer-section-label { color: ${lab} !important; font-weight: 700; }
 ${S} #timerPanel input, ${S} #timerPanel select { background: ${t.surf}; color: ${t.text}; border: 1px solid ${t.line} !important; border-radius: 8px; }
 ${S} #timerPanel input:focus, ${S} #timerPanel select:focus { outline: 2px solid ${t.focus}; outline-offset: 0; }
@@ -1802,7 +1802,7 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.23",
+    version: "3.24",
     description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",
