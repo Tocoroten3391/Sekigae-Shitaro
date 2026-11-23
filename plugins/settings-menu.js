@@ -371,6 +371,8 @@ function syncOfflineButtons() {
     if (saveBtn) saveBtn.disabled = isOffline; 
     if (loadBtn) loadBtn.disabled = isOffline; 
     if (connectBtn) connectBtn.disabled = isOffline; 
+    const histBtn = document.querySelector('button[onclick*="openHistoryModal"]');
+    if (histBtn) histBtn.disabled = isOffline;
 }
 
 const GROUP_COLOR_DEFAULTS = { 1: "#ef4444", 2: "#f97316", 3: "#eab308", 4: "#22c55e", 5: "#06b6d4", 6: "#3b82f6", 7: "#8b5cf6", 8: "#ec4899" };
@@ -379,7 +381,7 @@ const GROUP_COLOR_DEFAULTS = { 1: "#ef4444", 2: "#f97316", 3: "#eab308", 4: "#22
 SekigaeApp.registerPlugin({
     id: "settings-menu",
     name: "設定メニュー",
-    version: "1.3",
+    version: "1.4",
     required: true,
     description: "設定メニューの開け閉め、さがす、拡大表示、使い方の検索、Enterキーでの決定です。",
     mount() {
