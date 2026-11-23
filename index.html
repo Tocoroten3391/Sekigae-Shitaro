@@ -183,6 +183,14 @@
         <div class="config-group-title" data-group="クラスと席">クラスと席</div>
         <div class="config-section config-section-roster" data-sec="class" data-group="クラスと席" data-kw="クラス 名簿 切り替え 保存 削除 プリセット 欠席 休み 今日の欠席者 1年A組">
             <h3>クラスと名簿</h3>
+            <div id="presetListTools" class="preset-list-tools" hidden>
+                <label for="presetSortSelect">並び順</label>
+                <select id="presetSortSelect" onchange="setPresetSortMode(this.value)" aria-label="クラスの並び順">
+                    <option value="recent">最近使った順</option>
+                    <option value="name">名前順</option>
+                    <option value="saved">登録した順</option>
+                </select>
+            </div>
             <div id="presetRadioContainer" class="preset-radio-list"></div>
             <div class="input-group-row">
                 <input type="text" id="presetNameInput" placeholder="例: 1年A組">
@@ -190,6 +198,10 @@
                     <button onclick="savePreset()" class="btn-connect-mini">保存</button>
                     <button onclick="deletePreset()" class="btn-delete-mini">削除</button>
                 </div>
+            </div>
+            <div class="preset-manage-row">
+                <button type="button" id="btnRenameClass" onclick="renameSelectedClass()" class="btn-secondary">名前を変える</button>
+                <button type="button" id="btnDuplicateClass" onclick="duplicateSelectedClass()" class="btn-secondary">複製する</button>
             </div>
             <button data-plugin="absent" onclick="openAbsentModal()" class="btn-secondary btn-tint-amber" style="margin-top: 10px; background-color: #d97706; color: white;">今日の欠席者をまとめて選ぶ</button>
         </div>

@@ -98,7 +98,7 @@ let favProxies = {}; // 目印 → 「よく使う設定」に出す写し
 
 let favRefreshTimer = null;
 
-const FAV_SKIP_BUTTONS = new Set(["animFavToggleBtn", "animFavClearBtn", "myAnimDeleteBtn", "btnRosterExportMenu", "btnPluginMenu", "btnConfigWide"]);
+const FAV_SKIP_BUTTONS = new Set(["animFavToggleBtn", "animFavClearBtn", "myAnimDeleteBtn", "btnRosterExportMenu", "btnPluginMenu", "btnConfigWide", "btnRenameClass", "btnDuplicateClass"]);
 
 function favButtonEligible(b) {
     if (b.classList.contains("fav-star") || b.classList.contains("config-section-toggle")) return false;

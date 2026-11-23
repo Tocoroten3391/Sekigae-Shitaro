@@ -1537,7 +1537,7 @@ body.theme-game { --check-mark: #06142e; }
 .music-auto input[type="checkbox"],
 .music-eq-on input[type="checkbox"],
 .music-alb-over input[type="checkbox"],
-.music-alb-row input[type="checkbox"] {
+.music-alb-row input[type="checkbox"], .preset-dialog-check input[type="checkbox"] {
     -webkit-appearance: none; appearance: none;
     flex: 0 0 auto; box-sizing: border-box;
     width: 20px !important; height: 20px !important; min-width: 20px;
@@ -1553,7 +1553,7 @@ body.theme-game { --check-mark: #06142e; }
 .music-auto input[type="checkbox"]::before,
 .music-eq-on input[type="checkbox"]::before,
 .music-alb-over input[type="checkbox"]::before,
-.music-alb-row input[type="checkbox"]::before {
+.music-alb-row input[type="checkbox"]::before, .preset-dialog-check input[type="checkbox"]::before {
     content: ""; width: 10px; height: 5px;
     border-left: 3px solid var(--check-mark); border-bottom: 3px solid var(--check-mark);
     transform: translateY(-1px) rotate(-45deg) scale(0);
@@ -1565,14 +1565,14 @@ body.theme-game { --check-mark: #06142e; }
 .music-auto input[type="checkbox"]:checked,
 .music-eq-on input[type="checkbox"]:checked,
 .music-alb-over input[type="checkbox"]:checked,
-.music-alb-row input[type="checkbox"]:checked { background: var(--accent-color); border-color: var(--accent-color); }
+.music-alb-row input[type="checkbox"]:checked, .preset-dialog-check input[type="checkbox"]:checked { background: var(--accent-color); border-color: var(--accent-color); }
 .chart-opt input[type="checkbox"]:checked::before,
 .rm-check input[type="checkbox"]:checked::before,
 .nominate-exclude-item input[type="checkbox"]:checked::before,
 .music-auto input[type="checkbox"]:checked::before,
 .music-eq-on input[type="checkbox"]:checked::before,
 .music-alb-over input[type="checkbox"]:checked::before,
-.music-alb-row input[type="checkbox"]:checked::before { transform: translateY(-1px) rotate(-45deg) scale(1); }
+.music-alb-row input[type="checkbox"]:checked::before, .preset-dialog-check input[type="checkbox"]:checked::before { transform: translateY(-1px) rotate(-45deg) scale(1); }
 .chart-opt:hover input[type="checkbox"]:not(:checked),
 .rm-check:hover input[type="checkbox"]:not(:checked),
 .nominate-exclude-item:hover input[type="checkbox"]:not(:checked),
@@ -1586,7 +1586,7 @@ body.theme-game { --check-mark: #06142e; }
 .music-auto input[type="checkbox"]:focus-visible,
 .music-eq-on input[type="checkbox"]:focus-visible,
 .music-alb-over input[type="checkbox"]:focus-visible,
-.music-alb-row input[type="checkbox"]:focus-visible { outline: 3px solid var(--accent-color); outline-offset: 2px; }
+.music-alb-row input[type="checkbox"]:focus-visible, .preset-dialog-check input[type="checkbox"]:focus-visible { outline: 3px solid var(--accent-color); outline-offset: 2px; }
 .chart-opt input[type="checkbox"]:disabled, .music-alb-row input[type="checkbox"]:disabled { opacity: 0.45; cursor: not-allowed; }
 /* 押せる範囲を広げる */
 .chart-opt, .rm-check, .nominate-exclude-item { min-height: 32px; padding: 4px 6px; border-radius: 8px; gap: 8px; }
@@ -2241,3 +2241,36 @@ body.theme-dark .plugin-deps-warn-row .plugin-deps-warn, body.theme-blackboard .
     .info-tip { position: relative; }
     .info-tip::before { content: ""; position: absolute; top: -12px; right: -12px; bottom: -12px; left: -12px; }
 }
+
+/* ===== クラス一覧：カード型（人数・列×行・最後に使った日・固定） ===== */
+.preset-list-tools { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin: 4px 0 2px; font-size: 12px; font-weight: 700; color: var(--text-sub); }
+.preset-list-tools[hidden] { display: none; }
+.preset-list-tools select { width: auto; min-width: 130px; padding: 4px 8px; font-size: 13px; margin: 0; }
+.preset-radio-list { max-height: 300px; }
+.preset-card { position: relative; align-items: center; gap: 12px; padding: 10px 12px; font-size: 13px; }
+.preset-card > input[type="radio"] { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; margin: 0; }
+.preset-card .pc-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.preset-card .pc-top { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.preset-card .pc-name { font-size: 15px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.preset-card .pc-now { display: none; flex: none; font-size: 11px; font-weight: 800; padding: 1px 8px; border-radius: 999px; background: var(--accent-color); color: #fff; }
+.preset-card.is-current { border-color: var(--accent-color); box-shadow: inset 0 0 0 1px var(--accent-color); }
+.preset-card.is-current .pc-now { display: inline-block; }
+.preset-card .pc-meta { font-size: 12px; font-weight: 700; color: var(--text-sub); }
+.preset-card .pc-last { font-size: 11px; font-weight: 600; color: var(--text-sub); }
+.preset-card .pc-pin, .config-container .preset-card .pc-pin { flex: none; width: 36px !important; height: 36px !important; min-width: 36px !important; min-height: 36px !important; max-width: 36px; padding: 0 !important; margin: 0 !important; line-height: 1; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; min-width: 36px; padding: 0; margin: 0; border-radius: 50%; border: 1px solid var(--seat-border); background: transparent; color: var(--text-sub); font-size: 16px; cursor: pointer; box-shadow: none; }
+.preset-card .pc-pin:hover { border-color: var(--accent-color); color: var(--accent-color); }
+.preset-card .pc-pin[aria-pressed="true"] { background: var(--accent-color); border-color: var(--accent-color); color: #fff; }
+.preset-card:has(> input:focus-visible) { outline: 3px solid var(--accent-color); outline-offset: 1px; }
+.preset-card.is-pinned { border-style: solid; }
+.preset-manage-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.preset-manage-row button { margin: 0; }
+.preset-dialog { max-width: 420px; }
+.preset-dialog-msg { font-size: 14px; margin: 15px 0; color: var(--text-main); line-height: 1.6; }
+.preset-dialog-input { width: 100%; box-sizing: border-box; margin-bottom: 10px; }
+.preset-dialog-check { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; margin: 4px 0 12px; color: var(--text-main); cursor: pointer; }
+.preset-dialog-btns { flex-wrap: wrap; justify-content: flex-end; }
+.preset-list-tools label { white-space: nowrap; margin: 0; }
+.preset-list-tools select { flex: 1 1 auto; max-width: 200px; }
+.preset-dialog { max-width: 460px; width: calc(100vw - 32px); }
+.preset-dialog-btns { gap: 8px; }
+.modal-btn-row.preset-dialog-btns button { padding: 10px 14px !important; }
