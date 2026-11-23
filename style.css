@@ -1533,7 +1533,11 @@ body.theme-blackboard { --check-mark: #1d3a2e; }
 body.theme-game { --check-mark: #06142e; }
 .chart-opt input[type="checkbox"],
 .rm-check input[type="checkbox"],
-.nominate-exclude-item input[type="checkbox"] {
+.nominate-exclude-item input[type="checkbox"],
+.music-auto input[type="checkbox"],
+.music-eq-on input[type="checkbox"],
+.music-alb-over input[type="checkbox"],
+.music-alb-row input[type="checkbox"] {
     -webkit-appearance: none; appearance: none;
     flex: 0 0 auto; box-sizing: border-box;
     width: 20px !important; height: 20px !important; min-width: 20px;
@@ -1545,7 +1549,11 @@ body.theme-game { --check-mark: #06142e; }
 }
 .chart-opt input[type="checkbox"]::before,
 .rm-check input[type="checkbox"]::before,
-.nominate-exclude-item input[type="checkbox"]::before {
+.nominate-exclude-item input[type="checkbox"]::before,
+.music-auto input[type="checkbox"]::before,
+.music-eq-on input[type="checkbox"]::before,
+.music-alb-over input[type="checkbox"]::before,
+.music-alb-row input[type="checkbox"]::before {
     content: ""; width: 10px; height: 5px;
     border-left: 3px solid var(--check-mark); border-bottom: 3px solid var(--check-mark);
     transform: translateY(-1px) rotate(-45deg) scale(0);
@@ -1553,17 +1561,33 @@ body.theme-game { --check-mark: #06142e; }
 }
 .chart-opt input[type="checkbox"]:checked,
 .rm-check input[type="checkbox"]:checked,
-.nominate-exclude-item input[type="checkbox"]:checked { background: var(--accent-color); border-color: var(--accent-color); }
+.nominate-exclude-item input[type="checkbox"]:checked,
+.music-auto input[type="checkbox"]:checked,
+.music-eq-on input[type="checkbox"]:checked,
+.music-alb-over input[type="checkbox"]:checked,
+.music-alb-row input[type="checkbox"]:checked { background: var(--accent-color); border-color: var(--accent-color); }
 .chart-opt input[type="checkbox"]:checked::before,
 .rm-check input[type="checkbox"]:checked::before,
-.nominate-exclude-item input[type="checkbox"]:checked::before { transform: translateY(-1px) rotate(-45deg) scale(1); }
+.nominate-exclude-item input[type="checkbox"]:checked::before,
+.music-auto input[type="checkbox"]:checked::before,
+.music-eq-on input[type="checkbox"]:checked::before,
+.music-alb-over input[type="checkbox"]:checked::before,
+.music-alb-row input[type="checkbox"]:checked::before { transform: translateY(-1px) rotate(-45deg) scale(1); }
 .chart-opt:hover input[type="checkbox"]:not(:checked),
 .rm-check:hover input[type="checkbox"]:not(:checked),
-.nominate-exclude-item:hover input[type="checkbox"]:not(:checked) { border-color: var(--accent-color); }
+.nominate-exclude-item:hover input[type="checkbox"]:not(:checked),
+.music-auto:hover input[type="checkbox"]:not(:checked),
+.music-eq-on:hover input[type="checkbox"]:not(:checked),
+.music-alb-over:hover input[type="checkbox"]:not(:checked),
+.music-alb-row:hover input[type="checkbox"]:not(:checked) { border-color: var(--accent-color); }
 .chart-opt input[type="checkbox"]:focus-visible,
 .rm-check input[type="checkbox"]:focus-visible,
-.nominate-exclude-item input[type="checkbox"]:focus-visible { outline: 3px solid var(--accent-color); outline-offset: 2px; }
-.chart-opt input[type="checkbox"]:disabled { opacity: 0.45; cursor: not-allowed; }
+.nominate-exclude-item input[type="checkbox"]:focus-visible,
+.music-auto input[type="checkbox"]:focus-visible,
+.music-eq-on input[type="checkbox"]:focus-visible,
+.music-alb-over input[type="checkbox"]:focus-visible,
+.music-alb-row input[type="checkbox"]:focus-visible { outline: 3px solid var(--accent-color); outline-offset: 2px; }
+.chart-opt input[type="checkbox"]:disabled, .music-alb-row input[type="checkbox"]:disabled { opacity: 0.45; cursor: not-allowed; }
 /* 押せる範囲を広げる */
 .chart-opt, .rm-check, .nominate-exclude-item { min-height: 32px; padding: 4px 6px; border-radius: 8px; gap: 8px; }
 .chart-opt:hover, .rm-check:hover, .nominate-exclude-item:hover { background: rgba(59, 130, 246, 0.08); }

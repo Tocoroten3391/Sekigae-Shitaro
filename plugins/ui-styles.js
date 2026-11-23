@@ -468,6 +468,7 @@ const UIS_PICO = {
     play: "<path d='M7 4.5v15l12-7.5z'/>",
     back: "<path d='M17 4.5v15L5 12z'/>",
     shuffle: "<path d='M3 7h4c4 0 5 10 10 10h4M3 17h4c1.5 0 2.6-1 3.5-2.5M14 8.5C14.9 7.6 15.9 7 17 7h4M18 4l3 3-3 3M18 14l3 3-3 3'/>",
+    repeat1: "<path d='M4 11V9a3 3 0 0 1 3-3h13M17 3l3 3-3 3M20 13v2a3 3 0 0 1-3 3H4M7 21l-3-3 3-3'/><path d='M11 10l1.5-1v5'/>",
     repeat: "<path d='M4 11V9a3 3 0 0 1 3-3h13M17 3l3 3-3 3M20 13v2a3 3 0 0 1-3 3H4M7 21l-3-3 3-3'/>",
     expand: "<path d='M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5'/>",
     pause: "<path d='M8 5v14M16 5v14'/>",
@@ -505,6 +506,16 @@ const UIS_PICO = {
 };
 // タイマーやルーレットなど、文字が切り替わるボタンに付けるアイコン（ボタンごとに、文字から選びます）
 const UIS_BTN_ICO = [
+    { sel: "#btnEnvDraw", map: [[/./, "gift"]] },
+    { sel: "#btnSeatJourney", map: [[/./, "train"]] },
+    { sel: "#btnFortune", map: [[/./, "star"]] },
+    { sel: "#btnNominateUndoMenu", map: [[/./, "undo"]] },
+    { sel: "#btnSsMenu", map: [[/./, "monitor"]] },
+    { sel: "#btnFuriToggle", map: [[/./, "type"]] },
+    { sel: "#btnSavePng", map: [[/./, "image"]] },
+    { sel: "#btnSavePdf", map: [[/./, "file"]] },
+    { sel: "#btnShareMenu", map: [[/./, "share"]] },
+    { sel: "#btnMoreStage", map: [[/./, "sparkle"]] },
     { sel: "#btnFullscreen", map: [[/終える|やめる/, "compress"], [/./, "expand"]] },
     { sel: "#configContainer button[onclick*=\"openStatsModal\"]", map: [[/./, "barchart"]] },
     { sel: "#configContainer #btnNomBalance", map: [[/./, "speech"]] },
@@ -579,7 +590,7 @@ const UIS_ICO_MAP = {
     "📣": "megaphone", "✅": "check", "🖼": "image", "🖨": "printer", "🙋": "hand", "✋": "hand", "🔤": "type", "⬆": "arrowup",
     "📁": "folder", "💾": "save", "🔓": "unlock", "📤": "export", "📥": "import", "📋": "clipboard", "📊": "barchart", "📈": "trend",
     "🧾": "receipt", "🗣": "speech", "🗄": "archive", "🕘": "clock", "🗑": "trash", "🎲": "dice", "🆕": "sparkle", "👁": "eye",
-    "🍀": "star", "⏮": "skipback", "▶": "play", "◀": "back", "🔀": "shuffle", "🔁": "repeat",
+    "🍀": "star", "⏮": "skipback", "▶": "play", "◀": "back", "🔀": "shuffle", "🔁": "repeat", "🔂": "repeat1",
     "👓": "glasses", "📏": "ruler", "👂": "ear", "🤒": "thermo", "⚠": "alert", "🤫": "lock", "🔔": "bell", "🩺": "pulse", "🔮": "sparkle",
     "🚃": "train", "🎁": "gift", "🗺": "map", "🪑": "chair", "🎯": "target"
 };
@@ -1851,7 +1862,7 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.32",
+    version: "3.33",
     description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",
