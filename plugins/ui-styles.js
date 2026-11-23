@@ -433,6 +433,8 @@ const UIS_PICO = {
     hash: "<path d='M5 9h14M5 15h14M10 4 8 20M16 4l-2 16'/>",
     arrowdown: "<path d='M12 5v14M6 13l6 6 6-6'/>",
     menu: "<path d='M4 7h16M4 12h16M4 17h16'/>",
+    film: "<rect x='3' y='5' width='18' height='14' rx='2'/><path d='M7 5v14M17 5v14M3 9h4M17 9h4M3 15h4M17 15h4'/>",
+    qr: "<rect x='4' y='4' width='6' height='6'/><rect x='14' y='4' width='6' height='6'/><rect x='4' y='14' width='6' height='6'/><path d='M14 14h2v2h-2zM18 18h2M14 20h2'/>",
     sprout: "<path d='M12 21v-9'/><path d='M12 12c0-4 3-6 7-6 0 4-3 6-7 6z'/><path d='M12 14c0-3-2.5-5-6-5 0 3.5 2.5 5 6 5z'/>",
     bag: "<path d='M8 7V6a4 4 0 0 1 8 0v1'/><rect x='5' y='7' width='14' height='14' rx='3'/><path d='M9 14h6'/>",
     flower: "<circle cx='12' cy='12' r='2.5'/><path d='M12 9.5C10.5 7 10.5 4 12 3c1.5 1 1.5 4 0 6.5zM14.5 12c2.5-1.5 5.5-1.5 6.5 0-1 1.5-4 1.5-6.5 0zM12 14.5c1.5 2.5 1.5 5.5 0 6.5-1.5-1-1.5-4 0-6.5zM9.5 12C7 13.5 4 13.5 3 12c1-1.5 4-1.5 6.5 0z'/>",
@@ -512,6 +514,13 @@ const UIS_PICO = {
 };
 // タイマーやルーレットなど、文字が切り替わるボタンに付けるアイコン（ボタンごとに、文字から選びます）
 const UIS_BTN_ICO = [
+    { sel: ".announce-icon-btn", map: [[/終|やめ/, "compress"], [/./, "expand"]] },
+    { sel: ".env-quit, .sj-x", map: [[/./, "close"]] },
+    { sel: ".env-go", map: [[/./, "play"]] },
+    { sel: "#btnMainNominate", map: [[/./, "target"]] },
+    { sel: "#btnMegaRoulette", map: [[/./, "spin"]] },
+    { sel: "#btnGiantNominate", map: [[/./, "target"]] },
+    { sel: "#uisNomExit", map: [[/./, "close"]] },
     { sel: "button.calc-tool", map: [[/元に戻す/, "undo"], [/やり直し/, "redo"], [/履歴/, "clock"], [/メニュー/, "menu"]] },
     { sel: "#stickyModeBar button", map: [[/^やめる$/, "close"]] },
     { sel: ".modal-content button, #skinOverlay .skin-x", map: [[/^すべて開く$/, "arrowdown"], [/^すべて閉じる$/, "arrowup"], [/^重い機能だけ見る$/, "bolt"], [/^(閉じる|キャンセル|とじる)$/, "close"], [/^保存する$/, "save"], [/^すべて消す$/, "trash"], [/^元に戻す$/, "undo"], [/^やり直す$/, "redo"], [/予鈴を聞く|始まりを聞く|終わりを聞く/, "speaker"], [/この場所を空席にする/, "chair"], [/^名簿を書き出す/, "export"]] },
@@ -600,7 +609,7 @@ const UIS_ICO_MAP = {
     "📁": "folder", "💾": "save", "🔓": "unlock", "📤": "export", "📥": "import", "📋": "clipboard", "📊": "barchart", "📈": "trend",
     "🧾": "receipt", "🗣": "speech", "🗄": "archive", "🕘": "clock", "🗑": "trash", "🎲": "dice", "🆕": "sparkle", "👁": "eye",
     "🍀": "star", "⏮": "skipback", "▶": "play", "◀": "back", "🔀": "shuffle", "🔁": "repeat", "🔂": "repeat1",
-    "👓": "glasses", "📏": "ruler", "👂": "ear", "🤒": "thermo", "⚠": "alert", "🤫": "lock", "🔔": "bell", "🩺": "pulse", "🔮": "sparkle",
+    "👓": "glasses", "📏": "ruler", "👂": "ear", "🤒": "thermo", "😷": "thermo", "↩": "undo", "🔳": "qr", "🎬": "film", "🍣": "disc", "📍": "map", "⚠": "alert", "🤫": "lock", "🔔": "bell", "🩺": "pulse", "🔮": "sparkle",
     "🚃": "train", "🎁": "gift", "🗺": "map", "🪑": "chair", "🎯": "target", "📂": "folder", "📒": "file", "🔢": "hash", "🧽": "reset", "⬇": "arrowdown"
 };
 function uisIcoKey(s) { return UIS_ICO_MAP[String(s).replace(/[\uFE0F\u200D]/g, "")] || ""; }
@@ -668,7 +677,7 @@ function uisHeadToastPass() {
 function uisIconPass() {
     uisBtnIconPass();
     uisHeadToastPass();
-    document.querySelectorAll("#classroom button, .modal-content button, #announceOverlay button, #musicShuffleBtn, #musicRepeatBtn").forEach(el => {
+    document.querySelectorAll("#classroom button, .modal-content button, .modal-content label.chart-opt > span, #skinOverlay b, #announceOverlay button, #musicShuffleBtn, #musicRepeatBtn").forEach(el => {
         if (el.querySelector(":scope > .pico")) return;
         const t = uisFirstText(el);
         if (!t) return;
@@ -1871,7 +1880,7 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.34",
+    version: "3.35",
     description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",
