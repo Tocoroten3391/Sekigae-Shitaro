@@ -311,7 +311,7 @@ ${S} .toast { display: flex; align-items: center; gap: 10px; background: ${a ? "
 ${S} .toast.hide { animation: uisToastOut 0.28s ease-in forwards; }
 select.uis-bs, select.uis-bs::picker(select) { appearance: base-select; }
 ${S} select.uis-bs { display: flex; align-items: center; gap: 6px; }
-${S} select.uis-bs > button { all: unset; display: flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; cursor: pointer; padding: 0 !important; margin: 0 !important; background: none !important; border: 0 !important; box-shadow: none !important; min-height: 0 !important; height: auto !important; font: inherit !important; color: inherit !important; text-align: left !important; justify-content: flex-start !important; }
+${S} select.uis-bs.uis-bs.uis-bs > button { all: unset; display: flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; cursor: pointer; padding: 0 !important; margin: 0 !important; background: none !important; border: 0 !important; box-shadow: none !important; min-height: 0 !important; height: auto !important; font: inherit !important; color: inherit !important; text-align: left !important; justify-content: flex-start !important; }
 ${S} select.uis-bs::picker-icon { color: currentColor; opacity: 0.7; }
 ${S} select.uis-bs::picker(select) { background: ${t.surf}; color: ${t.text}; border: 1px solid ${t.line}; border-radius: 10px; padding: 4px; box-shadow: ${t.shadow}; max-height: min(360px, 60vh); position-area: block-end span-inline-end; position-try-order: normal; position-try-fallbacks: flip-block; margin: 4px 0; min-width: anchor-size(width); }
 ${S} select.uis-bs option { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 6px; background: transparent !important; color: ${t.text} !important; cursor: pointer; font-size: 14px; }
@@ -494,6 +494,10 @@ const UIS_PICO = {
     chime: "<path d='M12 3v3M6 8h12M8 8v9M12 8v12M16 8v7'/>",
     siren: "<path d='M7 18v-6a5 5 0 0 1 10 0v6M5 18h14M12 3v2M4 7l1.5 1.5M20 7l-1.5 1.5'/>",
     sbell: "<path d='M4 17h16M6 17a6 6 0 0 1 12 0M12 7v4M10 7h4'/>",
+    pin: "<path d='M12 21s-6-5.4-6-10a6 6 0 0 1 12 0c0 4.6-6 10-6 10z'/><circle cx='12' cy='11' r='2'/>",
+    rows: "<rect x='3' y='5' width='18' height='14' rx='2'/><path d='M3 12h18'/>",
+    cols: "<rect x='3' y='5' width='18' height='14' rx='2'/><path d='M12 5v14'/>",
+    grid: "<rect x='4' y='4' width='16' height='16' rx='2'/><path d='M4 12h16M12 4v16'/>",
     sprout: "<path d='M12 21v-9'/><path d='M12 12c0-4 3-6 7-6 0 4-3 6-7 6z'/><path d='M12 14c0-3-2.5-5-6-5 0 3.5 2.5 5 6 5z'/>",
     bag: "<path d='M8 7V6a4 4 0 0 1 8 0v1'/><rect x='5' y='7' width='14' height='14' rx='3'/><path d='M9 14h6'/>",
     flower: "<circle cx='12' cy='12' r='2.5'/><path d='M12 9.5C10.5 7 10.5 4 12 3c1.5 1 1.5 4 0 6.5zM14.5 12c2.5-1.5 5.5-1.5 6.5 0-1 1.5-4 1.5-6.5 0zM12 14.5c1.5 2.5 1.5 5.5 0 6.5-1.5-1-1.5-4 0-6.5zM9.5 12C7 13.5 4 13.5 3 12c1-1.5 4-1.5 6.5 0z'/>",
@@ -573,6 +577,11 @@ const UIS_PICO = {
 };
 // タイマーやルーレットなど、文字が切り替わるボタンに付けるアイコン（ボタンごとに、文字から選びます）
 const UIS_BTN_ICO = [
+    { sel: "#btnSsPause", map: [[/再開/, "play"], [/./, "pause"]] },
+    { sel: ".sx-reset-btn", map: [[/./, "reset"]] },
+    { sel: "#configContainer button[onclick=\"resetNominatedHistory()\"]", map: [[/./, "reset"]] },
+    { sel: "#configContainer button[onclick*=\"openTimerBtnModal('preset')\"]", map: [[/./, "clock"]] },
+    { sel: "#configContainer button[onclick*=\"openTimerBtnModal('add')\"]", map: [[/./, "plus"]] },
     { sel: ".announce-icon-btn", map: [[/終|やめ/, "compress"], [/./, "expand"]] },
     { sel: ".env-quit, .sj-x", map: [[/./, "close"]] },
     { sel: ".env-go", map: [[/./, "play"]] },
@@ -735,18 +744,26 @@ function uisHeadToastPass() {
 }
 // プルダウン（select）の項目に、線のアイコンを付けます。
 // Chrome の「appearance: base-select」が使える場合だけ、項目の絵文字を線のアイコンに置きかえます。
+const UIS_SEL_VAL = { modalAreaSelect: { none: "shuffle", fixed: "pin", row: "rows", col: "cols", priority: "glasses", customRC: "grid", customSeats: "target" } };
 function uisSelectPass() {
     if (!(window.CSS && CSS.supports && CSS.supports("appearance", "base-select"))) return;
     document.querySelectorAll("select:not([multiple])").forEach(sel => {
         if (sel.size > 1) return;
         let any = false;
+        const byVal = UIS_SEL_VAL[sel.id];
         sel.querySelectorAll("option").forEach(o => {
             if (o.querySelector(".pico")) { any = true; return; }
             const t = o.firstChild;
             if (!t || t.nodeType !== 3) return;
-            const m = t.nodeValue.match(UIS_EMO_RE);
-            if (!m) return;
-            const key = uisIcoKey(m[1]);
+            let m = t.nodeValue.match(UIS_EMO_RE);
+            let key = null;
+            if (byVal && byVal[o.value]) {
+                key = byVal[o.value];
+                if (!m) m = ["", ""];
+            } else {
+                if (!m) return;
+                key = uisIcoKey(m[1]);
+            }
             if (!key) return;
             const ico = document.createElement("span");
             ico.className = "pico";
@@ -2026,7 +2043,7 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.39",
+    version: "3.40",
     description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",
