@@ -313,7 +313,7 @@ select.uis-bs, select.uis-bs::picker(select) { appearance: base-select; }
 ${S} select.uis-bs { display: flex; align-items: center; gap: 6px; }
 ${S} select.uis-bs > button { all: unset; display: flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; cursor: pointer; padding: 0 !important; margin: 0 !important; background: none !important; border: 0 !important; box-shadow: none !important; min-height: 0 !important; height: auto !important; font: inherit !important; color: inherit !important; text-align: left !important; justify-content: flex-start !important; }
 ${S} select.uis-bs::picker-icon { color: currentColor; opacity: 0.7; }
-${S} select.uis-bs::picker(select) { background: ${t.surf}; color: ${t.text}; border: 1px solid ${t.line}; border-radius: 10px; padding: 4px; box-shadow: ${t.shadow}; max-height: min(360px, 60vh); }
+${S} select.uis-bs::picker(select) { background: ${t.surf}; color: ${t.text}; border: 1px solid ${t.line}; border-radius: 10px; padding: 4px; box-shadow: ${t.shadow}; max-height: min(360px, 60vh); position-area: block-end span-inline-end; position-try-order: normal; position-try-fallbacks: flip-block; margin: 4px 0; min-width: anchor-size(width); }
 ${S} select.uis-bs option { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 6px; background: transparent !important; color: ${t.text} !important; cursor: pointer; font-size: 14px; }
 ${S} select.uis-bs option:hover, ${S} select.uis-bs option:focus-visible { background: ${t.soft2} !important; }
 ${S} select.uis-bs option:checked { background: ${t.spec} !important; color: ${t.specText} !important; font-weight: 700; }
@@ -1992,7 +1992,7 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.36",
+    version: "3.37",
     description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",
