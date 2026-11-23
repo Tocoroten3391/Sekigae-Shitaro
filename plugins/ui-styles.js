@@ -423,6 +423,9 @@ ${S} #classStatusBar.is-trial .class-status-btn:hover { filter: brightness(1.08)
 const UIS_PICO = {
     cloud: "<path d='M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 9.5 4 4 0 0 1 17.5 18z'/>",
     link: "<path d='M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1'/>",
+    palette: "<path d='M12 3a9 9 0 1 0 0 18c1.2 0 2-.8 2-1.8 0-1.2-.9-1.5-.9-2.5 0-.9.7-1.5 1.7-1.5H17a4 4 0 0 0 4-4c0-4.4-4-8.2-9-8.2z'/><circle cx='7.5' cy='11' r='1'/><circle cx='10' cy='7' r='1'/><circle cx='15' cy='7.5' r='1'/>",
+    bolt: "<path d='M13 3 5 13h6l-1 8 8-10h-6z'/>",
+    puzzle: "<path d='M10 4a2 2 0 1 1 4 0v2h4v4h-2a2 2 0 1 0 0 4h2v4h-4v-2a2 2 0 1 0-4 0v2H6v-4h2a2 2 0 1 0 0-4H6V6h4z'/>",
     sprout: "<path d='M12 21v-9'/><path d='M12 12c0-4 3-6 7-6 0 4-3 6-7 6z'/><path d='M12 14c0-3-2.5-5-6-5 0 3.5 2.5 5 6 5z'/>",
     bag: "<path d='M8 7V6a4 4 0 0 1 8 0v1'/><rect x='5' y='7' width='14' height='14' rx='3'/><path d='M9 14h6'/>",
     flower: "<circle cx='12' cy='12' r='2.5'/><path d='M12 9.5C10.5 7 10.5 4 12 3c1.5 1 1.5 4 0 6.5zM14.5 12c2.5-1.5 5.5-1.5 6.5 0-1 1.5-4 1.5-6.5 0zM12 14.5c1.5 2.5 1.5 5.5 0 6.5-1.5-1-1.5-4 0-6.5zM9.5 12C7 13.5 4 13.5 3 12c1-1.5 4-1.5 6.5 0z'/>",
@@ -501,6 +504,7 @@ const UIS_PICO = {
 };
 // タイマーやルーレットなど、文字が切り替わるボタンに付けるアイコン（ボタンごとに、文字から選びます）
 const UIS_BTN_ICO = [
+    { sel: "#configContainer .config-section-title", map: [[/よく使う/, "star"], [/^クラスと名簿/, "users"], [/名簿の入力/, "clipboard"], [/進級/, "cap"], [/座席のレイアウト/, "chair"], [/座席の見え方/, "eye"], [/席替えのルール/, "shuffle"], [/班のしくみ/, "users"], [/班の表示/, "palette"], [/席替えの演出/, "sparkle"], [/指名モード/, "target"], [/記録・統計/, "barchart"], [/画面のタイトル/, "type"], [/テーマと背景/, "image"], [/表示モード/, "monitor"], [/動作の軽さ/, "bolt"], [/タイマーの表示/, "clock"], [/アラーム/, "bell"], [/タイマーの特別/, "pulse"], [/バックアップ/, "save"], [/スプレッドシート/, "cloud"], [/印刷・共有/, "printer"], [/機能・プラグイン/, "puzzle"], [/ロックと管理/, "lock"], [/入力の補助/, "mic"], [/使い方/, "info"], [/管理者用/, "archive"]] },
     { sel: "#configContainer button[onclick*=\"openHistoryModal\"]", map: [[/./, "clock"]] },
     { sel: "#configContainer button[onclick*=\"openCacheRestoreModal\"]", map: [[/./, "archive"]] },
     { sel: "#configContainer button[onclick*=\"openBackupModal\"]", map: [[/./, "save"]] },
@@ -550,7 +554,7 @@ const UIS_BTN_ICO = [
     { sel: "#rouletteOverlay .btn-secondary, #rouletteEditModal .btn-secondary", map: [[/^[＋+]\s*ボタンを追加/, "plus"]] }
 ];
 // 文字の先頭に付いている、絵文字や記号（アイコンにするので取り除きます）
-const UIS_BTN_LEAD = /^[\s✕⏱⏳⏸▶⏮⏭🔈🔊💾🔕📝📅🏫🎓📲↩🗑🔁\ufe0f🔇🎡🥋🕒＋+]+/u;
+const UIS_BTN_LEAD = /^[\s★✕⏱⏳⏸▶⏮⏭🔈🔊💾🔕📝📅🏫🎓📲↩🗑🔁\ufe0f🔇🎡🥋🕒＋+]+/u;
 // ボタンの先頭の絵文字と、線のアイコンの対応
 const UIS_ICO_MAP = {
     "👥": "users", "🧪": "flask", "📄": "file", "📝": "edit", "🔍": "search", "🔎": "search", "➕": "plus", "🔄": "refresh", "♻": "refresh",
@@ -1827,7 +1831,7 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.30",
+    version: "3.31",
     description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",
