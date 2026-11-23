@@ -309,6 +309,18 @@ ${a ? "" : `${S} :is(#topBarContainer, .main-btn-wrapper) :focus-visible { outli
 ${S} #toastContainer { top: auto; bottom: 44px; left: auto; right: 24px; transform: none; width: auto; max-width: min(380px, calc(100vw - 32px)); align-items: flex-end; }
 ${S} .toast { display: flex; align-items: center; gap: 10px; background: ${a ? "var(--card-bg)" : "#2F4A3E"}; color: ${a ? "var(--text-main)" : "#F6F3E8"}; border: ${a ? "1px solid var(--uis-line2, #CBD2DC)" : "2px solid #C9A978"}; border-left-width: ${a ? "1px" : "2px"}; border-radius: ${a ? "12px" : "8px"}; padding: 12px 18px 12px 14px; font-size: 14px; font-weight: 700; box-shadow: ${t.shadow}; backdrop-filter: none; animation: uisToastIn 0.28s ease-out both; }
 ${S} .toast.hide { animation: uisToastOut 0.28s ease-in forwards; }
+select.uis-bs, select.uis-bs::picker(select) { appearance: base-select; }
+${S} select.uis-bs { display: flex; align-items: center; gap: 6px; }
+${S} select.uis-bs > button { all: unset; display: flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; cursor: pointer; padding: 0 !important; margin: 0 !important; background: none !important; border: 0 !important; box-shadow: none !important; min-height: 0 !important; height: auto !important; font: inherit !important; color: inherit !important; text-align: left !important; justify-content: flex-start !important; }
+${S} select.uis-bs::picker-icon { color: currentColor; opacity: 0.7; }
+${S} select.uis-bs::picker(select) { background: ${t.surf}; color: ${t.text}; border: 1px solid ${t.line}; border-radius: 10px; padding: 4px; box-shadow: ${t.shadow}; max-height: min(360px, 60vh); }
+${S} select.uis-bs option { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 6px; background: transparent !important; color: ${t.text} !important; cursor: pointer; font-size: 14px; }
+${S} select.uis-bs option:hover, ${S} select.uis-bs option:focus-visible { background: ${t.soft2} !important; }
+${S} select.uis-bs option:checked { background: ${t.spec} !important; color: ${t.specText} !important; font-weight: 700; }
+${S} select.uis-bs option::checkmark { display: none; }
+${S} select.uis-bs .uis-emo { display: none; }
+${S} select.uis-bs optgroup > legend { display: flex; align-items: center; gap: 6px; padding: 8px 10px 4px; font-size: 12px; font-weight: 700; color: ${a ? t.sub : "#6B5A3E"}; }
+${S} select.uis-bs .pico { flex: none; }
 ${S} button.calc-tool { white-space: nowrap; padding-left: 4px !important; padding-right: 4px !important; font-size: 11px !important; gap: 2px; }
 ${S} button.calc-tool .pico { width: 12px; height: 12px; margin-right: 2px; }
 ${S} .toast::before { content: none; }
@@ -435,6 +447,52 @@ const UIS_PICO = {
     menu: "<path d='M4 7h16M4 12h16M4 17h16'/>",
     film: "<rect x='3' y='5' width='18' height='14' rx='2'/><path d='M7 5v14M17 5v14M3 9h4M17 9h4M3 15h4M17 15h4'/>",
     qr: "<rect x='4' y='4' width='6' height='6'/><rect x='14' y='4' width='6' height='6'/><rect x='4' y='14' width='6' height='6'/><path d='M14 14h2v2h-2zM18 18h2M14 20h2'/>",
+    slot: "<rect x='3' y='5' width='18' height='14' rx='2'/><path d='M9 5v14M15 5v14'/>",
+    drum: "<ellipse cx='12' cy='9' rx='8' ry='3'/><path d='M4 9v7c0 1.7 3.6 3 8 3s8-1.3 8-3V9M9 3l3 6M15 3l-3 6'/>",
+    fog: "<path d='M4 8h12M8 12h12M4 16h12M8 20h8'/>",
+    card: "<rect x='6' y='3' width='12' height='18' rx='2'/><path d='M12 8l3 4-3 4-3-4z'/>",
+    walk: "<circle cx='12' cy='5' r='2'/><path d='M12 8v6M12 14l-3 6M12 14l3 6M8 11l4-3 4 3'/>",
+    radar: "<path d='M5 12a7 7 0 0 1 14 0M8 12a4 4 0 0 1 8 0'/><circle cx='12' cy='15' r='1'/><path d='M12 16v5'/>",
+    joystick: "<circle cx='12' cy='6' r='3'/><path d='M12 9v6M5 20h14M7 20v-3a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v3'/>",
+    burst: "<path d='M12 2l2 6 6-2-3 5 5 3-6 1 1 6-5-4-5 4 1-6-6-1 5-3-3-5 6 2z'/>",
+    cyclone: "<circle cx='12' cy='12' r='1'/><path d='M12 8a4 4 0 0 1 4 4M12 4a8 8 0 0 1 8 8M12 16a4 4 0 0 1-4-4M12 20a8 8 0 0 1-8-8'/>",
+    meteor: "<circle cx='17' cy='7' r='3'/><path d='M14.5 9.5 4 20M12 8 3 14M16 12l-6 9'/>",
+    tornado: "<path d='M4 5h16M6 9h12M8 13h8M10 17h4'/>",
+    fireworks: "<path d='M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3'/>",
+    ball: "<circle cx='12' cy='12' r='9'/><path d='M12 7l4 3-1.5 5h-5L8 10z'/>",
+    bookmark: "<path d='M6 3h12v18l-6-4-6 4z'/>",
+    rocket: "<path d='M12 3c4 2 6 6 5 11l-3 3h-4l-3-3c-1-5 1-9 5-11z'/><circle cx='12' cy='10' r='1.5'/><path d='M7 15l-3 3M17 15l3 3'/>",
+    masks: "<path d='M4 5h10v7a5 5 0 0 1-10 0zM10 12h10v3a5 5 0 0 1-10 0z'/>",
+    plane: "<path d='M3 20h18M5 14l14 3M8 9l3 2 6-4'/>",
+    galaxy: "<circle cx='12' cy='12' r='9'/><circle cx='9' cy='10' r='1'/><circle cx='15' cy='14' r='1'/><path d='M12 5v1M17 9v1'/>",
+    leaf: "<path d='M5 19c0-9 5-14 14-14 0 9-5 14-14 14zM5 19l8-8'/>",
+    wave: "<path d='M3 9c3-3 6 3 9 0s6-3 9 0M3 15c3-3 6 3 9 0s6-3 9 0'/>",
+    brick: "<rect x='3' y='5' width='18' height='14' rx='1'/><path d='M3 12h18M9 5v7M15 12v7'/>",
+    shell: "<path d='M12 21a9 9 0 1 1 9-9c0 4-3 6-6 6s-5-2-5-5 2-4 4-4'/>",
+    bubble: "<circle cx='9' cy='11' r='6'/><circle cx='18' cy='7' r='2'/><circle cx='20' cy='15' r='1'/>",
+    pendulum: "<path d='M12 3v10'/><circle cx='12' cy='16' r='4'/>",
+    coin: "<circle cx='12' cy='12' r='9'/><path d='M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4'/>",
+    ice: "<rect x='5' y='5' width='14' height='14' rx='3'/><path d='M9 9l2 2'/>",
+    rainbow: "<path d='M3 18a9 9 0 0 1 18 0M7 18a5 5 0 0 1 10 0'/>",
+    glitch: "<path d='M6 8h12v8H6zM9 11h1M14 11h1M8 16v3M16 16v3M4 12h2M18 12h2'/>",
+    jelly: "<path d='M5 19h14l-1.5-9h-11zM8 10c0-3 2-5 4-5s4 2 4 5'/>",
+    ban: "<circle cx='12' cy='12' r='9'/><path d='M5.6 5.6l12.8 12.8'/>",
+    gem: "<path d='M6 4h12l3 5-9 11L3 9z'/><path d='M3 9h18'/>",
+    moon: "<path d='M20 14A8 8 0 1 1 10 4a6.5 6.5 0 0 0 10 10z'/>",
+    snow: "<path d='M12 3v18M4 7.5l16 9M4 16.5l16-9'/>",
+    pumpkin: "<path d='M12 7c-6 0-9 3-9 7s3 6 9 6 9-2 9-6-3-7-9-7zM12 7V4M9 11v3M15 11v3'/>",
+    tree: "<path d='M12 3l5 7h-3l4 6H6l4-6H7zM12 16v5'/>",
+    board: "<rect x='3' y='4' width='18' height='13' rx='1'/><path d='M8 21h8M12 17v4'/>",
+    gamepad: "<rect x='3' y='8' width='18' height='10' rx='5'/><path d='M8 11v4M6 13h4M16 12h.01M18 14h.01'/>",
+    paw: "<circle cx='7' cy='10' r='1.5'/><circle cx='12' cy='7' r='1.5'/><circle cx='17' cy='10' r='1.5'/><path d='M8 17c0-3 2-5 4-5s4 2 4 5c0 2-2 2-4 1-2 1-4 1-4-1z'/>",
+    minus: "<path d='M4 12h16'/>",
+    ring: "<circle cx='12' cy='12' r='8'/>",
+    bulb: "<path d='M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10c1 1 1 2 1 3h6c0-1 0-2 1-3a6 6 0 0 0-4-10z'/>",
+    dot: "<circle cx='12' cy='12' r='5' fill='black'/>",
+    alarmclock: "<circle cx='12' cy='13' r='7'/><path d='M12 9v4l2 2M5 4 3 6M19 4l2 2'/>",
+    chime: "<path d='M12 3v3M6 8h12M8 8v9M12 8v12M16 8v7'/>",
+    siren: "<path d='M7 18v-6a5 5 0 0 1 10 0v6M5 18h14M12 3v2M4 7l1.5 1.5M20 7l-1.5 1.5'/>",
+    sbell: "<path d='M4 17h16M6 17a6 6 0 0 1 12 0M12 7v4M10 7h4'/>",
     sprout: "<path d='M12 21v-9'/><path d='M12 12c0-4 3-6 7-6 0 4-3 6-7 6z'/><path d='M12 14c0-3-2.5-5-6-5 0 3.5 2.5 5 6 5z'/>",
     bag: "<path d='M8 7V6a4 4 0 0 1 8 0v1'/><rect x='5' y='7' width='14' height='14' rx='3'/><path d='M9 14h6'/>",
     flower: "<circle cx='12' cy='12' r='2.5'/><path d='M12 9.5C10.5 7 10.5 4 12 3c1.5 1 1.5 4 0 6.5zM14.5 12c2.5-1.5 5.5-1.5 6.5 0-1 1.5-4 1.5-6.5 0zM12 14.5c1.5 2.5 1.5 5.5 0 6.5-1.5-1-1.5-4 0-6.5zM9.5 12C7 13.5 4 13.5 3 12c1-1.5 4-1.5 6.5 0z'/>",
@@ -609,7 +667,7 @@ const UIS_ICO_MAP = {
     "📁": "folder", "💾": "save", "🔓": "unlock", "📤": "export", "📥": "import", "📋": "clipboard", "📊": "barchart", "📈": "trend",
     "🧾": "receipt", "🗣": "speech", "🗄": "archive", "🕘": "clock", "🗑": "trash", "🎲": "dice", "🆕": "sparkle", "👁": "eye",
     "🍀": "star", "⏮": "skipback", "▶": "play", "◀": "back", "🔀": "shuffle", "🔁": "repeat", "🔂": "repeat1",
-    "👓": "glasses", "📏": "ruler", "👂": "ear", "🤒": "thermo", "😷": "thermo", "↩": "undo", "🔳": "qr", "🎬": "film", "🍣": "disc", "📍": "map", "⚠": "alert", "🤫": "lock", "🔔": "bell", "🩺": "pulse", "🔮": "sparkle",
+    "👓": "glasses", "📏": "ruler", "👂": "ear", "🤒": "thermo", "😷": "thermo", "↩": "undo", "🔳": "qr", "🎬": "film", "🍣": "disc", "📍": "map", "✨": "sparkle", "⚡": "bolt", "⭐": "star", "🏫": "school", "☁": "cloud", "📣": "megaphone", "🎰": "slot", "🥁": "drum", "🌫": "fog", "🃏": "card", "🚶": "walk", "📡": "radar", "🕹": "joystick", "💥": "burst", "🌀": "cyclone", "🌠": "meteor", "🌪": "tornado", "🎆": "fireworks", "⚽": "ball", "🔖": "bookmark", "🚀": "rocket", "🎭": "masks", "🛬": "plane", "🌌": "galaxy", "🍃": "leaf", "🌊": "wave", "🧱": "brick", "🐚": "shell", "💭": "bubble", "🕰": "pendulum", "🪙": "coin", "🧊": "ice", "🌈": "rainbow", "👾": "glitch", "🍮": "jelly", "🛑": "ban", "💎": "gem", "🌙": "moon", "🌸": "flower", "🌷": "sprout", "🍂": "leaf", "⛄": "snow", "🎃": "pumpkin", "🎄": "tree", "🖍": "board", "🎮": "gamepad", "🐯": "paw", "🌱": "sprout", "🌲": "tree", "➖": "minus", "⭕": "ring", "💡": "bulb", "🔴": "dot", "⏰": "alarmclock", "🎐": "chime", "🚨": "siren", "🛎": "sbell", "⚠": "alert", "🤫": "lock", "🔔": "bell", "🩺": "pulse", "🔮": "sparkle",
     "🚃": "train", "🎁": "gift", "🗺": "map", "🪑": "chair", "🎯": "target", "📂": "folder", "📒": "file", "🔢": "hash", "🧽": "reset", "⬇": "arrowdown"
 };
 function uisIcoKey(s) { return UIS_ICO_MAP[String(s).replace(/[\uFE0F\u200D]/g, "")] || ""; }
@@ -674,8 +732,62 @@ function uisHeadToastPass() {
         tn.insertBefore(sp, tn.firstChild);
     });
 }
+// プルダウン（select）の項目に、線のアイコンを付けます。
+// Chrome の「appearance: base-select」が使える場合だけ、項目の絵文字を線のアイコンに置きかえます。
+function uisSelectPass() {
+    if (!(window.CSS && CSS.supports && CSS.supports("appearance", "base-select"))) return;
+    document.querySelectorAll("select:not([multiple])").forEach(sel => {
+        if (sel.size > 1) return;
+        let any = false;
+        sel.querySelectorAll("option").forEach(o => {
+            if (o.querySelector(".pico")) { any = true; return; }
+            const t = o.firstChild;
+            if (!t || t.nodeType !== 3) return;
+            const m = t.nodeValue.match(UIS_EMO_RE);
+            if (!m) return;
+            const key = uisIcoKey(m[1]);
+            if (!key) return;
+            const ico = document.createElement("span");
+            ico.className = "pico";
+            ico.dataset.pico = key;
+            ico.setAttribute("aria-hidden", "true");
+            const emo = document.createElement("span");
+            emo.className = "uis-emo";
+            emo.textContent = m[1];
+            t.nodeValue = t.nodeValue.slice(m[0].length);
+            if (t.nodeValue && !/^\s/.test(t.nodeValue)) t.nodeValue = " " + t.nodeValue;
+            o.insertBefore(emo, t);
+            o.insertBefore(ico, emo);
+            any = true;
+        });
+        sel.querySelectorAll("optgroup[label]").forEach(g => {
+            if (g.querySelector(":scope > legend")) return;
+            const m = g.label.match(UIS_EMO_RE);
+            if (!m) return;
+            const key = uisIcoKey(m[1]);
+            if (!key) return;
+            const lg = document.createElement("legend");
+            const ico = document.createElement("span");
+            ico.className = "pico";
+            ico.dataset.pico = key;
+            ico.setAttribute("aria-hidden", "true");
+            lg.appendChild(ico);
+            lg.appendChild(document.createTextNode(" " + g.label.slice(m[0].length).trim()));
+            g.insertBefore(lg, g.firstChild);
+        });
+        if (!any) return;
+        sel.classList.add("uis-bs");
+        if (!sel.querySelector(":scope > button > selectedcontent")) {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.appendChild(document.createElement("selectedcontent"));
+            sel.insertBefore(b, sel.firstChild);
+        }
+    });
+}
 function uisIconPass() {
     uisBtnIconPass();
+    try { uisSelectPass(); } catch (e) { /* 何もしない */ }
     uisHeadToastPass();
     document.querySelectorAll("#classroom button, .modal-content button, .modal-content label.chart-opt > span, #skinOverlay b, #announceOverlay button, #musicShuffleBtn, #musicRepeatBtn").forEach(el => {
         if (el.querySelector(":scope > .pico")) return;
@@ -1880,7 +1992,7 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.35",
+    version: "3.36",
     description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",
