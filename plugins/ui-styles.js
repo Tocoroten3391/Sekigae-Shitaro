@@ -479,7 +479,8 @@ const UIS_PICO = {
     ban: "<circle cx='12' cy='12' r='9'/><path d='M5.6 5.6l12.8 12.8'/>",
     gem: "<path d='M6 4h12l3 5-9 11L3 9z'/><path d='M3 9h18'/>",
     moon: "<path d='M20 14A8 8 0 1 1 10 4a6.5 6.5 0 0 0 10 10z'/>",
-    snow: "<path d='M12 3v18M4 7.5l16 9M4 16.5l16-9'/>",
+    snow: "<path d='M12 12L12.0 1.5M14.1 2.9L12.0 5.0L9.9 2.9M12 12L21.1 6.7M20.9 9.3L18.1 8.5L18.8 5.6M12 12L21.1 17.2M18.8 18.4L18.1 15.5L20.9 14.7M12 12L12.0 22.5M9.9 21.1L12.0 19.0L14.1 21.1M12 12L2.9 17.3M3.1 14.7L5.9 15.5L5.2 18.4M12 12L2.9 6.7M5.2 5.6L5.9 8.5L3.1 9.3'/>",
+    sakura: "<path d='M12.0 10.8 C7.6 8.5 6.8 3.8 9.6 1.7 L12.0 3.2 L14.4 1.7 C17.2 3.8 16.4 8.5 12.0 10.8 ZM13.1 11.6 C14.0 6.7 18.2 4.5 21.1 6.5 L20.4 9.3 L22.5 11.1 C21.4 14.4 16.7 15.1 13.1 11.6 ZM12.7 13.0 C17.6 12.2 21.0 15.6 20.0 18.9 L17.2 19.1 L16.1 21.7 C12.6 21.7 10.5 17.4 12.7 13.0 ZM11.3 13.0 C13.5 17.4 11.4 21.7 7.9 21.7 L6.8 19.1 L4.0 18.9 C3.0 15.6 6.4 12.2 11.3 13.0 ZM10.9 11.6 C7.3 15.1 2.6 14.4 1.5 11.1 L3.6 9.3 L2.9 6.5 C5.8 4.5 10.0 6.7 10.9 11.6 Z'/>",
     pumpkin: "<path d='M12 7c-6 0-9 3-9 7s3 6 9 6 9-2 9-6-3-7-9-7zM12 7V4M9 11v3M15 11v3'/>",
     tree: "<path d='M12 3l5 7h-3l4 6H6l4-6H7zM12 16v5'/>",
     board: "<rect x='3' y='4' width='18' height='13' rx='1'/><path d='M8 21h8M12 17v4'/>",
@@ -667,7 +668,7 @@ const UIS_ICO_MAP = {
     "📁": "folder", "💾": "save", "🔓": "unlock", "📤": "export", "📥": "import", "📋": "clipboard", "📊": "barchart", "📈": "trend",
     "🧾": "receipt", "🗣": "speech", "🗄": "archive", "🕘": "clock", "🗑": "trash", "🎲": "dice", "🆕": "sparkle", "👁": "eye",
     "🍀": "star", "⏮": "skipback", "▶": "play", "◀": "back", "🔀": "shuffle", "🔁": "repeat", "🔂": "repeat1",
-    "👓": "glasses", "📏": "ruler", "👂": "ear", "🤒": "thermo", "😷": "thermo", "↩": "undo", "🔳": "qr", "🎬": "film", "🍣": "disc", "📍": "map", "✨": "sparkle", "⚡": "bolt", "⭐": "star", "🏫": "school", "☁": "cloud", "📣": "megaphone", "🎰": "slot", "🥁": "drum", "🌫": "fog", "🃏": "card", "🚶": "walk", "📡": "radar", "🕹": "joystick", "💥": "burst", "🌀": "cyclone", "🌠": "meteor", "🌪": "tornado", "🎆": "fireworks", "⚽": "ball", "🔖": "bookmark", "🚀": "rocket", "🎭": "masks", "🛬": "plane", "🌌": "galaxy", "🍃": "leaf", "🌊": "wave", "🧱": "brick", "🐚": "shell", "💭": "bubble", "🕰": "pendulum", "🪙": "coin", "🧊": "ice", "🌈": "rainbow", "👾": "glitch", "🍮": "jelly", "🛑": "ban", "💎": "gem", "🌙": "moon", "🌸": "flower", "🌷": "sprout", "🍂": "leaf", "⛄": "snow", "🎃": "pumpkin", "🎄": "tree", "🖍": "board", "🎮": "gamepad", "🐯": "paw", "🌱": "sprout", "🌲": "tree", "➖": "minus", "⭕": "ring", "💡": "bulb", "🔴": "dot", "⏰": "alarmclock", "🎐": "chime", "🚨": "siren", "🛎": "sbell", "⚠": "alert", "🤫": "lock", "🔔": "bell", "🩺": "pulse", "🔮": "sparkle",
+    "👓": "glasses", "📏": "ruler", "👂": "ear", "🤒": "thermo", "😷": "thermo", "↩": "undo", "🔳": "qr", "🎬": "film", "🍣": "disc", "📍": "map", "✨": "sparkle", "⚡": "bolt", "⭐": "star", "🏫": "school", "☁": "cloud", "📣": "megaphone", "🎰": "slot", "🥁": "drum", "🌫": "fog", "🃏": "card", "🚶": "walk", "📡": "radar", "🕹": "joystick", "💥": "burst", "🌀": "cyclone", "🌠": "meteor", "🌪": "tornado", "🎆": "fireworks", "⚽": "ball", "🔖": "bookmark", "🚀": "rocket", "🎭": "masks", "🛬": "plane", "🌌": "galaxy", "🍃": "leaf", "🌊": "wave", "🧱": "brick", "🐚": "shell", "💭": "bubble", "🕰": "pendulum", "🪙": "coin", "🧊": "ice", "🌈": "rainbow", "👾": "glitch", "🍮": "jelly", "🛑": "ban", "💎": "gem", "🌙": "moon", "🌸": "sakura", "🌷": "sprout", "🍂": "leaf", "⛄": "snow", "🎃": "pumpkin", "🎄": "tree", "🖍": "board", "🎮": "gamepad", "🐯": "paw", "🌱": "sprout", "🌲": "tree", "➖": "minus", "⭕": "ring", "💡": "bulb", "🔴": "dot", "⏰": "alarmclock", "🎐": "chime", "🚨": "siren", "🛎": "sbell", "⚠": "alert", "🤫": "lock", "🔔": "bell", "🩺": "pulse", "🔮": "sparkle",
     "🚃": "train", "🎁": "gift", "🗺": "map", "🪑": "chair", "🎯": "target", "📂": "folder", "📒": "file", "🔢": "hash", "🧽": "reset", "⬇": "arrowdown"
 };
 function uisIcoKey(s) { return UIS_ICO_MAP[String(s).replace(/[\uFE0F\u200D]/g, "")] || ""; }
@@ -785,6 +786,33 @@ function uisSelectPass() {
         }
     });
 }
+// プルダウンが開いているときに、もう一度タッチ・クリックしたら閉じるようにします。
+(function () {
+    let wasOpen = null;
+    const selOf = e => { const t = e.target; return t && t.closest && !t.closest("option, optgroup") ? t.closest("select.uis-bs") : null; };
+    document.addEventListener("pointerdown", e => {
+        const s = selOf(e);
+        try { wasOpen = s && s.matches(":open") ? s : null; } catch (x) { wasOpen = null; }
+    }, true);
+    const stop = e => {
+        const s = selOf(e);
+        if (!s || s !== wasOpen) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const close = () => { try { if (s.matches(":open") && s.hidePicker) s.hidePicker(); } catch (x) { /* 何もしない */ } };
+        [0, 30, 120].forEach(ms => setTimeout(close, ms));
+    };
+    document.addEventListener("mouseup", stop, true);
+    document.addEventListener("touchend", e => { const s = selOf(e); if (s && s === wasOpen && e.cancelable) e.preventDefault(); }, { capture: true, passive: false });
+    document.addEventListener("click", e => {
+        const s = selOf(e);
+        if (!s || s !== wasOpen) return;
+        wasOpen = null;
+        e.preventDefault();
+        e.stopPropagation();
+        try { if (s.matches(":open") && s.hidePicker) s.hidePicker(); } catch (x) { /* 何もしない */ }
+    }, true);
+})();
 function uisIconPass() {
     uisBtnIconPass();
     try { uisSelectPass(); } catch (e) { /* 何もしない */ }
@@ -1992,7 +2020,7 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.37",
+    version: "3.38",
     description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",
