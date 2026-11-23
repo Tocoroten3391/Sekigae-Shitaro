@@ -578,6 +578,21 @@ const UIS_PICO = {
 };
 // タイマーやルーレットなど、文字が切り替わるボタンに付けるアイコン（ボタンごとに、文字から選びます）
 const UIS_BTN_ICO = [
+    { sel: "#configContainer button[onclick*=\"openFuriganaModal\"]", map: [[/./, "type"]] },
+    { sel: "#configContainer #btnPromote", map: [[/./, "cap"]] },
+    { sel: "#configContainer button[onclick*=\"resetToNumberOrder\"]", map: [[/./, "reset"]] },
+    { sel: "#configContainer #btnRoomSettings", map: [[/./, "chair"]] },
+    { sel: "#configContainer #btnRoomShow, #configContainer #btnStickyHide", map: [[/隠/, "eye"], [/./, "eye"]] },
+    { sel: "#configContainer #btnStickyMode", map: [[/./, "file"]] },
+    { sel: "#configContainer #btnLuckBank", map: [[/./, "coin"]] },
+    { sel: "#configContainer #btnSchedClear", map: [[/./, "trash"]] },
+    { sel: "#configContainer #btnWishModal", map: [[/./, "speech"]] },
+    { sel: "#configContainer button[onclick*=\"resetGroupColors\"]", map: [[/./, "reset"]] },
+    { sel: "#configContainer button[onclick*=\"previewShuffleAnimation\"]", map: [[/./, "play"]] },
+    { sel: "#configContainer button[onclick*=\"toggleAnimGallery\"]", map: [[/./, "grid"]] },
+    { sel: "#configContainer #animFavToggleBtn", map: [[/./, "star"]] },
+    { sel: "#configContainer .adv-box > summary", map: [[/./, "toolbox"]] },
+    { sel: "#configContainer details:not(.adv-box):not(.preset-archive) > summary", map: [[/^最初の3ステップ/, "map"], [/^こんな時は/, "bulb"], [/^席替えの演出/, "sparkle"], [/^席替え$/, "shuffle"], [/^席の指定/, "chair"], [/^指名/, "target"], [/^名簿/, "users"], [/^電卓/, "hash"], [/^タイマー/, "clock"], [/^ロック/, "lock"], [/^テンキー/, "hash"], [/^テーマ/, "palette"], [/^保存とバックアップ/, "save"], [/^記録/, "barchart"]] },
     { sel: "#btnRenameClass", map: [[/./, "edit"]] },
     { sel: "#btnDuplicateClass", map: [[/./, "copy"]] },
     { sel: "#btnArchiveClass", map: [[/去年度から戻/, "undo"], [/./, "archive"]] },
@@ -684,7 +699,7 @@ const UIS_ICO_MAP = {
     "🧾": "receipt", "🗣": "speech", "🗄": "archive", "🕘": "clock", "🗑": "trash", "🎲": "dice", "🆕": "sparkle", "👁": "eye",
     "🍀": "star", "⏮": "skipback", "▶": "play", "◀": "back", "🔀": "shuffle", "🔁": "repeat", "🔂": "repeat1",
     "👓": "glasses", "📏": "ruler", "👂": "ear", "🤒": "thermo", "😷": "thermo", "↩": "undo", "🔳": "qr", "🎬": "film", "🍣": "disc", "📍": "map", "✨": "sparkle", "⚡": "bolt", "⭐": "star", "🏫": "school", "☁": "cloud", "📣": "megaphone", "🎰": "slot", "🥁": "drum", "🌫": "fog", "🃏": "card", "🚶": "walk", "📡": "radar", "🕹": "joystick", "💥": "burst", "🌀": "cyclone", "🌠": "meteor", "🌪": "tornado", "🎆": "fireworks", "⚽": "ball", "🔖": "bookmark", "🚀": "rocket", "🎭": "masks", "🛬": "plane", "🌌": "galaxy", "🍃": "leaf", "🌊": "wave", "🧱": "brick", "🐚": "shell", "💭": "bubble", "🕰": "pendulum", "🪙": "coin", "🧊": "ice", "🌈": "rainbow", "👾": "glitch", "🍮": "jelly", "🛑": "ban", "💎": "gem", "🌙": "moon", "🌸": "sakura", "🌷": "sprout", "🍂": "leaf", "⛄": "snow", "🎃": "pumpkin", "🎄": "tree", "🖍": "board", "🎮": "gamepad", "🐯": "paw", "🌱": "sprout", "🌲": "tree", "➖": "minus", "⭕": "ring", "💡": "bulb", "🔴": "dot", "⏰": "alarmclock", "🎐": "chime", "🚨": "siren", "🛎": "sbell", "⚠": "alert", "🤫": "lock", "🔔": "bell", "🩺": "pulse", "🔮": "sparkle",
-    "🚃": "train", "🎁": "gift", "🗺": "map", "🪑": "chair", "🎯": "target", "📂": "folder", "📒": "file", "🔢": "hash", "🧽": "reset", "⬇": "arrowdown"
+    "🚃": "train", "🎁": "gift", "🗺": "map", "🪑": "chair", "🎯": "target", "📂": "folder", "📒": "file", "🔢": "hash", "🧽": "reset", "⬇": "arrowdown", "📜": "clock", "🙈": "ban", "🔒": "lock"
 };
 function uisIcoKey(s) { return UIS_ICO_MAP[String(s).replace(/[\uFE0F\u200D]/g, "")] || ""; }
 // ボタンの先頭の絵文字を、線のアイコンに置きかえます
@@ -2052,7 +2067,7 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.40",
+    version: "3.41",
     description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",
