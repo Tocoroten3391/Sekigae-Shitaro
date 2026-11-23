@@ -1003,6 +1003,9 @@ ${AS} #uiRail { display: block; position: fixed; left: 0; top: 0; bottom: 0; wid
 ${AS} .btn-config-toggle { position: fixed !important; left: 8px !important; top: var(--uis-top, 14px) !important; width: 68px; height: 64px; padding: 0 !important; border: 0 !important; border-radius: 12px !important; background: transparent !important; box-shadow: none !important; color: var(--text-sub) !important; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 0; z-index: 160; cursor: pointer; font-family: inherit; }
 ${AS} .btn-config-toggle::before { content: ""; width: 22px; height: 22px; background: currentColor; display: block; }
 ${AS} .btn-config-toggle::after { font-size: 12px; font-weight: 600; line-height: 1; content: ""; }
+${AS} #configMenuBtn.has-update-badge::after { position: static; top: auto; right: auto; width: auto; height: auto; border-radius: 0; background: none; box-shadow: none; animation: none; }
+${AS} #configMenuBtn.has-update-badge, ${AS} #configMenuBtn.has-update-badge:hover, ${AS} #configMenuBtn.has-update-badge.is-open { background-image: radial-gradient(circle at calc(50% + 15px) 14px, #ef4444 0 5px, #fff 5px 7px, transparent 7.5px) !important; }
+body:has(#configMenuBtn.has-update-badge) ${AS} #uisTrayConfig, body:has(#configMenuBtn.has-update-badge) #uisTrayConfig { background-image: radial-gradient(circle at calc(100% - 8px) 8px, #ef4444 0 5px, #fff 5px 7px, transparent 7.5px) !important; }
 ${Object.keys(railIds).map(id => `${AS} #${id}::before { ${mask(railIds[id][0])} } ${AS} #${id}::after, ${AS} #${id}.is-playing::after, ${AS} #${id}.is-open::after { content: "${railIds[id][1]}"; }`).join("\n")}
 ${AS} .btn-config-toggle:hover { background: var(--uis-soft) !important; }
 ${AS} .btn-config-toggle.is-open, ${A} #musicPlayerBtn.is-playing { background: var(--uis-tint) !important; color: var(--uis-ink) !important; }
@@ -1315,6 +1318,9 @@ ${P} #uiRail { display: block; position: fixed; left: 0; right: 0; bottom: 0; to
 ${P} .btn-config-toggle { position: fixed !important; top: auto !important; bottom: 0 !important; left: calc(var(--uis-i, 0) * 100vw / var(--uis-n, 5)) !important; width: calc(100vw / var(--uis-n, 5)); height: 62px; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; color: ${idle} !important; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 0; z-index: 160; cursor: pointer; font-family: inherit; transform: none; }
 ${P} .btn-config-toggle::before { content: ""; width: 22px; height: 22px; background: currentColor; display: block; }
 ${P} .btn-config-toggle::after { font-size: 11px; font-weight: 700; line-height: 1; content: ""; }
+${P} #configMenuBtn.has-update-badge::after { position: static; top: auto; right: auto; width: auto; height: auto; border-radius: 0; background: none; box-shadow: none; animation: none; }
+${P} #configMenuBtn.has-update-badge, ${P} #configMenuBtn.has-update-badge:hover, ${P} #configMenuBtn.has-update-badge.is-open { background-image: radial-gradient(circle at calc(50% + 15px) 14px, #ef4444 0 5px, #fff 5px 7px, transparent 7.5px) !important; }
+body:has(#configMenuBtn.has-update-badge) ${P} #uisTrayConfig, body:has(#configMenuBtn.has-update-badge) #uisTrayConfig { background-image: radial-gradient(circle at calc(100% - 8px) 8px, #ef4444 0 5px, #fff 5px 7px, transparent 7.5px) !important; }
 ${Object.keys(railIds).map(id => `${P} #${id}::before { ${mask(railIds[id][0])} } ${P} #${id}::after, ${P} #${id}.is-playing::after, ${P} #${id}.is-open::after { content: "${railIds[id][1]}"; }`).join("\n")}
 ${P} .btn-config-toggle:hover { background: ${a ? "var(--uis-soft)" : "#7A5430"} !important; }
 ${P} .btn-config-toggle.is-open, ${P} #musicPlayerBtn.is-playing { background: ${onBg} !important; color: ${onText} !important; }
@@ -2020,7 +2026,7 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.38",
+    version: "3.39",
     description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",
