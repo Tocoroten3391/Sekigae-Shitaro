@@ -4,16 +4,41 @@
 // 指名の画面には、順番を使っていることは出ません（設定の画面にだけ出ます）。
 // このファイルを index.html から外すと、この機能は、まとめて使えなくなります。指名は、これまでどおりに動きます
 // ==========================================
-const NQ_KEY = "nominate_queue_v1";   // { on: 使うか, list: [生徒の目印（座席の文字）の並び] }
+const NQ_KEY = "nominate_queue_v1";   // { on: 使うか, lists: { クラス名: [生徒の目印（座席の文字）の並び] } }
 let nqPendingPrev = null;             // 直前の指名で使った、順番リストのもとの並び（取り消し用）
 
-function nqState() {
+// クラスごとに、順番リストを持ちます。{ on: 使うか, lists: { クラス名: [生徒の目印の並び] } }
+function nqClassKey() { try { return (typeof activeClassId !== "undefined" && activeClassId) ? String(activeClassId) : ""; } catch (e) { return ""; } }
+function nqRaw() {
     let v = null;
     try { v = JSON.parse(lsGet(NQ_KEY, "null")); } catch (e) { v = null; }
     v = v && typeof v === "object" ? v : {};
-    return { on: v.on === true, list: Array.isArray(v.list) ? v.list.filter(x => typeof x === "string" && x) : [] };
+    const lists = v.lists && typeof v.lists === "object" && !Array.isArray(v.lists) ? v.lists : {};
+    const out = { on: v.on === true, lists: {} };
+    Object.keys(lists).forEach(k => { if (Array.isArray(lists[k])) out.lists[k] = lists[k].filter(x => typeof x === "string" && x); });
+    // 古い形（クラスを分けずに、ひとつだけ持っていた）は、いま開いているクラスのものとして引き継ぎます
+    if (Array.isArray(v.list) && v.list.length && !Object.keys(out.lists).length) out.lists[nqClassKey()] = v.list.filter(x => typeof x === "string" && x);
+    return out;
 }
-function nqSave(s) { lsSet(NQ_KEY, JSON.stringify({ on: !!s.on, list: s.list })); }
+function nqWriteRaw(r) {
+    const lists = {};
+    Object.keys(r.lists).forEach(k => { if (r.lists[k].length) lists[k] = r.lists[k]; });
+    lsSet(NQ_KEY, JSON.stringify({ on: !!r.on, lists: lists }));
+}
+function nqState() {
+    const r = nqRaw();
+    return { on: r.on, list: (r.lists[nqClassKey()] || []).slice() };
+}
+function nqSave(s) {
+    const r = nqRaw();
+    r.on = !!s.on;
+    r.lists[nqClassKey()] = s.list.slice();
+    nqWriteRaw(r);
+}
+// クラスの名前を変えた・複製した・消した時に、順番リストも合わせます
+function nqRenameClass(oldName, newName) { const r = nqRaw(); if (r.lists[oldName]) { r.lists[newName] = r.lists[oldName]; delete r.lists[oldName]; nqWriteRaw(r); } }
+function nqCopyClass(fromName, toName) { const r = nqRaw(); if (r.lists[fromName]) { r.lists[toName] = r.lists[fromName].slice(); nqWriteRaw(r); } }
+function nqRemoveClass(name) { const r = nqRaw(); if (r.lists[name]) { delete r.lists[name]; nqWriteRaw(r); } }
 function nqSetList(list) { const s = nqState(); s.list = list; nqSave(s); nqRender(); }
 function nqEsc(t) { return String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 function nqLabel(text) {
@@ -123,6 +148,17 @@ function nqPickWith(seats, orig) {
     return orig ? orig(seats) : seats[Math.floor(Math.random() * seats.length)];
 }
 
+// 巨大ルーレット：順番リストの、いちばん上の（盤にいる）人の番号を返します（なければ -1）。消すのは、当たりが決まった時です
+function nqRouletteIndex(items) {
+    const s = nqState();
+    if (!s.on || !SekigaeApp.isEnabled("nomination-queue")) return -1;
+    for (let i = 0; i < s.list.length; i++) {
+        const k = items.findIndex(it => it.fullText === s.list[i]);
+        if (k >= 0) return k;
+    }
+    return -1;
+}
+
 const NQ_CSS = `
 .nq-list { display: flex; flex-direction: column; gap: 5px; max-height: 220px; overflow-y: auto; margin-bottom: 8px; }
 .nq-item { display: flex; align-items: center; gap: 8px; padding: 5px 6px 5px 10px; border: 1px solid var(--seat-border); border-radius: 10px; background: var(--card-bg, var(--input-bg)); color: var(--input-text); font-size: 14px; font-weight: 700; }
@@ -154,9 +190,9 @@ const NQ_HTML = `
     <div class="nominate-exclude-help">名前を押すと、順番の最後に入ります</div>
     <div id="nqPicker" class="nq-picker"></div>
     <div class="nq-tools">
-        <button type="button" id="nqAddAllBtn" onclick="nqAddAll()" class="btn-secondary btn-compact">全員を名簿の順に入れる</button>
-        <button type="button" id="nqShuffleBtn" onclick="nqShuffle()" class="btn-secondary btn-compact">順番をばらばらにする</button>
-        <button type="button" id="nqClearBtn" onclick="nqClear()" class="btn-secondary btn-compact">順番をからにする</button>
+        <button type="button" id="nqAddAllBtn" onclick="nqAddAll()" class="btn-secondary">全員を名簿の順に入れる</button>
+        <button type="button" id="nqShuffleBtn" onclick="nqShuffle()" class="btn-secondary">順番をばらばらにする</button>
+        <button type="button" id="nqClearBtn" onclick="nqClear()" class="btn-secondary">順番をからにする</button>
     </div>
 </div>`;
 
@@ -180,6 +216,15 @@ SekigaeApp.registerPlugin({
         // 指名を取り消したら、順番リストも、もとに戻します
         const prevPush = window.pushNominationUndo;
         window.pushNominationUndo = function (kind, text, prevList, hist) {
+            // ルーレットで当たった人が、順番リストにいたら、リストから外します
+            if (kind === "roulette") {
+                const cur = nqState();
+                if (cur.on && SekigaeApp.isEnabled("nomination-queue") && cur.list.includes(text)) {
+                    nqPendingPrev = cur.list.slice();
+                    nqSave({ on: cur.on, list: cur.list.filter(t => t !== text) });
+                    setTimeout(nqRender, 0);
+                }
+            }
             prevPush.apply(this, arguments);
             if (nqPendingPrev && nominationUndoStack.length) nominationUndoStack[nominationUndoStack.length - 1].nqPrev = nqPendingPrev;
             nqPendingPrev = null;

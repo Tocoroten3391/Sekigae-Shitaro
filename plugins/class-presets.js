@@ -101,7 +101,7 @@ function updateArchiveButton() {
     const name = getSelectedPresetName();
     const presets = readPresetsSafe();
     const archived = !!(name && presets[name] && presets[name].archived);
-    btn.textContent = archived ? "選んだクラスを、去年度から戻す" : "選んだクラスを、去年度にする";
+    btn.textContent = archived ? "去年度から戻す" : "去年度にする";
     btn.disabled = !name;
     const ex = $id("btnExportYearCsv");
     if (ex) ex.disabled = !name;
@@ -325,6 +325,7 @@ function presetDialog(opts, done) {
         box.appendChild(m);
     }
     let input = null, check = null;
+    if (opts.bodyEl) box.appendChild(opts.bodyEl);
     if (opts.input) {
         input = document.createElement("input");
         input.type = "text";
@@ -499,6 +500,7 @@ function applyRenameClass(old, next) {
         updateStatsClassNote();
     }
     if (lsGet("trial_return_class", "") === old) lsSet("trial_return_class", next);
+    if (typeof nqRenameClass === "function") nqRenameClass(old, next);
     updatePresetRadioButtons();
     showToast(`クラス「${old}」を、「${next}」に名前変更しました。`, "success");
 }
@@ -548,6 +550,7 @@ function applyDuplicateClass(old, next, withRecords) {
         const c = localStorage.getItem(`gas_student_cache_${old}`);
         if (c !== null) localStorage.setItem(`gas_student_cache_${next}`, c);
     } catch (e) { /* 控えが写せなくても、そのまま続ける */ }
+    if (typeof nqCopyClass === "function") nqCopyClass(old, next);
     updatePresetRadioButtons();
     showToast(`クラス「${old}」を複製して、「${next}」を作りました。${withRecords ? "記録もコピーしています。" : "記録は、新しく始まります。"}`, "success");
 }
@@ -589,6 +592,7 @@ function confirmDeletePresetAction() {
     delete presets[name]; 
     localStorage.setItem("seat_shuffler_presets", JSON.stringify(presets)); 
     removeClassRecords(name);
+    if (typeof nqRemoveClass === "function") nqRemoveClass(name);
     updatePresetRadioButtons(); 
     onLayoutChange(); 
     closeDeleteModal(); 

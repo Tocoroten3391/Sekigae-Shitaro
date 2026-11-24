@@ -203,6 +203,7 @@
                 <button type="button" id="btnRenameClass" onclick="renameSelectedClass()" class="btn-secondary">名前を変える</button>
                 <button type="button" id="btnDuplicateClass" onclick="duplicateSelectedClass()" class="btn-secondary">複製する</button>
             </div>
+            <div data-plugin-slot="settings-classes"></div>
             <button data-plugin="absent" onclick="openAbsentModal()" class="btn-secondary btn-tint-amber" style="margin-top: 10px; background-color: #d97706; color: white;">今日の欠席者をまとめて選ぶ</button>
         </div>
         <div class="config-section" data-sec="rosterio" data-group="クラスと席" data-kw="名簿 生徒 作る 直す 貼り付け 読み込み csv txt ファイル クイック生成 人数 書き出し ふりがな 番号">
@@ -232,7 +233,7 @@
             <button type="button" onclick="openPromoteModal()" class="btn-secondary" id="btnPromote" style="margin-top: 10px;">進級の切り替え</button>
             <p class="config-note">新しい学年になった時に、新しいクラスを作ります。前の学年のクラスと記録は、そのまま残ります。</p>
             <button type="button" onclick="toggleArchiveSelectedClass()" class="btn-secondary" id="btnArchiveClass" style="margin-top: 10px;">選んだクラスを、去年度にする</button>
-            <button type="button" onclick="exportSelectedClassYearCsv()" class="btn-secondary" id="btnExportYearCsv" style="margin-top: 10px;">選んだクラスの、1年間の記録を書き出す</button>
+            <button type="button" onclick="exportSelectedClassYearCsv()" class="btn-secondary" id="btnExportYearCsv" style="margin-top: 10px;">1年間の記録をCSVで書き出す</button>
             <p class="config-note">去年度にしたクラスは、一覧の下の「去年度のクラス」にまとまります。記録は消えません。年度の終わりに、1年間の指名や席の記録を、表計算ソフトで開けるファイルに書き出せます。</p>
         </div>
         <div class="config-section" data-sec="layout" data-group="クラスと席" data-kw="座席 空席 列 行 レイアウト 固定 出席番号順 リセット 教室の配置">
@@ -831,7 +832,7 @@
                             <li>「番号名簿をクイック生成」に人数を入れて「生成」を押すと、番号だけの名簿ができます。番号名簿の時は、自動で、座席が番号のみの表示になります。</li>
                             <li>クラス名を入れて「保存」を押すと、クラスとして保存できます。保存したクラスは、選ぶだけで呼び出せます。クラウドへは自動接続しません。</li>
                             <li>新しい学年になったら、「進級の切り替え」を押します。新しいクラスの名前を入れ、クラス替えがあるかを選ぶと、新しいクラスができます。前の学年のクラスと、その記録は、そのまま残ります。新しいクラスの記録は、まっさらから始まります。</li>
-                            <li>「選んだクラスを、去年度にする」を押すと、そのクラスが、一覧の下の「去年度のクラス」にまとまります。進級の切り替えで新しいクラスを作ると、前のクラスを、自動でまとめることもできます。記録は消えません。「選んだクラスの、1年間の記録を書き出す」では、そのクラスの指名回数、結果、よく座る席を、表計算ソフトで開けるファイルに保存できます。</li>
+                            <li>「去年度にする」を押すと、そのクラスが、一覧の下の「去年度のクラス」にまとまります。進級の切り替えで新しいクラスを作ると、前のクラスを、自動でまとめることもできます。記録は消えません。「選んだクラスの、1年間の記録を書き出す」では、そのクラスの指名回数、結果、よく座る席を、表計算ソフトで開けるファイルに保存できます。</li>
                             <li>「サンプルのクラスで試す」は、お試し専用です。試している間の席替えや指名の記録は、本物のクラスには入らず、お試しをやめると消えます。</li>
                             <li data-plugin="absent">「今日の欠席者をまとめて選ぶ」で、お休みの人をタップして赤くし、「反映する」を押すと、まとめて欠席になります。席替えの後でも、今の席のまま反映され、「戻す」で元に戻せます。</li>
                             <li>「スプレッドシート連携」で、GASのURLを入れて「GASに接続・更新」を押すと、クラウドの名簿を取り込みます。「GASに接続」は、接続できるかを確かめるだけで、座席表は変わりません。</li>
@@ -1826,6 +1827,7 @@
     <script src="plugins/plugin-presets.js"></script>
     <script src="plugins/nomination-balance.js"></script>
     <script src="plugins/nomination-queue.js"></script>
+    <script src="plugins/class-bulk.js"></script>
     <script src="plugins/seat-fairness.js"></script>
     <script src="plugins/diagnostics.js"></script>
     <script src="plugins/settings-search.js"></script>

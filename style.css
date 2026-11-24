@@ -2274,3 +2274,6 @@ body.theme-dark .plugin-deps-warn-row .plugin-deps-warn, body.theme-blackboard .
 .preset-dialog { max-width: 460px; width: calc(100vw - 32px); }
 .preset-dialog-btns { gap: 8px; }
 .modal-btn-row.preset-dialog-btns button { padding: 10px 14px !important; }
+#configContainer .preset-manage-row button { margin: 0 !important; }
+.preset-manage-row { gap: 10px; }
+.preset-manage-row.cb-stack { margin-top: 10px; }

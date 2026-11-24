@@ -208,7 +208,7 @@ function spinRoulette(flickV) {
     rouletteTickReset();
     if (rouletteIsReel()) { spinReel(); return; }
     if (rouletteIsMarble()) { spinMarble(); return; }
-    if (rouletteTeaseOn()) { spinWheelTease(); return; }
+    if (rouletteTeaseOn() || rouletteHasQueuedWinner()) { spinWheelTease(); return; }
     rSpinning = true;
     rVelocity = typeof flickV === "number" ? flickV : 0.3 + Math.random() * 0.1;   // ドラッグではじいた時は、その強さで回ります
     rWheelLastT = null;
@@ -396,7 +396,7 @@ function rouletteWheelTeasePlan(mainMs) {
     const n = rItems.length || 1, scale = rCanvas && rCanvas.clientWidth ? rCanvas.clientWidth / rCanvas.width : 1;
     const arcPx = Math.max(12, (Math.PI * 2 / n) * ((rCanvas ? rCanvas.width / 2 : 300) - 10 - PEG_INSET) * scale);
     const near = () => Math.max(0.012, Math.min(0.08, R(2, 4.5) / arcPx));
-    const kinds = ["back", "over", "plain"];
+    const kinds = rouletteTeaseOn() ? ["back", "over", "plain"] : ["plain"];   // 焦らし演出がオフの時（順番リストで、当たる人が決まっている時）は、ふつうに止まります
     const kind = kinds[Math.floor(Math.random() * kinds.length)];
     // 止まる位置：真ん中に近い所が多めで、端（±0.4）にも止まります
     let fin = (Math.random() < 0.5 ? -1 : 1) * 0.4 * Math.pow(Math.random(), 0.6);
@@ -422,10 +422,18 @@ function rouletteWheelTeasePlan(mainMs) {
     return { segs: segs, total: segs.reduce((t, g) => t + g.dur, 0), names: [kind], start: segs[0].to, fin: fin };
 }
 let rWheelTeaseKind = "";                       // 今回の焦らしの種類（back／over／plain）
+// 当たる人を決めます（指名の順番リストがあれば、その順。なければ、ランダム）
+function roulettePickWinnerIndex(n) {
+    try { if (typeof nqRouletteIndex === "function") { const i = nqRouletteIndex(rItems); if (i >= 0 && i < n) return i; } } catch (e) { /* ランダムにする */ }
+    return Math.floor(Math.random() * n);
+}
+function rouletteHasQueuedWinner() {
+    try { return typeof nqRouletteIndex === "function" && nqRouletteIndex(rItems) >= 0; } catch (e) { return false; }
+}
 function spinWheelTease() {
     const n = rItems.length;
     const arc = Math.PI * 2 / n;
-    const winner = Math.floor(Math.random() * n);
+    const winner = roulettePickWinnerIndex(n);
     // 止まった時に、ポインターが winner の真ん中に来る角度
     const targetNorm = ((Math.PI * 1.5 - (winner + 0.5) * arc) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
     const from = rAngle;
@@ -561,7 +569,7 @@ function spinReel() {
     rSpinning = true;
     rReelPos = Math.round(rReelPos) % n;
     if (rReelPos < 0) rReelPos += n;
-    const winner = Math.floor(Math.random() * n);
+    const winner = roulettePickWinnerIndex(n);
     const from = rReelPos;
     const base = ((from - winner) % n + n) % n;
     const dist = base + n * Math.ceil(24 / n);                      // 24人分以上は、流れるようにします
@@ -660,7 +668,7 @@ function drawMarbleWheel() {
 function spinMarble() {
     const n = rItems.length, arc = Math.PI * 2 / n;
     const tease = rouletteTeaseOn(), mult = rouletteSpeedMult();
-    const winner = Math.floor(Math.random() * n);
+    const winner = roulettePickWinnerIndex(n);
     const T1 = (tease ? 6200 : 5000) * mult, S = (tease ? 3600 : 2600) * mult, T = T1 + S;   // 走る時間と、くぼみで跳ねる時間
     const Ssec = S / 1000, D = Math.PI * 2 * (tease ? 6 : 4.5);
     const omega = Math.PI * 2 * 1.5 / Ssec, gamma = 5 / Ssec;
