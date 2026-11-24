@@ -89,6 +89,12 @@ function cbCleanPreset(p) {
         if (typeof gcol[i] === "string" && /^#[0-9a-fA-F]{3,8}$/.test(gcol[i])) out.groupColors[i] = gcol[i];
     }
     Object.keys(mm).slice(0, 2000).forEach(k => { if (typeof mm[k] === "number" || typeof mm[k] === "string") out.manualGroupMap[k.slice(0, 100)] = mm[k]; });
+    const cs = cbObj(p.csettings);
+    if (cs.vals && typeof cs.vals === "object" && !Array.isArray(cs.vals)) {
+        const vals = {};
+        Object.keys(cs.vals).slice(0, 60).forEach(k => { const v = cs.vals[k]; if (/^[a-z0-9_]{1,60}$/.test(k) && (v === null || typeof v === "string")) vals[k] = v === null ? null : v.slice(0, 50000); });
+        out.csettings = { t: typeof cs.t === "number" && isFinite(cs.t) ? cs.t : 0, cats: Array.isArray(cs.cats) ? cs.cats.filter(x => typeof x === "string").slice(0, 10) : [], vals: vals };
+    }
     if (p.archived === true) out.archived = true;
     if (p.pinned === true) out.pinned = true;
     if (typeof p.lastUsed === "number" && isFinite(p.lastUsed)) out.lastUsed = p.lastUsed;

@@ -501,6 +501,7 @@ function applyRenameClass(old, next) {
     }
     if (lsGet("trial_return_class", "") === old) lsSet("trial_return_class", next);
     if (typeof nqRenameClass === "function") nqRenameClass(old, next);
+    if (typeof chistRenameClass === "function") chistRenameClass(old, next);
     updatePresetRadioButtons();
     showToast(`クラス「${old}」を、「${next}」に名前変更しました。`, "success");
 }
@@ -593,6 +594,7 @@ function confirmDeletePresetAction() {
     localStorage.setItem("seat_shuffler_presets", JSON.stringify(presets)); 
     removeClassRecords(name);
     if (typeof nqRemoveClass === "function") nqRemoveClass(name);
+    if (typeof chistRemoveClass === "function") chistRemoveClass(name);
     updatePresetRadioButtons(); 
     onLayoutChange(); 
     closeDeleteModal(); 
@@ -607,6 +609,7 @@ function buildPresetFromUI(prev) {
     if (prev && prev.archived) keep.archived = true;
     if (prev && prev.pinned) keep.pinned = true;
     if (prev && prev.lastUsed) keep.lastUsed = prev.lastUsed;
+    if (prev && prev.csettings) keep.csettings = prev.csettings;
     const colors = {};
     for (let i = 1; i <= 8; i++) colors[i] = getCurrentGroupColor(i);
     return {

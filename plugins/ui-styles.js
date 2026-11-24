@@ -281,7 +281,7 @@ ${S} #configContainer :is(button[onclick="savePreset()"], button[onclick="openSt
 ${S} #configContainer :is(button[onclick="savePreset()"], button[onclick="openStatsModal()"], #connectGasBtn, #saveSpreadsheetBtn):hover { background: var(--uis-b-on-bg) !important; color: var(--uis-b-on-fg) !important; filter: brightness(1.1); }
 ${S} #configContainer :is(#connectOnlyGasBtn, #loadSpreadsheetBtn, button[onclick="downloadAsCSV()"], button[onclick*="openHistoryModal"], button[onclick*="openCacheRestoreModal"], button[onclick*="openBackupModal"], #btnSchedClear, #btnSsPause, #btnRenameClass, #btnDuplicateClass, #btnArchiveClass, #btnExportYearCsv, #nqAddAllBtn, #nqShuffleBtn, #nqClearBtn, #btnClassBulkExport, #btnClassBulkImport, #btnClassBulkPromote) { background: var(--uis-b-bg) !important; color: var(--uis-b-fg) !important; border: 1px solid var(--uis-b-line) !important; box-shadow: none !important; font-weight: 700 !important; height: auto !important; min-height: 44px !important; box-sizing: border-box !important; padding-top: 6px !important; padding-bottom: 6px !important; }
 ${S} #configContainer :is(#connectOnlyGasBtn, #loadSpreadsheetBtn, button[onclick="downloadAsCSV()"], button[onclick*="openHistoryModal"], button[onclick*="openCacheRestoreModal"], button[onclick*="openBackupModal"], #btnSchedClear, #btnSsPause, #btnRenameClass, #btnDuplicateClass, #btnArchiveClass, #btnExportYearCsv, #nqAddAllBtn, #nqShuffleBtn, #nqClearBtn, #btnClassBulkExport, #btnClassBulkImport, #btnClassBulkPromote):hover { background: var(--uis-b-hover-bg) !important; color: var(--uis-b-fg) !important; border-color: var(--uis-b-hover-line) !important; }
-${S} #configContainer :is(#connectOnlyGasBtn, #loadSpreadsheetBtn, #connectGasBtn, #saveSpreadsheetBtn, #btnSchedClear, #btnSsPause, #btnRenameClass, #btnDuplicateClass, #btnArchiveClass, #btnExportYearCsv, #nqAddAllBtn, #nqShuffleBtn, #nqClearBtn, #btnClassBulkExport, #btnClassBulkImport, #btnClassBulkPromote, #btnSsOpen, #btnRosterExportMenu, #btnShareChart, button[onclick="downloadAsCSV()"], button[onclick="savePreset()"], button[onclick="openStatsModal()"], button[onclick*="openHistoryModal"], button[onclick*="openCacheRestoreModal"], button[onclick*="openBackupModal"], button[onclick*="openChartExportModal"], button[onclick*="openRosterEditor()"], button[onclick*="openRosterPasteModal"], button[onclick*="offlineFileInput"], button[onclick*="openAbsentModal"]) { font-size: 15px !important; padding-left: 10px !important; padding-right: 10px !important; }
+${S} #configContainer :is(#connectOnlyGasBtn, #loadSpreadsheetBtn, #connectGasBtn, #saveSpreadsheetBtn, #btnSchedClear, #btnSsPause, #btnRenameClass, #btnDuplicateClass, #btnArchiveClass, #btnExportYearCsv, #nqAddAllBtn, #nqShuffleBtn, #nqClearBtn, #btnClassBulkExport, #btnClassBulkImport, #btnClassBulkPromote, #rsetSaveBtn, #csetRememberBtn, #csetClearBtn, #chistBtn, #btnSsOpen, #btnRosterExportMenu, #btnShareChart, button[onclick="downloadAsCSV()"], button[onclick="savePreset()"], button[onclick="openStatsModal()"], button[onclick*="openHistoryModal"], button[onclick*="openCacheRestoreModal"], button[onclick*="openBackupModal"], button[onclick*="openChartExportModal"], button[onclick*="openRosterEditor()"], button[onclick*="openRosterPasteModal"], button[onclick*="offlineFileInput"], button[onclick*="openAbsentModal"]) { font-size: 15px !important; padding-left: 10px !important; padding-right: 10px !important; }
 ${S} #configContainer :is(button.btn-secondary, button.btn-connect, button.btn-save, button.btn-load, button.btn-csv):not(.btn-compact):not(.sx-reset-btn):not(.btn-config-wide):not(.fav-star) { font-size: 15px !important; font-weight: 700 !important; min-height: 44px !important; height: auto !important; box-sizing: border-box !important; padding-top: 6px !important; padding-bottom: 6px !important; }
 ${S} #configContainer :is(button.btn-compact, button.sx-reset-btn):not(.nq-op):not(.fav-star) { font-size: 13px !important; font-weight: 700 !important; min-height: 32px !important; height: auto !important; box-sizing: border-box !important; padding: 4px 12px !important; }
 ${S} #configContainer .layout-grid-fields:has(#saveSpreadsheetBtn) { grid-template-columns: 1fr !important; gap: 8px !important; }
@@ -602,7 +602,11 @@ const UIS_BTN_ICO = [
     { sel: "#btnClassBulkExport", map: [[/./, "export"]] },
     { sel: "#btnClassBulkImport", map: [[/./, "import"]] },
     { sel: "#btnClassBulkPromote", map: [[/./, "cap"]] },
-    { sel: ".preset-dialog-btns button", map: [[/書き出す/, "export"], [/読み込む/, "import"], [/進級/, "cap"]] },
+    { sel: ".preset-dialog-btns button", map: [[/書き出す/, "export"], [/読み込む/, "import"], [/進級/, "cap"], [/^上書きする$/, "save"], [/^消す$/, "trash"], [/^戻す$/, "undo"], [/^やめる$/, "close"]] },
+    { sel: "#rsetSaveBtn", map: [[/./, "save"]] },
+    { sel: "#csetRememberBtn", map: [[/./, "bookmark"]] },
+    { sel: "#csetClearBtn", map: [[/./, "trash"]] },
+    { sel: "#chistBtn", map: [[/./, "clock"]] },
     { sel: "#nqAddAllBtn", map: [[/./, "users"]] },
     { sel: "#nqShuffleBtn", map: [[/./, "shuffle"]] },
     { sel: "#nqClearBtn", map: [[/./, "trash"]] },
@@ -2080,7 +2084,7 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.43",
+    version: "3.44",
     description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",
