@@ -2,7 +2,7 @@ const $id = id => document.getElementById(id);
 
 // アプリのバージョン。ここを更新すれば設定メニューの表示にも自動で反映される。
 // SemVer（メジャー.マイナー.パッチ）方式：メジャー=大きな仕様変更、マイナー=新機能、パッチ=不具合修正。
-const APP_VERSION = "4.59.1";
+const APP_VERSION = "4.60.0";
 const LATEST_VERSION_URL = "https://github.com/Tocoroten3391/Sekigae-Shitaro_Apps/releases/latest";
 // 自前で更新情報を配信するときのURL。空の間は、下のGASを使います。
 // GitHub なら、changelog.json のURL（末尾が .json）を書きます。server/updates.php のURLでも使えます。
@@ -60,6 +60,7 @@ const PLUGIN_CATALOG_BUILTIN = [
     ["program-timer.js", false, "プログラムタイマー。曜日ごとの時間割を登録しておくと、決めた時刻に、自動でチャイムが鳴ります。予鈴、始まりと終わりのチャイム、いまの授業の残り時間の表示、授業の始まりでタイマーを自動で始める機能があります"],
     ["plugin-presets.js", false, "構成プリセット。使う機能の組み合わせを、「かんたん」「授業用」「年度はじめ」「電子黒板」「指名・発表」「フル」などに、ワンタッチで切りかえます。いまの構成に名前をつけて、保存もできます。保存した構成は、ファイルに書き出して、ほかの先生に配れます。もらったファイルは、読み込めます"],
     ["nomination-balance.js", false, "発言・指名の偏り防止。指名と発言の回数を数えて、まだ当たっていない人を、先に指名できます。座席を押して発言を数える「発言モード」、座席表の回数表示、記録・統計の「偏り」タブがあります"],
+    ["nomination-queue.js", false, "指名の順番リスト。指名する人を、あらかじめ順番に決めておけます。「次を指名する！」を押すたびに、上の人から当たります。"],
     ["seat-fairness.js", false, "席の公平性レポート。前列・後列・窓側・廊下側・角・教卓の前に、何回座ったかを、生徒ごとに数えて、表のコピーと印刷ができます。偏りが続いた人は、次の席替えで調整できます。席替えの点数を、fairActive と fairPenalty で受け取ります"],
     ["diagnostics.js", false, "動作の診断。起動にかかった時間、計算と描画の速さ、メモリの目安を測って、動きが重い時の対処を勧めます。軽量モードや全体アニメーションのオフを、画面のボタンで試せます"],
     ["settings-search.js", false, "設定の検索。設定のさがすを、項目ごとの検索に強化します。ひらがな・カタカナのちがいを無視して、設定、ダイアログの中のボタン、プラグイン、使い方まで探せます。結果を押すと、その場所に移って光らせます。「/」キーで、いつでも検索に移れます。"],
@@ -184,7 +185,7 @@ const SekigaeApp = {
     },
     // プラグインの設定画面の、グループ分け（ここに無いプラグインは、「そのほか」に入ります）
     groups: [
-        { title: "席替え・指名のくふう", color: "#d97706", ids: ["announce", "preview", "compare", "seatcheck", "yaocho", "roulette", "absent", "reasons", "animextra", "seatnote", "luckbank", "fortune", "roomlayout", "envelope", "seatjourney", "seat-wishes", "menu-groups", "seatskin", "nomination-balance", "seat-fairness"] },
+        { title: "席替え・指名のくふう", color: "#d97706", ids: ["announce", "preview", "compare", "seatcheck", "yaocho", "roulette", "absent", "reasons", "animextra", "seatnote", "luckbank", "fortune", "roomlayout", "envelope", "seatjourney", "seat-wishes", "menu-groups", "seatskin", "nomination-balance", "nomination-queue", "seat-fairness"] },
         { title: "名簿・入力", color: "#16a34a", ids: ["roster", "furigana", "softkeypad"] },
         { title: "記録・印刷・クラウド", color: "#0ea5e9", ids: ["history", "term", "print", "share", "seat-export", "schedule", "cloud", "updateinfo"] },
         { title: "道具", color: "#7c3aed", ids: ["timer", "program-timer", "calc", "music", "diagnostics", "plugin-presets", "settings-search", "plugin-menu", "settings-extras", "display-scale", "second-screen", "ui-styles", "tour"] }
