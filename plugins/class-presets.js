@@ -477,6 +477,23 @@ function renameSelectedClass() {
     ask(old, "");
 }
 
+// クラス名をキーにして保存している情報（教室の配置・付箋・希望・運の貯金）を、名前変更・複製・削除に合わせて動かします
+const CLASS_KEYED_STORES = ["room_layout", "seat_notes", "seat_wishes_v1", "luck_bank"];
+function classKeyedMove(mode, from, to) {
+    CLASS_KEYED_STORES.forEach(key => {
+        try {
+            const raw = localStorage.getItem(key);
+            if (!raw) return;
+            const all = JSON.parse(raw);
+            if (!all || typeof all !== "object" || Array.isArray(all) || all[from] === undefined) return;
+            if (mode === "rename") { all[to] = all[from]; delete all[from]; }
+            else if (mode === "copy") { all[to] = JSON.parse(JSON.stringify(all[from])); }
+            else if (mode === "remove") { delete all[from]; }
+            localStorage.setItem(key, JSON.stringify(all));
+        } catch (e) { /* 動かせなくても、そのまま続ける */ }
+    });
+}
+
 function applyRenameClass(old, next) {
     const presets = readPresetsSafe();
     if (!presets[old] || presets[next]) return;
@@ -500,6 +517,7 @@ function applyRenameClass(old, next) {
         updateStatsClassNote();
     }
     if (lsGet("trial_return_class", "") === old) lsSet("trial_return_class", next);
+    classKeyedMove("rename", old, next);
     if (typeof nqRenameClass === "function") nqRenameClass(old, next);
     if (typeof chistRenameClass === "function") chistRenameClass(old, next);
     updatePresetRadioButtons();
@@ -551,6 +569,7 @@ function applyDuplicateClass(old, next, withRecords) {
         const c = localStorage.getItem(`gas_student_cache_${old}`);
         if (c !== null) localStorage.setItem(`gas_student_cache_${next}`, c);
     } catch (e) { /* 控えが写せなくても、そのまま続ける */ }
+    classKeyedMove("copy", old, next);
     if (typeof nqCopyClass === "function") nqCopyClass(old, next);
     updatePresetRadioButtons();
     showToast(`クラス「${old}」を複製して、「${next}」を作りました。${withRecords ? "記録もコピーしています。" : "記録は、新しく始まります。"}`, "success");
@@ -593,6 +612,7 @@ function confirmDeletePresetAction() {
     delete presets[name]; 
     localStorage.setItem("seat_shuffler_presets", JSON.stringify(presets)); 
     removeClassRecords(name);
+    classKeyedMove("remove", name, null);
     if (typeof nqRemoveClass === "function") nqRemoveClass(name);
     if (typeof chistRemoveClass === "function") chistRemoveClass(name);
     updatePresetRadioButtons(); 

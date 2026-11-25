@@ -59,7 +59,7 @@ function checkForAppUpdates() {
             // それより新しいバージョンが出れば、また表示する。
             renderNewUpdateModal(sorted[0], sorted);
             // 設定で「設定ボタンの印だけ」を選んでいる時は、ポップアップを出さない
-            if (updNoticeMode() === "popup" && !isUpdatePopupIgnored(latestKnownChangelogVersion)) {
+            if (updNoticeMode() === "popup" && !isUpdatePopupIgnored(latestKnownChangelogVersion) && !updSnoozed(latestKnownChangelogVersion)) {
                 const overlay = $id("newUpdateModalOverlay");
                 if (overlay) overlay.style.display = "flex";
             }
@@ -110,6 +110,37 @@ function updParseNotes(notes) {
     });
     return out;
 }
+// 新機能の説明から、その機能の設定を探すためのことば（説明の中に、左の言葉があれば、「設定を開く」を付けます）
+const UPD_TRY = [
+    [/条件セット/, "条件セット"], [/クラスごとに持/, "クラスごとの設定"], [/保存履歴/, "保存履歴"], [/順番リスト/, "順番リスト"],
+    [/まとめて進級|全クラス/, "クラスのまとめ"], [/ふりがな/, "ふりがな"], [/拡張画面/, "拡張画面"], [/席替えの予約/, "予約"],
+    [/公平性/, "公平性"], [/運の貯金/, "運の貯金"], [/希望|配慮/, "希望"], [/テスト用/, "テスト用座席"], [/席ラベル|名札/, "席ラベル"],
+    [/教室の配置/, "教室の配置"], [/更新のお知らせ/, "更新のお知らせ"], [/プログラムタイマー|時間割/, "プログラムタイマー"],
+    [/偏り防止|発言バランス/, "偏り防止"], [/画面スタイル/, "画面スタイル"], [/バックアップ/, "バックアップ"], [/タイマー/, "タイマー"]
+];
+function updTryQuery(text) {
+    for (const [re, q] of UPD_TRY) if (re.test(text)) return q;
+    return "";
+}
+// 設定を開いて、さがす欄に言葉を入れる
+function updTry(q) {
+    closeNewUpdateModal(); closeWhatsNewModal();
+    const o = $id("updateInfoModalOverlay");
+    if (o) o.style.display = "none";
+    const cc = $id("configContainer");
+    if (cc && !cc.classList.contains("open") && typeof toggleConfigMenu === "function") toggleConfigMenu();
+    const input = $id("configSearchInput");
+    if (!input) return;
+    input.value = q;
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    try { if (typeof ssRun === "function") { ssIndex = null; ssRun(); } } catch (e) { /* 検索が使えなくても、言葉は入っています */ }
+    input.focus();
+}
+function updTryHtml(it) {
+    if (it.cat !== "new") return "";
+    const q = updTryQuery(it.text);
+    return q ? ` <button type="button" class="upd-try" data-q="${updEsc(q)}">設定を開く</button>` : "";
+}
 function updBulletsHtml(entry, filter, query) {
     const q = (query || "").trim().toLowerCase();
     const whole = q && ((entry.version || "") + " " + (entry.date || "")).toLowerCase().includes(q);
@@ -117,7 +148,47 @@ function updBulletsHtml(entry, filter, query) {
         (!filter || filter === "all" || it.cat === filter) && (!q || whole || it.text.toLowerCase().includes(q)));
     if (!items.length) return "";
     return '<ul class="upd-list">' + items.map(it =>
-        `<li><span class="upd-tag upd-${it.cat}">${UPD_CATS[it.cat]}</span><span class="upd-txt">${updEsc(it.text)}</span></li>`).join("") + "</ul>";
+        `<li><span class="upd-tag upd-${it.cat}">${UPD_CATS[it.cat]}</span><span class="upd-txt">${updEsc(it.text)}${updTryHtml(it)}</span></li>`).join("") + "</ul>";
+}
+
+// ---- 更新のしかた ----
+function updHowtoHtml() {
+    const web = /^https?:/.test(location.protocol);
+    const last = typeof getBackupLastAt === "function" ? getBackupLastAt() : 0;
+    const lastTxt = last ? `最後のバックアップ：${typeof formatBackupDate === "function" ? formatBackupDate(last) : new Date(last).toLocaleDateString()}` : "まだ、バックアップを取っていません。";
+    const steps = web
+        ? ["「バックアップを開く」で、いまのデータを書き出して、とっておきます。", "このページを、再読み込みします。新しい版が、自動で入ります。", "変わらない時は、もう一度、再読み込みします。"]
+        : ["「バックアップを開く」で、いまのデータを書き出して、とっておきます。", "「最新バージョンはこちら」で、新しい版のzipをダウンロードして、展開します。", "展開してできたファイルを、いま使っているフォルダに上書きして、アプリを開き直します。"];
+    return `<details class="upd-howto"><summary>更新のしかた</summary><ol>${steps.map(t => `<li>${t}</li>`).join("")}</ol>
+        <div class="upd-howto-last${last ? "" : " is-warn"}">${updEsc(lastTxt)}</div>
+        <button type="button" class="btn-secondary upd-howto-btn">バックアップを開く</button></details>`;
+}
+const UPD_SNOOZE_KEY = "update_snooze_v1";   // { until: 時刻, ver: そのとき知らせていた版 }
+function updSnoozed(ver) {
+    try {
+        const s = JSON.parse(localStorage.getItem(UPD_SNOOZE_KEY) || "null");
+        return !!s && s.ver === ver && Date.now() < s.until;
+    } catch (e) { return false; }
+}
+function updSnoozeFor(days) {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + days);
+    try { localStorage.setItem(UPD_SNOOZE_KEY, JSON.stringify({ until: d.getTime(), ver: latestKnownChangelogVersion })); } catch (e) { /* 何もしない */ }
+    closeNewUpdateModal();
+    showToast(days === 1 ? "今日は、もう知らせません。明日、また知らせます。" : `${days}日後に、また知らせます。`, "success");
+}
+function updSnoozeAsk() {
+    if (typeof presetDialog !== "function") { updSnoozeFor(3); return; }
+    presetDialog({
+        title: "あとで知らせる",
+        message: "いつ、また知らせますか？",
+        buttons: [
+            { label: "やめる", value: "cancel", cls: "btn-secondary" },
+            { label: "今日は出さない", value: "1", cls: "btn-secondary" },
+            { label: "3日後", value: "3", cls: "btn-connect is-primary", primary: true }
+        ]
+    }, v => { if (v === "1" || v === "3") updSnoozeFor(Number(v)); });
 }
 
 // 更新のお知らせポップアップ。いまの版より新しい版が、いくつもあるときは、まとめて見せます
@@ -144,6 +215,8 @@ function renderNewUpdateModal(latestEntry, allSorted) {
     }).join("");
     if (newer.length > SHOW) html += `<p class="upd-more">ほか ${newer.length - SHOW}回分の更新は、「更新履歴を見る」で見られます。</p>`;
     notesEl.innerHTML = html;
+    const howto = $id("newUpdateHowto");
+    if (howto) howto.innerHTML = updHowtoHtml();
 }
 function closeNewUpdateModal() {
     const overlay = $id("newUpdateModalOverlay");
@@ -221,7 +294,7 @@ function renderUpdateInfoList() {
     let html = "";
     const latest = entries[0];
     if (latest && compareVersions(latest.version, APP_VERSION) > 0) {
-        html += `<div class="upd-banner">新しいバージョン <b>Ver.${updEsc(latest.version)}</b> があります（いま Ver.${updEsc(APP_VERSION)}）</div>`;
+        html += `<div class="upd-banner">新しいバージョン <b>Ver.${updEsc(latest.version)}</b> があります（いま Ver.${updEsc(APP_VERSION)}）</div>` + updHowtoHtml();
     }
     let shown = 0;
     entries.forEach((e, i) => {
@@ -336,5 +409,16 @@ SekigaeApp.registerPlugin({
         const sel = $id("updateNoticeMode");
         if (sel) sel.value = updNoticeMode();
         setTimeout(updCheckWhatsNew, 1800);
+        document.addEventListener("click", e => {
+            const t = e.target.closest && e.target.closest(".upd-try");
+            if (t) { updTry(t.dataset.q || ""); return; }
+            const h = e.target.closest && e.target.closest(".upd-howto-btn");
+            if (h) {
+                closeNewUpdateModal(); closeWhatsNewModal();
+                const o = $id("updateInfoModalOverlay");
+                if (o) o.style.display = "none";
+                if (typeof openBackupModal === "function") openBackupModal();
+            }
+        });
     }
 });

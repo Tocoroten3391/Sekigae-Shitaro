@@ -2,7 +2,7 @@ const $id = id => document.getElementById(id);
 
 // アプリのバージョン。ここを更新すれば設定メニューの表示にも自動で反映される。
 // SemVer（メジャー.マイナー.パッチ）方式：メジャー=大きな仕様変更、マイナー=新機能、パッチ=不具合修正。
-const APP_VERSION = "4.63.0";
+const APP_VERSION = "4.64.0";
 const LATEST_VERSION_URL = "https://github.com/Tocoroten3391/Sekigae-Shitaro_Apps/releases/latest";
 // 自前で更新情報を配信するときのURL。空の間は、下のGASを使います。
 // GitHub なら、changelog.json のURL（末尾が .json）を書きます。server/updates.php のURLでも使えます。
@@ -64,6 +64,8 @@ const PLUGIN_CATALOG_BUILTIN = [
     ["class-bulk.js", false, "クラスのまとめ操作。全クラスを1つのファイルに書き出す・読み込む、まとめて進級させる、ができます。"],
     ["rule-sets.js", false, "席替えの条件セット。前の席を避ける・離す／近くに置く・優先順位などに名前をつけて保存し、ワンタップで切り替えられます。"],
     ["class-settings.js", false, "クラスごとの設定。席替えの条件・演出・テーマ・指名のしかたを、クラスごとに持てます。"],
+    ["seat-labels.js", false, "座席表の生徒の名札シールや席ラベルを、市販のラベル用紙（A4・10面〜65面）に合わせて印刷します。用紙の寸法は自分で決めることもでき、使いかけの用紙や、位置のずれにも対応します。"],
+    ["exam-seats.js", false, "テストや検定のための座席づくり。番号が近い人どうしが隣にならない千鳥配置、A・B問題を交互に配る版の割り当て、机に置く受験番号札の印刷ができます。"],
     ["class-history.js", false, "クラスの保存履歴。クラスを保存するたびに、前の状態を自動で残して、あとから戻せます。"],
     ["seat-fairness.js", false, "席の公平性レポート。前列・後列・窓側・廊下側・角・教卓の前に、何回座ったかを、生徒ごとに数えて、表のコピーと印刷ができます。偏りが続いた人は、次の席替えで調整できます。席替えの点数を、fairActive と fairPenalty で受け取ります"],
     ["diagnostics.js", false, "動作の診断。起動にかかった時間、計算と描画の速さ、メモリの目安を測って、動きが重い時の対処を勧めます。軽量モードや全体アニメーションのオフを、画面のボタンで試せます"],
@@ -189,9 +191,9 @@ const SekigaeApp = {
     },
     // プラグインの設定画面の、グループ分け（ここに無いプラグインは、「そのほか」に入ります）
     groups: [
-        { title: "席替え・指名のくふう", color: "#d97706", ids: ["announce", "preview", "compare", "seatcheck", "yaocho", "roulette", "absent", "reasons", "animextra", "seatnote", "luckbank", "fortune", "roomlayout", "envelope", "seatjourney", "seat-wishes", "menu-groups", "seatskin", "nomination-balance", "nomination-queue", "seat-fairness", "rule-sets"] },
+        { title: "席替え・指名のくふう", color: "#d97706", ids: ["announce", "preview", "compare", "seatcheck", "yaocho", "roulette", "absent", "reasons", "animextra", "seatnote", "luckbank", "fortune", "roomlayout", "envelope", "seatjourney", "seat-wishes", "exam-seats", "menu-groups", "seatskin", "nomination-balance", "nomination-queue", "seat-fairness", "rule-sets"] },
         { title: "名簿・入力", color: "#16a34a", ids: ["roster", "furigana", "softkeypad", "class-bulk", "class-settings", "class-history"] },
-        { title: "記録・印刷・クラウド", color: "#0ea5e9", ids: ["history", "term", "print", "share", "seat-export", "schedule", "cloud", "updateinfo"] },
+        { title: "記録・印刷・クラウド", color: "#0ea5e9", ids: ["history", "term", "print", "seat-labels", "share", "seat-export", "schedule", "cloud", "updateinfo"] },
         { title: "道具", color: "#7c3aed", ids: ["timer", "program-timer", "calc", "music", "diagnostics", "plugin-presets", "settings-search", "plugin-menu", "settings-extras", "display-scale", "second-screen", "ui-styles", "tour"] }
     ],
     // オフのままの前提（入っているもの）を、前提の前提までたどって、返します

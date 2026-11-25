@@ -1534,9 +1534,11 @@
                 <div id="newUpdateCount" class="upd-vers-count"></div>
             </div>
             <div id="newUpdateNotes" class="upd-notes-scroll"></div>
+            <div id="newUpdateHowto"></div>
             <div class="modal-btn-row">
                 <button onclick="openLatestVersionPage()" class="btn-connect">🆕 最新バージョンはこちら</button>
                 <button onclick="closeNewUpdateModal(); openUpdateInfoModal(true);" class="btn-secondary">📜 更新履歴を見る</button>
+                <button onclick="updSnoozeAsk()" class="btn-secondary">あとで</button>
                 <button onclick="ignoreThisUpdateVersion()" class="btn-secondary">🙈 このバージョンを無視する</button>
                 <button onclick="closeNewUpdateModal()" class="btn-save">閉じる</button>
             </div>
@@ -1839,6 +1841,8 @@
     <script src="plugins/rule-sets.js"></script>
     <script src="plugins/class-settings.js"></script>
     <script src="plugins/class-history.js"></script>
+    <script src="plugins/exam-seats.js"></script>
+    <script src="plugins/seat-labels.js"></script>
     <script src="plugins/seat-fairness.js"></script>
     <script src="plugins/diagnostics.js"></script>
     <script src="plugins/settings-search.js"></script>

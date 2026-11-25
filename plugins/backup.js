@@ -471,7 +471,42 @@ const RESTORE_PREVIEW_ROWS = [
     ["ほかのクラスの記録", "class_records_v1", "クラス分"]
 ];
 
-let pendingRestoreLoss = [];
+// ---- 復元する内容を選ぶ（クラスと記録／席替えの条件／見た目・演出などの設定）----
+const RESTORE_GROUPS = [
+    { id: "classes", label: "クラスと記録", note: "クラス、名簿、指名や座席の記録、席替えの履歴、希望メモなど" },
+    { id: "rules", label: "席替えの条件", note: "前の席を避ける、離す・近くに置く、優先順位、条件セットなど" },
+    { id: "settings", label: "見た目・演出・タイマーなどの設定", note: "テーマ、演出、タイマー、音、プラグインの選び方など" }
+];
+const RESTORE_CLASS_KEYS = ["seat_shuffler_presets", "seat_history_log", "nomination_history_log", "seat_layout_log", "pair_history_log", "stats_archives", "class_records_v1", "active_class_id", "roster_map_memory", "furigana_map", "seat_timeline", "class_history_v1", "nominate_queue_v1", "seat_wishes_v1", "seat_notes"];
+const RESTORE_RULE_KEYS = ["avoid_same_seat", "avoid_neighbor", "avoid_depth", "avoid_repeat_pairs", "separation_pairs", "near_pairs", "condition_priority", "seat_fair_v1", "seat_rule_sets_v1", "class_settings_on_v1", "class_settings_cats_v1"];
+function restoreGroupOf(key) {
+    if (RESTORE_CLASS_KEYS.includes(key) || (typeof CLASS_RECORD_KEYS !== "undefined" && CLASS_RECORD_KEYS.includes(key))) return "classes";
+    if (RESTORE_RULE_KEYS.includes(key) || /^luck_/.test(key)) return "rules";
+    return "settings";
+}
+function buildRestoreGroupsHtml(items) {
+    const count = {};
+    Object.keys(items).forEach(k => { const g = restoreGroupOf(k); count[g] = (count[g] || 0) + 1; });
+    const active = RESTORE_GROUPS.filter(g => count[g.id]);
+    if (active.length < 2) return "";
+    return `<div class="rp-groups"><div class="rp-groups-title">復元する内容を選べます</div>`
+        + active.map(g => `<label class="rp-group"><input type="checkbox" class="rp-group-cb" data-group="${g.id}" checked onchange="onRestoreGroupChange()"><span><b>${g.label}</b>　${count[g.id]}件<br><small>${g.note}</small></span></label>`).join("")
+        + `</div>`;
+}
+function selectedRestoreGroups() {
+    const boxes = document.querySelectorAll(".rp-group-cb");
+    if (!boxes.length) return null;   // 選ぶ欄が無い時は、すべて
+    const set = new Set();
+    boxes.forEach(b => { if (b.checked) set.add(b.dataset.group); });
+    return set;
+}
+function onRestoreGroupChange() {
+    const sel = selectedRestoreGroups();
+    const apply = $id("backupApplyBtn");
+    if (apply) { apply.disabled = !!sel && sel.size === 0; apply.style.opacity = apply.disabled ? "0.5" : ""; }
+}
+
+let pendingRestoreLoss = [];   // [{ g: 内容の種類, t: 文 }]
 
 function getObjectKeysFromJsonText(text) {
     try { const v = JSON.parse(text); return (v && typeof v === "object" && !Array.isArray(v)) ? Object.keys(v) : []; } catch (error) { return []; }
@@ -488,7 +523,7 @@ function buildRestorePreviewHtml(items, data, when, n) {
         const c = cur[key] !== undefined ? countJsonEntries(cur[key]) : 0;
         if (b === 0 && c === 0) return;
         const less = b < c;
-        if (less) loss.push(`${label}が、${c}${unit}から${b}${unit}に減ります。`);
+        if (less) loss.push({ g: restoreGroupOf(key), t: `${label}が、${c}${unit}から${b}${unit}に減ります。` });
         rows.push(`<tr${less ? ' class="rp-less"' : ""}><th>${escapeStatsHtml(label)}</th><td>${b}${unit}</td><td>${c}${unit}</td></tr>`);
     });
     const notes = [];
@@ -497,7 +532,7 @@ function buildRestorePreviewHtml(items, data, when, n) {
         const cNames = getObjectKeysFromJsonText(cur.seat_shuffler_presets || "{}");
         const lost = cNames.filter(x => !bNames.includes(x));
         const added = bNames.filter(x => !cNames.includes(x));
-        if (lost.length) { loss.push(`いまの端末にだけあるクラス「${lost.join("」「")}」が消えます。`); notes.push(`<li class="rp-warn">いまの端末にだけあるクラスが、消えます：${escapeStatsHtml(lost.join("、"))}</li>`); }
+        if (lost.length) { loss.push({ g: "classes", t: `いまの端末にだけあるクラス「${lost.join("」「")}」が消えます。` }); notes.push(`<li class="rp-warn">いまの端末にだけあるクラスが、消えます：${escapeStatsHtml(lost.join("、"))}</li>`); }
         if (added.length) notes.push(`<li>バックアップにだけあるクラスが、増えます：${escapeStatsHtml(added.join("、"))}</li>`);
     }
     let days = 0;
@@ -510,14 +545,15 @@ function buildRestorePreviewHtml(items, data, when, n) {
         + (rows.length ? `<table class="rp-table"><thead><tr><th></th><th>バックアップ</th><th>いまの端末</th></tr></thead><tbody>${rows.join("")}</tbody></table>` : "")
         + (notes.length ? `<ul class="rp-notes">${notes.join("")}</ul>` : "")
         + `<button type="button" class="btn-secondary btn-compact" onclick="exportBackup()" style="width: auto; margin-top: 6px; padding: 6px 12px; font-size: 12px;">📤 復元の前に、いまの内容を書き出す</button>`
-        + `<br><span style="color:#dc2626;">復元すると、今の保存内容は、このバックアップの内容で上書きされます。</span>`;
+        + buildRestoreGroupsHtml(items)
+        + `<br><span style="color:#dc2626;">復元すると、選んだ内容は、このバックアップの内容で上書きされます。</span>`;
 }
 
 function onBackupFileChosen(input) {
     const file = input && input.files && input.files[0];
     const info = $id("backupImportInfo"), apply = $id("backupApplyBtn");
     pendingBackup = null;
-    if (apply) apply.style.display = "none";
+    if (apply) { apply.style.display = "none"; apply.disabled = false; apply.style.opacity = ""; }
     pendingRestoreLoss = [];
     if (!file) return;
     if (file.size > BACKUP_MAX_BYTES) { if (info) info.textContent = "ファイルが大きすぎます。バックアップのファイルを選んでください。"; return; }
@@ -550,18 +586,25 @@ function onBackupFileChosen(input) {
 function applyBackupImport() {
     if (isAppLocked()) { showLockedToast(); return; }
     if (!pendingBackup) return;
-    if (pendingRestoreLoss.length && !confirm(`復元すると、次のものが減ったり、消えたりします。\n・${pendingRestoreLoss.join("\n・")}\nよろしいですか？`)) return;
-    const items = pendingBackup;
+    const sel = selectedRestoreGroups();   // null なら、すべて
+    if (sel && sel.size === 0) { showToast("復元する内容を、1つ以上、選んでください。", "error"); return; }
+    const items = {};
+    Object.keys(pendingBackup).forEach(k => { if (!sel || sel.has(restoreGroupOf(k))) items[k] = pendingBackup[k]; });
+    const includesClasses = !sel || sel.has("classes");
+    const loss = pendingRestoreLoss.filter(x => !sel || sel.has(x.g)).map(x => x.t);
+    if (loss.length && !confirm(`復元すると、次のものが減ったり、消えたりします。\n・${loss.join("\n・")}\nよろしいですか？`)) return;
     let saved = 0;
-    if (items.class_records_v1 !== undefined) {
-        // クラスごとの記録が入ったバックアップ：入っていない記録は、今の端末のものを残さない
-        CLASS_RECORD_KEYS.forEach(k => { if (items[k] === undefined) { try { localStorage.removeItem(k); } catch (error) {} } });
-        lsSet("legacy_records_pending", "0");
-        try { localStorage.removeItem("trial_return_class"); } catch (error) {}
-    } else if (activeClassId === TRIAL_CLASS_ID) {
-        // 古い形式のバックアップは、サンプルではなく、元のクラスの記録として戻す
-        lsSet("active_class_id", lsGet("trial_return_class", ""));
-        try { localStorage.removeItem("trial_return_class"); } catch (error) {}
+    if (includesClasses) {
+        if (items.class_records_v1 !== undefined) {
+            // クラスごとの記録が入ったバックアップ：入っていない記録は、今の端末のものを残さない
+            CLASS_RECORD_KEYS.forEach(k => { if (items[k] === undefined) { try { localStorage.removeItem(k); } catch (error) {} } });
+            lsSet("legacy_records_pending", "0");
+            try { localStorage.removeItem("trial_return_class"); } catch (error) {}
+        } else if (activeClassId === TRIAL_CLASS_ID) {
+            // 古い形式のバックアップは、サンプルではなく、元のクラスの記録として戻す
+            lsSet("active_class_id", lsGet("trial_return_class", ""));
+            try { localStorage.removeItem("trial_return_class"); } catch (error) {}
+        }
     }
     Object.keys(items).forEach(k => { try { localStorage.setItem(k, items[k]); saved++; } catch (error) { /* 容量が足りない項目は、飛ばす */ } });
     pendingBackup = null;
