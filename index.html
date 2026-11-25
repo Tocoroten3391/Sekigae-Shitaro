@@ -665,6 +665,7 @@
             <input type="text" id="gasUrlInput" placeholder="GASのウェブアプリURLを貼り付け">
             <button id="connectGasBtn" onclick="saveAndConnectGas()" class="btn-connect">GASに接続・更新</button>
             <button id="connectOnlyGasBtn" onclick="connectGasOnly()" class="btn-secondary">GASに接続</button>
+            <div id="gasErrBox" class="gas-err-box" style="display: none;" role="status"></div>
             <div class="divider-line"></div>
             <div class="layout-grid-fields" style="margin-top: 10px;">
                 <button id="saveSpreadsheetBtn" onclick="saveResultToSpreadsheet()" class="btn-save" style="margin:0;">シートに保存</button>

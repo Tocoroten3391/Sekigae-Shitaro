@@ -81,8 +81,7 @@ function restoreHistoryItem(historyId) {
             showToast(`${formatRelativeTime(res.savedAt)}の座席を復元しました。`, "success");
             closeHistoryModal();
         } else {
-            updateStatus("error", "復元失敗");
-            showToast("この履歴は見つかりませんでした。", "error");
+            gasFail("E-SHEET-02", { action: "loadHistoryItem", detail: "この履歴は見つかりませんでした" });
         }
     });
 }
@@ -174,6 +173,8 @@ function confirmSlotNameAndSave() {
             updateStatus("connected", "接続完了");
             showToast(`枠${slotIndex}に保存しました。`, "success");
             renderSpecialSlots();
+        } else {
+            gasFail("E-SHEET-04", { action: "saveSpecial", detail: "返事に success がありませんでした" });
         }
     });
 }

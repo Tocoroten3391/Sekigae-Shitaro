@@ -2340,3 +2340,20 @@ body.theme-dark .plugin-deps-warn-row .plugin-deps-warn, body.theme-blackboard .
 .rp-group { display: flex; align-items: flex-start; gap: 8px; padding: 4px 0; font-size: 13px; line-height: 1.5; color: var(--text-main); cursor: pointer; }
 .rp-group input { flex: none; margin-top: 4px; }
 .rp-group small { color: var(--text-sub); font-size: 11px; }
+
+/* 同期の失敗の、原因とエラーコード（設定の「スプレッドシート連携」） */
+.gas-err-box { margin: 10px 0; border: 1px solid #fca5a5; background: #fef2f2; border-radius: 10px; padding: 10px 12px; font-size: 12.5px; line-height: 1.7; color: #7f1d1d; }
+.gas-err-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 4px; }
+.gas-err-title { font-weight: 800; font-size: 13.5px; flex: 1 1 auto; }
+.gas-err-kind { padding: 1px 10px; border-radius: 999px; color: #fff; font-size: 12px; font-weight: 700; background: #dc2626; }
+.gas-err-kind-NET { background: #2563eb; } .gas-err-kind-AUTH { background: #9333ea; } .gas-err-kind-SHEET { background: #16a34a; }
+.gas-err-kind-URL { background: #ea580c; } .gas-err-kind-DATA { background: #0f766e; }
+.gas-err-code { font-family: ui-monospace, Menlo, Consolas, monospace; font-weight: 800; background: #fff; border: 1px solid #fca5a5; border-radius: 6px; padding: 0 8px; }
+.gas-err-body p { margin: 2px 0; }
+.gas-err-body b { margin-right: 2px; }
+.gas-err-meta { color: #9f1239; font-size: 11.5px; }
+.gas-err-btns { display: flex; gap: 8px; margin-top: 6px; }
+.gas-err-btns button { width: auto !important; margin: 0 !important; }
+body.theme-dark .gas-err-box, body.theme-blackboard .gas-err-box, body.theme-game .gas-err-box { background: #3b1111; border-color: #7f1d1d; color: #fecaca; }
+body.theme-dark .gas-err-code, body.theme-blackboard .gas-err-code, body.theme-game .gas-err-code { background: #1e1e1e; border-color: #7f1d1d; }
+body.theme-dark .gas-err-meta, body.theme-blackboard .gas-err-meta, body.theme-game .gas-err-meta { color: #fca5a5; }
