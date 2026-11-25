@@ -1,14 +1,16 @@
 // ==========================================
-// 画面スタイルプラグイン：画面全体の見た目を、「シンプル」「黒板」から選べます。
+// 画面スタイルプラグイン：画面全体の見た目を、「シンプル」「黒板」「クラシック」から選べます。
 // 設定の「画面スタイル」で切り替えます。席替えや指名のしくみは変わらず、見た目だけが変わります
 // このファイルを index.html から外すと、この機能は、まとめて使えなくなります（見た目は、このプラグインを入れる前の元の画面に戻ります）
 // ==========================================
 const UIS_KEY = "ui_style";
 const UIS_CHOICES = [
     { v: "a", label: "シンプル（白とブルーの、落ち着いた画面）" },
-    { v: "b", label: "黒板（黒板と机の、教室らしい画面）" }
+    { v: "b", label: "黒板（黒板と机の、教室らしい画面）" },
+    { v: "classic", label: "クラシック（もとの画面。絵文字は、線のアイコンになります）" }
 ];
 const UIS_NOTES = {
+    classic: "このプラグインを入れる前の、もとの画面です。ボタンや見出しの絵文字は、線のアイコンになります。広い画面でも、上の帯と、設定の1列表示は、そのままです。",
     a: "上の帯と操作ボタンを整えて、左にツールバーを置きます。指名中の画面も、このスタイルになります。設定は、左に分類、右に内容の2列で開きます。色は、選んでいるテーマ（ダークなど）に合わせます。",
     b: "画面の上を黒板、ボタンをチョーク受け、座席を机の見た目にして、左にツールバーを置きます。指名中の画面も、このスタイルになります。設定は、左に分類、右に内容の2列で開きます。色は、このスタイルの色に固定されます。"
 };
@@ -551,6 +553,13 @@ const UIS_PICO = {
     bell: "<path d='M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 21h4'/>",
     next: "<path d='M5 5v14l11-7zM19 5v14'/>",
     close: "<path d='M6 6l12 12M18 6L6 18'/>",
+    config: "<path d='M4 7h10M18 7h2M4 17h2M10 17h10'/><circle cx='16' cy='7' r='2'/><circle cx='8' cy='17' r='2'/>",
+    calc: "<rect x='5' y='3' width='14' height='18' rx='2'/><path d='M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01'/>",
+    music: "<path d='M9 18V6l10-2v12'/><circle cx='6.5' cy='18' r='2.5'/><circle cx='16.5' cy='16' r='2.5'/>",
+    target: "<circle cx='12' cy='12' r='8'/><circle cx='12' cy='12' r='3'/><path d='M12 2v3M12 19v3M2 12h3M19 12h3'/>",
+    lock: "<rect x='5' y='11' width='14' height='9' rx='2'/><path d='M8 11V8a4 4 0 0 1 8 0v3'/>",
+    redo: "<path d='m15 14 5-5-5-5'/><path d='M20 9H10a6 6 0 0 0 0 12h3'/>",
+    more: "<circle cx='5' cy='12' r='1.2'/><circle cx='12' cy='12' r='1.2'/><circle cx='19' cy='12' r='1.2'/>",
     flag: "<path d='M5 21V4M5 4h11l-2 4 2 4H5'/>",
     spin: "<path d='M20 12a8 8 0 1 1-2.6-5.9M20 4v5h-5'/><circle cx='12' cy='12' r='2'/>",
     disc: "<circle cx='12' cy='12' r='9'/><circle cx='12' cy='12' r='3'/><path d='M12 3v4'/>",
@@ -871,7 +880,49 @@ function uisSelectPass() {
         try { if (s.matches(":open") && s.hidePicker) s.hidePicker(); } catch (x) { /* 何もしない */ }
     }, true);
 })();
+// クラシック：上の帯と左の3つのボタンの絵文字（や、絵文字のない主なボタン）に、線のアイコンを付けます。ほかの画面スタイルに替えたら、もとに戻します
+const UIS_CLASSIC_ICO = [
+    ["#configMenuBtn", "config"], ["#calcOpenBtn", "calc"], ["#musicPlayerBtn", "music"],
+    ["#btnMainShuffle", "dice"], ["#btnNominateMenu", "target"], ["#btnUndo", "undo"], ["#btnRedo", "redo"],
+    ["#btnMoreMenu", "more"], ["#btnLock", "lock"], ["#btnTopFullscreen", "expand"]
+];
+function uisClassicPass() {
+    UIS_CLASSIC_ICO.forEach(([sel, key]) => {
+        const el = document.querySelector(sel);
+        if (!el || el.querySelector(":scope > .pico[data-uis-classic]")) return;
+        let emo = "";
+        const wrapped = el.querySelector(":scope > .emo");   // 絵文字が、読み上げ用の枠（.emo）で包まれているとき
+        if (wrapped) { emo = wrapped.textContent.trim(); wrapped.remove(); }
+        else {
+            const t = uisFirstText(el);
+            if (t) {
+                const m = t.nodeValue.match(UIS_EMO_RE);
+                if (m) { emo = m[1]; t.nodeValue = " " + t.nodeValue.replace(UIS_EMO_RE, ""); }
+            }
+        }
+        const sp = document.createElement("span");
+        sp.className = "pico";
+        sp.dataset.pico = key;
+        sp.dataset.uisClassic = "1";
+        if (emo) sp.dataset.emo = emo;
+        sp.setAttribute("aria-hidden", "true");
+        el.insertBefore(sp, el.firstChild);
+    });
+}
+function uisClassicRestore() {
+    document.querySelectorAll(".pico[data-uis-classic]").forEach(sp => {
+        const emo = sp.dataset.emo;
+        if (emo) {
+            // 絵文字は、あとに文字が続く文字列の頭に戻します（単独の文字列だと、読み上げ用の枠が、絵文字の途中で切れるため）
+            let n = sp.nextSibling;
+            while (n && !(n.nodeType === 3 && n.nodeValue.trim())) n = n.nextSibling;
+            if (n) n.nodeValue = emo + " " + n.nodeValue.replace(/^\s+/, "");
+        }
+        sp.remove();
+    });
+}
 function uisIconPass() {
+    if (uisCurrent() === "classic") uisClassicPass();
     uisBtnIconPass();
     try { uisSelectPass(); } catch (e) { /* 何もしない */ }
     uisHeadToastPass();
@@ -898,13 +949,13 @@ function uisIconPass() {
 }
 function uisPicoCss() {
     const ic = k => `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'>${UIS_PICO[k]}</svg>")`;
-    let c = `body:is(.ui-style-a, .ui-style-b) .pico { font-size: 0; }\nbody:is(.ui-style-a, .ui-style-b) .pico::before { content: ""; display: inline-block; width: 16px; height: 16px; margin-right: 2px; vertical-align: -3px; background: currentColor; }\n`;
-    c += `body:is(.ui-style-a, .ui-style-b) #giantTimeOverlay .pico::before { width: 30px; height: 30px; margin-right: 8px; vertical-align: -5px; }\nbody:is(.ui-style-a, .ui-style-b) #giantTimeOverlay #giantClockDisplay .pico::before { width: 56px; height: 56px; margin-right: 14px; vertical-align: 14px; }\nbody:is(.ui-style-a, .ui-style-b) #giantTimeOverlay .btn-close-giant .pico::before { width: 18px; height: 18px; margin-right: 4px; vertical-align: -3px; }\nbody:is(.ui-style-a, .ui-style-b) #giantTimeOverlay #giantEndTimeDisplay .pico::before { width: 44px; height: 44px; margin-right: 12px; vertical-align: -2px; }\nbody:is(.ui-style-a, .ui-style-b) #giantTimeOverlay h4 .pico::before { width: 20px; height: 20px; vertical-align: -3px; }\nbody:is(.ui-style-a, .ui-style-b) #rouletteOverlay .pico::before { width: 22px; height: 22px; margin-right: 6px; vertical-align: -4px; }\n`;
-    c += `body:is(.ui-style-a, .ui-style-b) #giantTimeOverlay.clock-only #giantClockDisplay .pico::before { width: calc(var(--gu) * 9); height: calc(var(--gu) * 9); margin-right: calc(var(--gu) * 1.5); vertical-align: calc(var(--gu) * 0.6); }\n`;
-    c += `body:is(.ui-style-a, .ui-style-b) .pico[data-uis-head]::before { width: 18px; height: 18px; margin-right: 6px; vertical-align: -3px; }\n`;
-    c += `body:is(.ui-style-a, .ui-style-b) .toast > .pico::before { width: 14px; height: 14px; margin: 0; vertical-align: 0; }\n`;
-    c += `body:is(.ui-style-a, .ui-style-b) #btnSpinRoulette .pico::before { width: 26px; height: 26px; margin-right: 6px; vertical-align: -5px; }\n`;
-    Object.keys(UIS_PICO).forEach(k => { c += `body:is(.ui-style-a, .ui-style-b) .pico[data-pico="${k}"]::before { -webkit-mask: ${ic(k)} center/contain no-repeat; mask: ${ic(k)} center/contain no-repeat; }\n`; });
+    let c = `body:is(.ui-style-a, .ui-style-b, .ui-style-classic) .pico { font-size: 0; }\nbody:is(.ui-style-a, .ui-style-b, .ui-style-classic) .pico::before { content: ""; display: inline-block; width: 16px; height: 16px; margin-right: 2px; vertical-align: -3px; background: currentColor; }\n`;
+    c += `body:is(.ui-style-a, .ui-style-b, .ui-style-classic) #giantTimeOverlay .pico::before { width: 30px; height: 30px; margin-right: 8px; vertical-align: -5px; }\nbody:is(.ui-style-a, .ui-style-b, .ui-style-classic) #giantTimeOverlay #giantClockDisplay .pico::before { width: 56px; height: 56px; margin-right: 14px; vertical-align: 14px; }\nbody:is(.ui-style-a, .ui-style-b, .ui-style-classic) #giantTimeOverlay .btn-close-giant .pico::before { width: 18px; height: 18px; margin-right: 4px; vertical-align: -3px; }\nbody:is(.ui-style-a, .ui-style-b, .ui-style-classic) #giantTimeOverlay #giantEndTimeDisplay .pico::before { width: 44px; height: 44px; margin-right: 12px; vertical-align: -2px; }\nbody:is(.ui-style-a, .ui-style-b, .ui-style-classic) #giantTimeOverlay h4 .pico::before { width: 20px; height: 20px; vertical-align: -3px; }\nbody:is(.ui-style-a, .ui-style-b, .ui-style-classic) #rouletteOverlay .pico::before { width: 22px; height: 22px; margin-right: 6px; vertical-align: -4px; }\n`;
+    c += `body:is(.ui-style-a, .ui-style-b, .ui-style-classic) #giantTimeOverlay.clock-only #giantClockDisplay .pico::before { width: calc(var(--gu) * 9); height: calc(var(--gu) * 9); margin-right: calc(var(--gu) * 1.5); vertical-align: calc(var(--gu) * 0.6); }\n`;
+    c += `body:is(.ui-style-a, .ui-style-b, .ui-style-classic) .pico[data-uis-head]::before { width: 18px; height: 18px; margin-right: 6px; vertical-align: -3px; }\n`;
+    c += `body:is(.ui-style-a, .ui-style-b, .ui-style-classic) .toast > .pico::before { width: 14px; height: 14px; margin: 0; vertical-align: 0; }\n`;
+    c += `body:is(.ui-style-a, .ui-style-b, .ui-style-classic) #btnSpinRoulette .pico::before { width: 26px; height: 26px; margin-right: 6px; vertical-align: -5px; }\n`;
+    Object.keys(UIS_PICO).forEach(k => { c += `body:is(.ui-style-a, .ui-style-b, .ui-style-classic) .pico[data-pico="${k}"]::before { -webkit-mask: ${ic(k)} center/contain no-repeat; mask: ${ic(k)} center/contain no-repeat; }\n`; });
     return c;
 }
 function uisBuildCss() {
@@ -1404,7 +1455,7 @@ let uisNomWas = false;
 let uisTickTimer = null;
 const UIS_WEEK = ["日", "月", "火", "水", "木", "金", "土"];
 
-function uisWide() { return window.matchMedia("(min-width: 900px)").matches; }
+function uisWide() { return uisCurrent() !== "classic" && window.matchMedia("(min-width: 900px)").matches; }
 function uisSetText(el, txt) { if (el && el.textContent !== txt) el.textContent = txt; }
 function uisSetHtml(el, html) { if (el && el.dataset.uisH !== html) { el.dataset.uisH = html; el.innerHTML = html; } }
 
@@ -1882,7 +1933,10 @@ function uisEmojiRestore() {
         if (t && !t.nodeValue.trim().startsWith(emo)) t.nodeValue = emo + " " + t.nodeValue.replace(/^\s+/, "");
     });
 }
-function uisEmojiSync() { if (uisEmojiActive()) { uisEmojiPass(); uisIconPass(); } else uisEmojiRestore(); }
+function uisEmojiSync() {
+    if (uisCurrent() !== "classic") uisClassicRestore();
+    if (uisEmojiActive()) { uisEmojiPass(); uisIconPass(); } else uisEmojiRestore();
+}
 
 // ---------- 設定の画面：左の分類を選ぶと、右にカードが並びます
 const UIS_CFG_DESC = {
@@ -2051,6 +2105,7 @@ function uisApply(refit) {
     const b = document.body;
     b.classList.toggle("ui-style-a", v === "a");
     b.classList.toggle("ui-style-b", v === "b");
+    b.classList.toggle("ui-style-classic", v === "classic");
     const sel = $id("uiStyleSelect");
     if (sel) sel.value = v;
     const note = $id("uiStyleNote");
@@ -2071,6 +2126,7 @@ function uisApply(refit) {
 
 // AとBでは、設定を、左に分類・右に内容の2列で開きます（広い画面だけ）
 function uisSyncSettingsLayout(v) {
+    if (v === "classic") return;
     if (typeof setConfigWide !== "function" || typeof isConfigWide !== "function") return;
     if (window.innerWidth >= 820 && !isConfigWide()) { setConfigWide(true); lsSet("ui_style_wide_auto", "1"); }
 }
@@ -2087,8 +2143,8 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.45",
-    description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
+    version: "3.46",
+    description: "画面全体の見た目を、「シンプル」「黒板」「クラシック」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",
     mount(app) {
@@ -2269,7 +2325,7 @@ SekigaeApp.registerPlugin({
             w._uis = true;
             selectConfigWideSection = w;
         }
-        app.insertInto("guide-faq", "<li data-plugin=\"ui-styles\"><strong>画面の見た目を変えたい</strong>：設定の「画面スタイル」で、「シンプル」「黒板」を選べます。いつでも切り替えられます。</li>");
+        app.insertInto("guide-faq", "<li data-plugin=\"ui-styles\"><strong>画面の見た目を変えたい</strong>：設定の「画面スタイル」で、「シンプル」「黒板」「クラシック」を選べます。いつでも切り替えられます。</li>");
         const opts = UIS_CHOICES.map(c => '<option value="' + c.v + '">' + c.label + '</option>').join("");
         app.insertInto("settings-display", '<div class="ds-row" data-plugin="ui-styles"><label for="uiStyleSelect" class="switch-label">画面スタイル</label><select id="uiStyleSelect" onchange="onUiStyleChange()">' + opts + '</select></div><div class="ds-note" id="uiStyleNote" data-plugin="ui-styles"></div>');
         uisApply(false);
