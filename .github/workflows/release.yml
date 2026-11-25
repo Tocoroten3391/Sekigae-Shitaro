@@ -1,13 +1,16 @@
 # タグ（v4.53.4 など）を付けると、次を自動で行います。
 #   1. zip を作って、Releases に公開する（説明は changelog.js の、その版の本文）
 #   2. Sekigae-Shitaro_Updates-info の changelog.json を、changelog.js の履歴で更新する
-# タグを付けなくても、Actions の「Run workflow」を押すと、script.js の版で、同じことを行います。
+# main に script.js か changelog.js の変更を push すると、自動で、script.js の版で、同じことを行います。
+# （手で行いたいときは、Actions の「Run workflow」を押します。）
 # 何度でも、やり直せます（再実行しても壊れません）。
 name: リリースと更新情報
 
 on:
   push:
     tags: ["v*"]
+    branches: [main]
+    paths: ["script.js", "changelog.js"]
   workflow_dispatch:
 
 permissions:
