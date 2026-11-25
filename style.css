@@ -2277,3 +2277,19 @@ body.theme-dark .plugin-deps-warn-row .plugin-deps-warn, body.theme-blackboard .
 #configContainer .preset-manage-row button { margin: 0 !important; }
 .preset-manage-row { gap: 10px; }
 .preset-manage-row.cb-stack { margin-top: 10px; }
+
+/* ---- ポップアップの「閉じる」は、右上の ✕ に（ui-parts.js が作ります） ---- */
+.modal-content > .modal-x-wrap { position: sticky; top: -16px; z-index: 5; display: flow-root; height: 0; margin: -16px 0 16px !important; }
+.modal-content > .modal-x-wrap + * { margin-top: 0 !important; }
+.modal-content > .modal-x-wrap + h4 { padding-right: 32px; }
+.modal-content button.modal-x-btn {
+    position: absolute; top: 0; right: -16px;
+    width: 32px !important; min-width: 32px !important; height: 32px !important; min-height: 32px !important;
+    margin: 0 !important; padding: 0 !important; border-radius: 50% !important;
+    background: transparent !important; border: none !important; box-shadow: none !important;
+    color: var(--text-sub); cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+}
+.modal-content button.modal-x-btn:hover, .modal-content button.modal-x-btn:focus-visible { background: var(--input-bg, rgba(127,127,127,0.15)) !important; color: var(--text-main); }
+.modal-content button.modal-x-btn svg { pointer-events: none; }
+.modal-content .modal-close-moved { display: none !important; }
+.modal-content .modal-btn-row.modal-row-empty { display: none !important; }

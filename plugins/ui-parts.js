@@ -320,6 +320,62 @@ function togglePopMenu(id, ev) {
     }
 }
 
+// ---- ポップアップの「閉じる」ボタンを、右上の ✕ に移す ----
+// 窓（.modal-content）の下にある「閉じる」ボタンを見つけて、右上に ✕ を作ります。✕ を押すと、もとの「閉じる」ボタンを押したのと同じになります。
+// もとのボタンは、画面から隠すだけで残します（ほかの処理が、そのボタンを使っていても、こわれません）
+const MODAL_X_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+
+function modalIsCloseBtn(b) {
+    return /^\s*(✕\s*)?閉じる\s*$/.test(b.textContent || "");
+}
+
+function modalMoveClose(content) {
+    if (!content || content.querySelector(":scope > .modal-x-wrap")) return;
+    const rows = content.querySelectorAll(".modal-btn-row");
+    let src = null, row = null;
+    for (let i = rows.length - 1; i >= 0 && !src; i--) {
+        const found = Array.from(rows[i].querySelectorAll("button")).find(modalIsCloseBtn);
+        if (found) { src = found; row = rows[i]; }
+    }
+    if (!src) return;
+    const x = document.createElement("button");
+    x.type = "button";
+    x.className = "modal-x-btn";
+    x.setAttribute("aria-label", "閉じる");
+    x.title = "閉じる";
+    x.innerHTML = MODAL_X_ICON;
+    x.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); src.click(); });
+    const wrap = document.createElement("div");
+    wrap.className = "modal-x-wrap";
+    wrap.appendChild(x);
+    content.insertBefore(wrap, content.firstChild);
+    src.classList.add("modal-close-moved");
+    // 行に、ほかに見えるボタンがなければ、行ごと隠す
+    if (!Array.from(row.querySelectorAll("button")).some(b => !b.classList.contains("modal-close-moved"))) row.classList.add("modal-row-empty");
+}
+
+function modalMoveCloseAll() {
+    document.querySelectorAll(".modal-content").forEach(modalMoveClose);
+}
+
+(function modalCloseSetup() {
+    let queued = false;
+    const later = () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => { queued = false; modalMoveCloseAll(); });
+    };
+    const relevant = n => n.nodeType === 1 && (n.matches(".modal-overlay, .modal-content, .modal-btn-row") || (n.childElementCount && n.querySelector(".modal-content, .modal-btn-row")));
+    const start = () => {
+        modalMoveCloseAll();
+        new MutationObserver(recs => {
+            for (const r of recs) for (const n of r.addedNodes) if (relevant(n)) { later(); return; }
+        }).observe(document.body, { childList: true, subtree: true });
+    };
+    if (document.body) start(); else document.addEventListener("DOMContentLoaded", start);
+    window.addEventListener("load", later);
+})();
+
 // ---- 本体への登録（必須：オン・オフの切り替えはできません） ----
 SekigaeApp.registerPlugin({
     id: "ui-parts",
