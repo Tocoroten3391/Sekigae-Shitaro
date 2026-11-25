@@ -57,8 +57,9 @@ function checkForAppUpdates() {
             // ポップアップは起動して情報が取れたタイミングで毎回表示する。
             // ただし「このバージョンを無視する」を押した版（またはそれ以前）の場合だけは出さない。
             // それより新しいバージョンが出れば、また表示する。
-            renderNewUpdateModal(sorted[0]);
-            if (!isUpdatePopupIgnored(latestKnownChangelogVersion)) {
+            renderNewUpdateModal(sorted[0], sorted);
+            // 設定で「設定ボタンの印だけ」を選んでいる時は、ポップアップを出さない
+            if (updNoticeMode() === "popup" && !isUpdatePopupIgnored(latestKnownChangelogVersion)) {
                 const overlay = $id("newUpdateModalOverlay");
                 if (overlay) overlay.style.display = "flex";
             }
@@ -81,15 +82,68 @@ function ignoreThisUpdateVersion() {
     closeNewUpdateModal();
     showToast(`Ver.${version || ""} のお知らせポップアップを表示しないようにしました。新しいバージョンが出ると、また表示します。`, "success");
 }
-function renderNewUpdateModal(latestEntry) {
+// ---- 更新の説明文を、「新機能・改善・修正」に分けて見せる ----
+// 説明文に【新機能】【改善】【修正】と書いてあれば、それを使います。書いていない古い履歴は、言葉から、およその種類を決めます
+const UPD_CATS = { "new": "新機能", "improve": "改善", "fix": "修正" };
+const UPD_TAG_MAP = { "新機能": "new", "改善": "improve", "修正": "fix", "その他": "improve" };
+function updEsc(t) { return stripEmoji(t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+function updGuessCat(text) {
+    if (/(修正|直し|なおし|不具合|崩れ|見えにく|問題)/.test(text)) return "fix";
+    if (/(できるように|使えるように|作れるように|選べるように|ようになりました|新機能|新しく|ができました|を作りました|を入れました)/.test(text)) return "new";
+    return "improve";
+}
+function updParseNotes(notes) {
+    const out = [];
+    String(notes || "").split(/\r?\n/).forEach(line => {
+        line = line.trim();
+        if (!line) return;
+        // 1行に「／」で、いくつも並べてある古い書き方は、文の終わりの「／」だけで分ける
+        line.split(/(?<=(?:ました|ました。|修正|追加|変更|統一|そろえた|置きかえ|です|ます|した))／/).forEach(part => {
+            part = part.trim();
+            if (!part) return;
+            let cat = null;
+            const m = part.match(/^【(新機能|改善|修正|その他)】\s*/);
+            if (m) { cat = UPD_TAG_MAP[m[1]]; part = part.slice(m[0].length); }
+            if (!part) return;
+            out.push({ cat: cat || updGuessCat(part), text: part });
+        });
+    });
+    return out;
+}
+function updBulletsHtml(entry, filter, query) {
+    const q = (query || "").trim().toLowerCase();
+    const whole = q && ((entry.version || "") + " " + (entry.date || "")).toLowerCase().includes(q);
+    const items = updParseNotes(entry.notes).filter(it =>
+        (!filter || filter === "all" || it.cat === filter) && (!q || whole || it.text.toLowerCase().includes(q)));
+    if (!items.length) return "";
+    return '<ul class="upd-list">' + items.map(it =>
+        `<li><span class="upd-tag upd-${it.cat}">${UPD_CATS[it.cat]}</span><span class="upd-txt">${updEsc(it.text)}</span></li>`).join("") + "</ul>";
+}
+
+// 更新のお知らせポップアップ。いまの版より新しい版が、いくつもあるときは、まとめて見せます
+function renderNewUpdateModal(latestEntry, allSorted) {
+    let newer = Array.isArray(allSorted) ? allSorted.filter(e => compareVersions(e.version, APP_VERSION) > 0) : [];
+    if (!newer.length) newer = [latestEntry];
     const titleEl = $id("newUpdateTitle");
-    if (titleEl) titleEl.textContent = `最新アップデート「Ver.${latestEntry.version}」が見つかりました`;
+    if (titleEl) titleEl.textContent = `新しいバージョン Ver.${latestEntry.version} があります`;
     const curEl = $id("newUpdateCurrentVer");
     if (curEl) curEl.textContent = "Ver." + APP_VERSION;
     const latEl = $id("newUpdateLatestVer");
     if (latEl) latEl.textContent = "Ver." + latestEntry.version;
+    const cntEl = $id("newUpdateCount");
+    if (cntEl) cntEl.textContent = newer.length > 1 ? `${newer.length}回分の更新があります` : "";
     const notesEl = $id("newUpdateNotes");
-    if (notesEl) notesEl.textContent = latestEntry.notes || "";
+    if (!notesEl) return;
+    const SHOW = 5;
+    const multi = newer.length > 1;
+    let html = newer.slice(0, SHOW).map(e => {
+        const list = updBulletsHtml(e) || '<p class="upd-none">この版の説明は、ありません。</p>';
+        return multi
+            ? `<div class="upd-ver"><div class="upd-ver-head"><span class="upd-ver-no">Ver.${updEsc(e.version)}</span><span class="upd-ver-date">${updEsc(formatChangelogDate(e.date))}</span></div>${list}</div>`
+            : list;
+    }).join("");
+    if (newer.length > SHOW) html += `<p class="upd-more">ほか ${newer.length - SHOW}回分の更新は、「更新履歴を見る」で見られます。</p>`;
+    notesEl.innerHTML = html;
 }
 function closeNewUpdateModal() {
     const overlay = $id("newUpdateModalOverlay");
@@ -136,34 +190,57 @@ function formatChangelogDate(dateStr) {
     }
     return dateStr;
 }
+// ---- 更新履歴：検索・種類の絞り込み・折りたたみ ----
+let updHist = { entries: [], filter: "all", query: "" };
 function renderUpdateInfoModal(entries) {
+    updHist.entries = entries || [];
+    updHist.filter = "all";
+    updHist.query = "";
+    const tools = $id("updateInfoTools");
+    if (tools) {
+        tools.innerHTML = `
+            <input type="search" id="updateInfoSearch" class="upd-search" placeholder="言葉でさがす　例：タイマー、指名" autocomplete="off">
+            <div class="upd-chips" role="group" aria-label="種類で絞りこむ">
+                ${[["all", "すべて"], ["new", "新機能"], ["improve", "改善"], ["fix", "修正"]].map(c => `<button type="button" class="upd-chip${c[0] === "all" ? " is-on" : ""}" data-filter="${c[0]}">${c[1]}</button>`).join("")}
+            </div>`;
+        const input = $id("updateInfoSearch");
+        if (input) input.addEventListener("input", () => { updHist.query = input.value; renderUpdateInfoList(); });
+        tools.querySelectorAll(".upd-chip").forEach(btn => btn.addEventListener("click", () => {
+            updHist.filter = btn.dataset.filter;
+            tools.querySelectorAll(".upd-chip").forEach(b => b.classList.toggle("is-on", b === btn));
+            renderUpdateInfoList();
+        }));
+    }
+    renderUpdateInfoList();
+}
+function renderUpdateInfoList() {
     const body = $id("updateInfoBody");
     if (!body) return;
-    const escapeHtml = s => stripEmoji(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    const entryHtml = e => `
-        <div class="update-entry">
-            <div class="update-entry-header">
-                <span class="update-entry-version">Ver.${escapeHtml(e.version)}</span>
-                <span class="update-entry-date">${escapeHtml(formatChangelogDate(e.date))}</span>
-            </div>
-            <div class="update-entry-notes">${escapeHtml(e.notes)}</div>
-        </div>`;
-
-    // 今のバージョンより新しいものがあれば、ポップアップと同じ内容を一番上に出し、その下にすべての履歴を並べる。
+    const { entries, filter, query } = updHist;
+    const filtering = filter !== "all" || !!query.trim();
+    let html = "";
     const latest = entries[0];
     if (latest && compareVersions(latest.version, APP_VERSION) > 0) {
-        body.innerHTML = `
-            <div class="update-highlight">
-                <div class="update-highlight-title">最新アップデート「Ver.${escapeHtml(latest.version)}」が見つかりました</div>
-                <p class="update-highlight-lead">席替えし太郎の新しいバージョンが利用可能です。</p>
-                <div class="update-highlight-ver">Ver.${escapeHtml(APP_VERSION)} → <span>Ver.${escapeHtml(latest.version)}</span></div>
-                <div class="update-entry-notes">${escapeHtml(latest.notes)}</div>
-            </div>
-            <div class="update-all-title">すべての更新履歴</div>
-            ${entries.map(entryHtml).join("")}`;
-    } else {
-        body.innerHTML = entries.map(entryHtml).join("");
+        html += `<div class="upd-banner">新しいバージョン <b>Ver.${updEsc(latest.version)}</b> があります（いま Ver.${updEsc(APP_VERSION)}）</div>`;
     }
+    let shown = 0;
+    entries.forEach((e, i) => {
+        const bullets = updBulletsHtml(e, filter, query);
+        if (!bullets) return;
+        shown++;
+        const cmp = compareVersions(e.version, APP_VERSION);
+        const mark = cmp > 0 ? '<span class="upd-mark upd-mark-new">新着</span>' : (cmp === 0 ? '<span class="upd-mark upd-mark-now">いま使用中</span>' : "");
+        const first = updParseNotes(e.notes)[0];
+        const preview = first ? `<span class="upd-prev">${updEsc(first.text)}</span>` : "";
+        const open = filtering || cmp >= 0 || shown <= 3;
+        html += `<details class="upd-entry"${open ? " open" : ""}>
+            <summary><span class="upd-sum-main"><span class="upd-ver-no">Ver.${updEsc(e.version)}</span>${mark}<span class="upd-ver-date">${updEsc(formatChangelogDate(e.date))}</span></span>${preview}</summary>
+            ${bullets}
+        </details>`;
+    });
+    if (!shown) html += `<p class="upd-none">${filtering ? "あてはまる更新は、ありません。" : "更新情報は、ありません。"}</p>`;
+    else html += `<p class="upd-count-line">${filtering ? "あてはまる更新：" : "全"}${shown}件</p>`;
+    body.innerHTML = html;
 }
 
 // 開いていたのを実際に閉じた時点で「読んだ」ことにする。検知しただけの時点では既読にしない。
@@ -178,11 +255,86 @@ function showUpdateBadge() {
     if (openBtn) openBtn.classList.add("has-update-badge");
 }
 
+// ---- 更新のお知らせの出し方（設定）と、更新したあとの「変わったところ」 ----
+const UPD_MODE_KEY = "update_notice_mode";       // "popup"（既定）／"badge"（設定ボタンの印だけ）
+const UPD_SEEN_KEY = "last_seen_app_version";    // 前に起動した時の版。更新したかどうかを知るため
+function updNoticeMode() {
+    try { return localStorage.getItem(UPD_MODE_KEY) === "badge" ? "badge" : "popup"; } catch (e) { return "popup"; }
+}
+function setUpdateNoticeMode(v) {
+    try { localStorage.setItem(UPD_MODE_KEY, v === "badge" ? "badge" : "popup"); } catch (e) { /* 何もしない */ }
+    showToast(v === "badge" ? "更新のお知らせは、設定ボタンの印だけにしました。" : "更新のお知らせを、ポップアップで出します。", "success");
+}
+function updSaveSeen() { try { localStorage.setItem(UPD_SEEN_KEY, APP_VERSION); } catch (e) { /* 何もしない */ } }
+function updAnyModalOpen() {
+    return Array.from(document.querySelectorAll(".modal-overlay")).some(o => getComputedStyle(o).display !== "none");
+}
+function closeWhatsNewModal() {
+    const o = $id("whatsNewModalOverlay");
+    if (o) o.style.display = "none";
+}
+// 更新して、はじめて起動した時に、1回だけ、変わったところを見せる（アプリの中の履歴を使うので、通信は要りません）
+function updCheckWhatsNew(retried) {
+    let last = null;
+    try { last = localStorage.getItem(UPD_SEEN_KEY); } catch (e) { return; }
+    if (!last) { updSaveSeen(); return; }   // はじめての起動：何も出さない
+    const cmp = compareVersions(APP_VERSION, last);
+    if (cmp <= 0) { if (cmp < 0) updSaveSeen(); return; }
+    if (updNoticeMode() === "badge" || typeof LOCAL_CHANGELOG === "undefined") { updSaveSeen(); return; }
+    const items = sortChangelogEntriesDesc(LOCAL_CHANGELOG).filter(e => compareVersions(e.version, last) > 0 && compareVersions(e.version, APP_VERSION) <= 0);
+    if (!items.length) { updSaveSeen(); return; }
+    if (updAnyModalOpen()) {
+        // ほかのポップアップが出ている間は、待つ。それでも出ていたら、次の起動で見せる
+        if (!retried) setTimeout(() => updCheckWhatsNew(true), 5000);
+        return;
+    }
+    let overlay = $id("whatsNewModalOverlay");
+    if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.id = "whatsNewModalOverlay";
+        overlay.className = "modal-overlay";
+        overlay.style.display = "none";
+        overlay.innerHTML = `<div class="modal-content" style="max-width: 480px; width: 95%;">
+            <h4 id="whatsNewTitle" class="update-title"></h4>
+            <p id="whatsNewLead" class="upd-lead"></p>
+            <div id="whatsNewBody" class="upd-notes-scroll"></div>
+            <div class="modal-btn-row">
+                <button type="button" class="btn-secondary" id="whatsNewHistoryBtn">更新履歴を見る</button>
+                <button type="button" class="btn-save" id="whatsNewCloseBtn">閉じる</button>
+            </div>
+        </div>`;
+        document.body.appendChild(overlay);
+        $id("whatsNewCloseBtn").addEventListener("click", closeWhatsNewModal);
+        $id("whatsNewHistoryBtn").addEventListener("click", () => { closeWhatsNewModal(); openUpdateInfoModal(true); });
+        overlay.addEventListener("click", e => { if (e.target === overlay) closeWhatsNewModal(); });
+    }
+    $id("whatsNewTitle").textContent = `Ver.${APP_VERSION} に、アップデートされました`;
+    $id("whatsNewLead").textContent = items.length > 1 ? `前に使った Ver.${last} から、${items.length}回分の変わったところです。` : `前に使った Ver.${last} からの、変わったところです。`;
+    const SHOW = 6;
+    const multi = items.length > 1;
+    let html = items.slice(0, SHOW).map(e => {
+        const list = updBulletsHtml(e) || "";
+        return multi
+            ? `<div class="upd-ver"><div class="upd-ver-head"><span class="upd-ver-no">Ver.${updEsc(e.version)}</span><span class="upd-ver-date">${updEsc(formatChangelogDate(e.date))}</span></div>${list}</div>`
+            : list;
+    }).join("");
+    if (items.length > SHOW) html += `<p class="upd-more">ほか ${items.length - SHOW}回分は、「更新履歴を見る」で見られます。</p>`;
+    $id("whatsNewBody").innerHTML = html;
+    overlay.style.display = "flex";
+    updSaveSeen();
+}
+
 // ---- 本体への登録 ----
 SekigaeApp.registerPlugin({
     id: "updateinfo",
     name: "更新情報",
-    version: "1.1",
-    description: "新しいバージョンの知らせを確かめます。自前のサーバーか GAS から取り、通信できないときは、アプリの中の履歴を出します。",
-    stubs: ["checkForAppUpdates"]
+    version: "1.2",
+    description: "新しいバージョンの知らせを確かめます。自前のサーバーか GAS から取り、通信できないときは、アプリの中の履歴を出します。更新したあとに、変わったところも見せます。",
+    stubs: ["checkForAppUpdates"],
+    backupKeys: [UPD_MODE_KEY],
+    mount() {
+        const sel = $id("updateNoticeMode");
+        if (sel) sel.value = updNoticeMode();
+        setTimeout(updCheckWhatsNew, 1800);
+    }
 });

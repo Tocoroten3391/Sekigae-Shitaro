@@ -603,6 +603,7 @@ const UIS_BTN_ICO = [
     { sel: "#btnClassBulkImport", map: [[/./, "import"]] },
     { sel: "#btnClassBulkPromote", map: [[/./, "cap"]] },
     { sel: ".preset-dialog-btns button", map: [[/書き出す/, "export"], [/読み込む/, "import"], [/進級/, "cap"], [/^上書きする$/, "save"], [/^消す$/, "trash"], [/^戻す$/, "undo"], [/^やめる$/, "close"]] },
+    { sel: "#whatsNewHistoryBtn", map: [[/./, "clock"]] },
     { sel: "#rsetSaveBtn", map: [[/./, "save"]] },
     { sel: "#csetRememberBtn", map: [[/./, "bookmark"]] },
     { sel: "#csetClearBtn", map: [[/./, "trash"]] },
@@ -2084,7 +2085,7 @@ function onUiStyleChange() {
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
-    version: "3.44",
+    version: "3.45",
     description: "画面全体の見た目を、「シンプル」「黒板」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",

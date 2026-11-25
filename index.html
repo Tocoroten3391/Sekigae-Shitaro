@@ -697,10 +697,17 @@
             <div data-plugin-slot="settings-export"></div>
         </div>
         <div class="config-group-title" data-group="しくみ">しくみ</div>
-        <div class="config-section" data-sec="plugins" data-group="しくみ" data-kw="プラグイン 拡張 機能 オン オフ 構成 プリセット かんたん 更新履歴 バージョン 新機能">
+        <div class="config-section" data-sec="plugins" data-group="しくみ" data-kw="プラグイン 拡張 機能 オン オフ 構成 プリセット かんたん 更新履歴 バージョン 新機能 更新 お知らせ ポップアップ 通知">
             <h3>機能・プラグイン</h3>
             <button type="button" class="btn-secondary" id="btnPluginMenu" onclick="openPluginModal()" style="margin-top: 10px;">プラグインの設定</button>
             <button data-plugin="updateinfo" id="updateInfoOpenBtn" onclick="openUpdateInfoModal(true)" class="btn-secondary btn-tint-cyan" style="background-color: #0891b2; color: white;">更新履歴を見る</button>
+            <div data-plugin="updateinfo" class="upd-mode-row">
+                <label class="input-label" for="updateNoticeMode">更新のお知らせ：</label>
+                <select id="updateNoticeMode" onchange="setUpdateNoticeMode(this.value)">
+                    <option value="popup">ポップアップで知らせる</option>
+                    <option value="badge">設定ボタンの印だけ</option>
+                </select>
+            </div>
             <div data-plugin-slot="settings-system"></div>
         </div>
         <div class="config-section" data-sec="lock" data-group="しくみ" data-kw="ロック 暗証番号 パスワード 管理者 自動ロック 解除 認証">
@@ -1508,9 +1515,10 @@
     </div>
 
     <div id="updateInfoModalOverlay" class="modal-overlay" style="display: none;">
-        <div class="modal-content" style="max-width: 460px; width: 95%;">
-            <h4 style="color: #0891b2;">更新情報</h4>
-            <div id="updateInfoBody" style="max-height: 380px; overflow-y: auto; margin-bottom: 16px;"></div>
+        <div class="modal-content" style="max-width: 480px; width: 95%;">
+            <h4 class="update-title">更新情報</h4>
+            <div id="updateInfoTools" class="upd-tools"></div>
+            <div id="updateInfoBody" class="upd-body"></div>
             <div data-plugin="updateinfo" class="modal-btn-row">
                 <button onclick="openLatestVersionPage()" class="btn-connect">🆕 最新バージョンはこちら</button>
                 <button onclick="closeUpdateInfoModal()" class="btn-secondary">閉じる</button>
@@ -1520,12 +1528,12 @@
 
     <div data-plugin="updateinfo" id="newUpdateModalOverlay" class="modal-overlay" style="display: none;">
         <div class="modal-content" style="max-width: 480px; width: 95%;">
-            <h4 id="newUpdateTitle" style="color: #0891b2;"></h4>
-            <p style="font-size: 13px; color: var(--text-main); margin: -6px 0 14px; line-height: 1.6;">席替えし太郎の新しいバージョンが利用可能です。</p>
-            <div style="text-align: center; font-size: 15px; font-weight: bold; margin-bottom: 16px; padding: 10px; background: var(--body-bg); border: 1px solid var(--seat-border); border-radius: 8px; color: var(--text-main);">
-                <span id="newUpdateCurrentVer"></span> → <span style="color: #0891b2;" id="newUpdateLatestVer"></span>
+            <h4 id="newUpdateTitle" class="update-title"></h4>
+            <div class="upd-vers">
+                <span id="newUpdateCurrentVer"></span> → <span class="upd-vers-new" id="newUpdateLatestVer"></span>
+                <div id="newUpdateCount" class="upd-vers-count"></div>
             </div>
-            <div id="newUpdateNotes" style="font-size: 13px; color: var(--text-main); line-height: 1.7; white-space: pre-wrap; margin-bottom: 18px;"></div>
+            <div id="newUpdateNotes" class="upd-notes-scroll"></div>
             <div class="modal-btn-row">
                 <button onclick="openLatestVersionPage()" class="btn-connect">🆕 最新バージョンはこちら</button>
                 <button onclick="closeNewUpdateModal(); openUpdateInfoModal(true);" class="btn-secondary">📜 更新履歴を見る</button>
