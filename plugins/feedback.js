@@ -224,11 +224,40 @@ async function fbAddFiles(files) {
     }
     fbRenderThumbs();
 }
+// 撮った画面（canvas）を、画像として付けます。「画面を撮る」の窓からも、使います
+function fbAttachImage(canvas) {
+    if (!canvas) return false;
+    if (fbImages.length >= FB_MAX_IMAGES) { fbShowMsg("画像は、" + FB_MAX_IMAGES + "枚までです。", true); return false; }
+    const e = fbEncode(canvas, canvas.width, canvas.height);
+    if (!e) { fbShowMsg("画像を小さくできませんでした。", true); return false; }
+    fbImages.push(e);
+    fbImgOkOn = false;
+    fbRenderThumbs();
+    return true;
+}
+function fbShotAvailable() {
+    try { return !!(window.SekigaeShot && SekigaeApp.isEnabled("screenshot")); } catch (e) { return false; }
+}
+async function fbShotNow() {
+    if (fbImages.length >= FB_MAX_IMAGES) { fbShowMsg("画像は、" + FB_MAX_IMAGES + "枚までです。", true); return; }
+    const btn = $id("fbShotBtn");
+    if (btn) { btn.disabled = true; btn.textContent = "撮影しています"; }
+    try {
+        const c = await window.SekigaeShot.capture({ skip: ["fbOverlay", "fbMaskOverlay"] });
+        if (fbAttachImage(c)) fbShowMsg("画面を撮りました。名簿の名前は、✕にしました。ほかにも写っていないか、見てください。", false);
+    } catch (e) {
+        fbShowMsg("撮影できませんでした。F-SHOT", true);
+    } finally {
+        const b2 = $id("fbShotBtn");
+        if (b2) { b2.disabled = false; b2.textContent = "いまの画面を撮る"; }
+    }
+}
 function fbRenderThumbs() {
     const box = $id("fbThumbs");
     if (!box) return;
     const full = fbImages.length >= FB_MAX_IMAGES;
     const pick = $id("fbPickBtn"); if (pick) pick.disabled = full;
+    const shot = $id("fbShotBtn"); if (shot) shot.disabled = full;
     if (!fbImages.length) { box.innerHTML = ""; return; }
     box.innerHTML = '<div class="fb-thumbs">' + fbImages.map((im, i) =>
         '<div class="fb-thumb"><img src="' + im.data + '" alt="画像' + (i + 1) + '"><div class="fb-thumb-btns"><button type="button" class="btn-secondary" data-fb="mask" data-i="' + i + '">隠す</button><button type="button" class="btn-secondary" data-fb="imgdel" data-i="' + i + '">消す</button></div></div>').join("") +
@@ -309,6 +338,7 @@ const FB_CSS = `
 #fbOverlay .fb-done-title { font-size: 17px; font-weight: 800; margin-bottom: 8px; }
 #fbOverlay .fb-sent { list-style: none; margin: 6px 0; padding: 0; font-size: 13px; }
 #fbOverlay .fb-sent li { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 6px 0; border-bottom: 1px solid var(--seat-border); }
+#fbOverlay .modal-content .fb-row button { height: auto !important; min-height: 38px; margin: 0 !important; }
 #fbOverlay .fb-thumbs { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
 #fbOverlay .fb-thumb { width: 150px; border: 1px solid var(--seat-border); border-radius: 10px; padding: 6px; background: var(--card-bg); }
 #fbOverlay .fb-thumb img { width: 100%; height: 92px; object-fit: contain; background: #e5e7eb; border-radius: 6px; display: block; }
@@ -361,7 +391,7 @@ function fbRender(prefill) {
         '<p class="fb-kind-hint" id="fbKindHint">' + fbEsc(k.hint) + '</p>' +
         '<textarea id="fbText" maxlength="2000" placeholder="' + (fbKind === "bug" ? "どの画面で、何をしたら、どうなりましたか？（例：席替えスタートを押すと、画面が止まる）" : fbKind === "idea" ? "どんなときに、どんな機能があると、助かりますか？" : "知りたいことを、書いてください。") + '">' + fbEsc(text) + '</textarea>' +
         '<div class="fb-count"><span id="fbCount">0</span> / 2000</div>' +
-        (hasRelay ? '<div class="fb-row"><button type="button" class="btn-secondary" id="fbPickBtn" data-fb="pick">画像をつける</button><span class="fb-hint">スクリーンショットなど（最大' + FB_MAX_IMAGES + '枚）。貼り付け（Ctrl+V）やドラッグでも付けられます</span><input type="file" id="fbFile" accept="image/*" multiple style="display:none;"></div><div id="fbThumbs"></div>' : '') +
+        (hasRelay ? '<div class="fb-row"><button type="button" class="btn-secondary" id="fbPickBtn" data-fb="pick">画像をつける</button>' + (fbShotAvailable() ? '<button type="button" class="btn-secondary" id="fbShotBtn" data-fb="shot">いまの画面を撮る</button>' : '') + '<span class="fb-hint">スクリーンショットなど（最大' + FB_MAX_IMAGES + '枚）。貼り付け（Ctrl+V）やドラッグでも付けられます</span><input type="file" id="fbFile" accept="image/*" multiple style="display:none;"></div><div id="fbThumbs"></div>' : '') +
         '<input type="text" id="fbHp" class="fb-hp" tabindex="-1" autocomplete="off" aria-hidden="true">' +
         '<div class="fb-row"><label><input type="checkbox" id="fbWithEnv" checked> 画面の状態もつける（版・ブラウザ・直前のエラーなど）</label></div>' +
         '<details><summary style="cursor:pointer;font-size:13px;">付ける内容を見る</summary><pre class="fb-env" id="fbEnvPre"></pre></details>' +
@@ -441,6 +471,7 @@ SekigaeApp.registerPlugin({
             else if (act === "send") fbSend();
             else if (act === "status") fbStatus();
             else if (act === "again") { fbImages = []; fbImgOkOn = false; fbRender({ kind: fbKind, text: "" }); const ta = $id("fbText"); if (ta) ta.focus(); }
+            else if (act === "shot") fbShotNow();
             else if (act === "pick") { const f = $id("fbFile"); if (f) f.click(); }
             else if (act === "imgdel") { fbImages.splice(parseInt(t.dataset.i, 10), 1); fbImgOkOn = false; fbRenderThumbs(); }
             else if (act === "mask") fbMaskOpen(parseInt(t.dataset.i, 10));

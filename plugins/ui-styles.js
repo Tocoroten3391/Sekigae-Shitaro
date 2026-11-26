@@ -620,6 +620,7 @@ const UIS_BTN_ICO = [
     { sel: "#examOpenBtn", map: [[/./, "edit"]] },
     { sel: "#slbOpenBtn", map: [[/./, "printer"]] },
     { sel: "#fbOpenBtn", map: [[/./, "edit"]] },
+    { sel: "#shotOpenBtn", map: [[/./, "image"]] },
     { sel: "#nqAddAllBtn", map: [[/./, "users"]] },
     { sel: "#nqShuffleBtn", map: [[/./, "shuffle"]] },
     { sel: "#nqClearBtn", map: [[/./, "trash"]] },
