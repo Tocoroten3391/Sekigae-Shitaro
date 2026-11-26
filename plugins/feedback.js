@@ -5,7 +5,7 @@
 // 「画面の状態」（版・画面スタイル・ブラウザ・直前のエラーコード）は、チェックを入れたときだけ付き、送る前に、全部見られます
 // このファイルを index.html から外すと、この機能は、まとめて使えなくなります
 // ==========================================
-const FB_RELAY_URL = "";   // 中継役の URL（例：https://sekigae-feedback.xxxx.workers.dev）。空のときは、送らずに、コピーとGitHubで開く方法だけを出します
+const FB_RELAY_URL = "https://sekigae-feedback.tocoroten3391.workers.dev/";   // 中継役の URL（例：https://sekigae-feedback.xxxx.workers.dev）。空のときは、送らずに、コピーとGitHubで開く方法だけを出します
 const FB_REPO = "Tocoroten3391/Sekigae-Shitaro_Apps";
 const FB_DRAFT_KEY = "feedback_draft_v1";
 const FB_SENT_KEY = "feedback_sent_v1";
