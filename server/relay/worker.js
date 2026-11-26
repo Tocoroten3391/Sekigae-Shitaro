@@ -7,10 +7,15 @@
 //   変数  GH_OWNER : Tocoroten3391
 //   変数  GH_REPO  : Sekigae-Shitaro_Apps
 //   シークレット  GH_TOKEN : GitHubのトークン（Issues の読み書きだけを許可したもの）
-//   （おすすめ）KV の名前空間を、名前 RATE で結びつける ← 回数の制限に使います
+//   （おすすめ）KV の名前空間を、名前 RATE で結びつける ← 回数の制限と、スクリーンショットの保管に使います
+//     スクリーンショットは、KV に、180日だけ置かれます（GitHub には置きません）
 // ==========================================
 
-const LIMIT_PER_HOUR = 5;      // 1つの接続元が、1時間に送れる数
+const LIMIT_PER_HOUR = 20;     // 1つの接続元が、1時間に送れる数
+const MAX_IMAGES = 3;          // 1件に付けられる画像の数
+const MAX_IMAGE_BYTES = 500000; // 画像1枚の大きさ（アプリ側で、縮めて送ります）
+const IMAGE_TTL = 60 * 60 * 24 * 180; // 画像を置いておく日数（秒）
+const MAX_BODY = 2400000;      // 受け取れる、全体の大きさ
 const LIMIT_PER_DAY = 100;     // 全体で、1日に作る Issue の数（荒らし対策）
 const KINDS = {
   bug: { label: "不具合", tag: "[不具合]" },
@@ -51,7 +56,7 @@ async function hit(env, key, limit, ttl) {
   return true;
 }
 
-function buildIssue(p, ip) {
+function buildIssue(p, imageUrls, imageNote) {
   const kind = KINDS[p.kind] || KINDS.bug;
   const text = clean(p.text, 2000).trim();
   const firstLine = text.split(/\r?\n/)[0].replace(/\s+/g, " ").slice(0, 50);
@@ -72,22 +77,68 @@ function buildIssue(p, ip) {
   const quoted = text.split(/\r?\n/).map(l => "> " + l).join("\n");
   const body =
     "**種類**：" + kind.label + "\n\n" + quoted +
+    (imageUrls && imageUrls.length ? "\n\n**添付画像**\n\n" + imageUrls.map((u, i) => "![画像" + (i + 1) + "](" + u + ")").join("\n\n") : "") +
+    (imageNote ? "\n\n*" + imageNote + "*" : "") +
     (rows.length ? "\n\n| 項目 | 内容 |\n|---|---|\n" + rows.join("\n") : "") + errs +
     "\n\n---\n*アプリの「不具合・要望を送る」から送られました。*";
   return { title, body, labels: [kind.label, "アプリから"] };
 }
 
+// ---- 画像 ----
+function randomId() {
+  const a = crypto.getRandomValues(new Uint8Array(12));
+  return Array.from(a).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+// 受け取った画像（base64）を確かめて、バイト列にします。JPEG だけ受け付けます（アプリが、必ず JPEG にして送ります）
+function decodeImage(b64) {
+  if (typeof b64 !== "string" || b64.length < 100 || b64.length > Math.ceil(MAX_IMAGE_BYTES * 4 / 3) + 8) return null;
+  if (!/^[A-Za-z0-9+/]+={0,2}$/.test(b64)) return null;
+  let bin;
+  try { bin = atob(b64); } catch (e) { return null; }
+  if (bin.length > MAX_IMAGE_BYTES) return null;
+  const u = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  if (!(u[0] === 0xFF && u[1] === 0xD8 && u[2] === 0xFF)) return null;
+  return u;
+}
+async function saveImages(env, origin, list) {
+  const store = env.IMG || env.RATE;
+  if (!store) return { urls: [], note: "画像は、保管場所（KV）がまだ結びつけられていないため、付けられませんでした。", error: "no_store" };
+  const urls = [];
+  for (const b64 of list.slice(0, MAX_IMAGES)) {
+    const bytes = decodeImage(b64);
+    if (!bytes) return { urls, note: "画像のうち、受け付けられないものがありました。", error: "bad_image" };
+    const id = randomId();
+    try { await store.put("img:" + id, bytes, { expirationTtl: IMAGE_TTL }); }
+    catch (e) { return { urls, note: "画像を保管できませんでした。", error: "store_failed" }; }
+    urls.push(origin + "/img/" + id + ".jpg");
+  }
+  return { urls, note: "", error: "" };
+}
+async function serveImage(env, pathname) {
+  const store = env.IMG || env.RATE;
+  const m = pathname.match(/^\/img\/([0-9a-f]{24})\.jpg$/);
+  if (!store || !m) return new Response("not found", { status: 404, headers: CORS });
+  const buf = await store.get("img:" + m[1], "arrayBuffer");
+  if (!buf) return new Response("not found", { status: 404, headers: CORS });
+  return new Response(buf, { status: 200, headers: { ...CORS, "Content-Type": "image/jpeg", "Cache-Control": "public, max-age=86400", "X-Content-Type-Options": "nosniff" } });
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
-    if (request.method === "GET") return json({ ok: true, name: "sekigae-feedback-relay" });
+    if (request.method === "GET") {
+      const u = new URL(request.url);
+      if (u.pathname.startsWith("/img/")) return serveImage(env, u.pathname);
+      return json({ ok: true, name: "sekigae-feedback-relay", images: !!(env.IMG || env.RATE) });
+    }
     if (request.method !== "POST") return json({ ok: false, error: "method" }, 405);
     if (!env.GH_TOKEN || !env.GH_OWNER || !env.GH_REPO) return json({ ok: false, error: "not_configured" }, 500);
 
     const len = parseInt(request.headers.get("content-length") || "0", 10);
-    if (len > 20000) return json({ ok: false, error: "too_large" }, 413);
+    if (len > MAX_BODY) return json({ ok: false, error: "too_large" }, 413);
     let p;
-    try { p = JSON.parse(await request.text()); } catch (e) { return json({ ok: false, error: "bad_json" }, 400); }
+    try { const raw = await request.text(); if (raw.length > MAX_BODY) return json({ ok: false, error: "too_large" }, 413); p = JSON.parse(raw); } catch (e) { return json({ ok: false, error: "bad_json" }, 400); }
     if (!p || typeof p !== "object") return json({ ok: false, error: "bad_json" }, 400);
 
     // ボットよけ：人には見えない欄に、何か入っていたら、受け付けた振りをして、捨てます
@@ -102,7 +153,11 @@ export default {
     const day = new Date().toISOString().slice(0, 10);
     if (!(await hit(env, "d:" + day, LIMIT_PER_DAY, 86400))) return json({ ok: false, error: "busy" }, 429);
 
-    const issue = buildIssue(p, ip);
+    // 画像：うまく保管できなくても、文章の報告は、Issue にします（画像だけ、付かなかったと伝えます）
+    let img = { urls: [], note: "", error: "" };
+    const wanted = Array.isArray(p.images) ? p.images.filter(x => typeof x === "string") : [];
+    if (wanted.length) img = await saveImages(env, new URL(request.url).origin, wanted);
+    const issue = buildIssue(p, img.urls, img.note);
     let r;
     try {
       r = await fetch("https://api.github.com/repos/" + encodeURIComponent(env.GH_OWNER) + "/" + encodeURIComponent(env.GH_REPO) + "/issues", {
@@ -122,6 +177,6 @@ export default {
       return json({ ok: false, error: "github_" + r.status }, 502);
     }
     const d = await r.json();
-    return json({ ok: true, number: d.number, url: d.html_url });
+    return json({ ok: true, number: d.number, url: d.html_url, images: img.urls.length, imageError: img.error || undefined });
   }
 };

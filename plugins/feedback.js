@@ -2,13 +2,17 @@
 // 不具合・要望を送るプラグイン：アプリの中から、不具合の報告や、機能の要望を送ります
 // 送った内容は、中継役（Cloudflare Workers）を通って、GitHubの Issue（公開）になります。GitHubのトークンは、アプリには入っていません
 // 生徒の名前などが入らないよう、送る前に、名簿の名前・メールアドレス・電話番号を探して、見つかったら送れないようにします
+// 画像（スクリーンショットなど）は、最大3枚まで付けられます。アプリの中で、縮めて、JPEGにしてから送り（撮った場所などの情報は消えます）、「隠す」で、名前などを黒く塗れます
+// 画像は、中継役の保管場所（KV）に、180日だけ置かれ、Issueには、その画像のリンクが貼られます
 // 「画面の状態」（版・画面スタイル・ブラウザ・直前のエラーコード）は、チェックを入れたときだけ付き、送る前に、全部見られます
 // このファイルを index.html から外すと、この機能は、まとめて使えなくなります
 // ==========================================
-const FB_RELAY_URL = "https://sekigae-feedback.tocoroten3391.workers.dev/";   // 中継役の URL（例：https://sekigae-feedback.xxxx.workers.dev）。空のときは、送らずに、コピーとGitHubで開く方法だけを出します
+const FB_RELAY_URL = "https://sekigae-feedback.tocoroten3391.workers.dev";   // 中継役の URL。空のときは、送らずに、コピーとGitHubで開く方法だけを出します
 const FB_REPO = "Tocoroten3391/Sekigae-Shitaro_Apps";
 const FB_DRAFT_KEY = "feedback_draft_v1";
 const FB_SENT_KEY = "feedback_sent_v1";
+const FB_MAX_IMAGES = 3;
+const FB_IMG_MAX_BYTES = 420000;   // 1枚の大きさの上限（中継役は500000まで受け付けます）
 const FB_KINDS = [
     { id: "bug", label: "不具合", hint: "うまく動かない・おかしい" },
     { id: "idea", label: "要望", hint: "こんな機能がほしい・ここを直してほしい" },
@@ -20,12 +24,16 @@ const FB_ERRORS = {
     "F-BUSY": "いま、受け付けが混み合っています。明日、もう一度送ってください。",
     "F-SHORT": "内容が短すぎます。10文字以上で、書いてください。",
     "F-LONG": "内容が長すぎます。2000文字までに、まとめてください。",
+    "F-BIG": "送る内容が大きすぎます。画像を減らすか、小さくしてください。",
     "F-SRV": "受け付けられませんでした。時間をおいて、もう一度ためしてください。続くときは、下の「GitHubで開く」を使ってください。"
 };
 
 const fbErrBuf = [];   // 直前の内部エラー（メッセージだけ。最大5件）
 let fbKind = "bug";
 let fbSending = false;
+let fbImages = [];          // 付ける画像（{ data: "data:image/jpeg;base64,...", w, h }）
+let fbImgOkOn = false;      // 「名前などが写っていないか確認した」のチェック
+let fbMask = null;          // 黒塗り中の状態（{ i, base, rects, cur }）
 
 function fbRelayUrl() {
     try { const o = localStorage.getItem("feedback_relay_url"); if (o) return o; } catch (e) { /* 何もしない */ }
@@ -124,25 +132,28 @@ async function fbSend() {
     if (chk.problems.length) { fbShowMsg(chk.problems.join("\n"), true); return; }
     const url = fbRelayUrl();
     if (!url) { fbShowMsg("送り先を準備中です。「内容をコピー」か「GitHubで開く」を使ってください。", true); return; }
+    if (fbImages.length && !fbImgOkOn) { fbShowMsg("画像に、生徒の名前などが写っていないか、確かめて、「確認しました」にチェックを入れてください。写っているときは、「隠す」で黒く塗れます。", true); return; }
     const withEnv = $id("fbWithEnv") && $id("fbWithEnv").checked;
     fbSending = true;
     fbSetBusy(true);
     const ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
-    const timer = setTimeout(() => { if (ctl) ctl.abort(); }, 15000);
+    const timer = setTimeout(() => { if (ctl) ctl.abort(); }, fbImages.length ? 45000 : 15000);
     try {
         // 「text/plain」で送ると、ブラウザの事前確認（プリフライト）が要らず、ファイルを直接開いていても送れます
-        const res = await fetch(url, { method: "POST", headers: { "Content-Type": "text/plain;charset=UTF-8" }, body: JSON.stringify({ kind: fbKind, text, env: withEnv ? fbEnv() : {}, hp: ($id("fbHp") || {}).value || "" }), signal: ctl ? ctl.signal : undefined });
+        const res = await fetch(url, { method: "POST", headers: { "Content-Type": "text/plain;charset=UTF-8" }, body: JSON.stringify({ kind: fbKind, text, env: withEnv ? fbEnv() : {}, images: fbImages.map(x => String(x.data).replace(/^data:image\/jpeg;base64,/, "")), hp: ($id("fbHp") || {}).value || "" }), signal: ctl ? ctl.signal : undefined });
         let d = null;
         try { d = await res.json(); } catch (e) { d = null; }
         if (d && d.ok) {
             const sent = fbLoad(FB_SENT_KEY, []);
             if (d.number) sent.unshift({ n: d.number, url: d.url, kind: fbKind, title: text.split(/\r?\n/)[0].slice(0, 40), t: Date.now() });
-            fbSave(FB_SENT_KEY, sent.slice(0, 20));
+            fbSave(FB_SENT_KEY, sent.slice(0, 30));
             try { localStorage.removeItem(FB_DRAFT_KEY); } catch (e) { /* 何もしない */ }
-            fbShowDone(d);
+            const attached = fbImages.length;
+            fbImages = []; fbImgOkOn = false;
+            fbShowDone(d, attached);
         } else {
             const err = d && d.error;
-            const code = err === "rate_limit" ? "F-RATE" : err === "busy" ? "F-BUSY" : err === "too_short" ? "F-SHORT" : err === "too_long" ? "F-LONG" : "F-SRV";
+            const code = err === "too_large" ? "F-BIG" : err === "rate_limit" ? "F-RATE" : err === "busy" ? "F-BUSY" : err === "too_short" ? "F-SHORT" : err === "too_long" ? "F-LONG" : "F-SRV";
             fbShowMsg(FB_ERRORS[code] + "（" + code + (err && code === "F-SRV" ? "／" + err : "") + "）", true);
         }
     } catch (e) {
@@ -162,13 +173,109 @@ function fbShowMsg(msg, isErr) {
     m.textContent = msg;
     m.style.display = msg ? "" : "none";
 }
-function fbShowDone(d) {
+function fbShowDone(d, attached) {
     const body = $id("fbBody");
     if (!body) return;
     body.innerHTML = '<div class="fb-done"><div class="fb-done-title">送りました。ありがとうございます。</div>' +
         (d.number ? '<p>報告の番号は <b>#' + fbEsc(d.number) + '</b> です。返事や対応の様子は、「送った報告」で見られます。</p>' : "") +
-        '<p>公開の場所（GitHub）に載ります。生徒の名前などは、入っていないはずですが、もし入っていたら、すぐに、お知らせください。</p></div>';
+        (attached && !(d.images >= attached) ? '<div class="fb-msg fb-msg-err" style="text-align:left;">文章は届きましたが、画像は、付けられませんでした（F-IMG' + (d.imageError ? "／" + fbEsc(d.imageError) : "") + '）。必要なら、報告の番号を書いて、もう一度、画像だけ送ってください。</div>' : (attached ? '<p>画像は ' + d.images + ' 枚、付きました。</p>' : "")) +
+        '<p>公開の場所（GitHub）に載ります。生徒の名前などは、入っていないはずですが、もし入っていたら、すぐに、お知らせください。</p>' +
+        '<div class="fb-row" style="justify-content:center;"><button type="button" class="btn-secondary" data-fb="again">続けて、もう1件書く</button></div></div>';
     const bar = $id("fbBtns"); if (bar) bar.style.display = "none";
+}
+
+
+// ---- 画像 ----
+function fbLoadImg(src) {
+    return new Promise((ok, ng) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ng(new Error("img")); im.src = src; });
+}
+// 大きさを縮めながら、上限に収まるJPEGにします（元の画像に入っていた撮影情報などは、ここで消えます）
+function fbEncode(src, w, h) {
+    for (const side of [1280, 1024, 800, 640, 480]) {
+        const sc = Math.min(1, side / Math.max(w, h));
+        const c = document.createElement("canvas");
+        c.width = Math.max(1, Math.round(w * sc)); c.height = Math.max(1, Math.round(h * sc));
+        const x = c.getContext("2d");
+        x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
+        x.drawImage(src, 0, 0, c.width, c.height);
+        for (const q of [0.82, 0.68, 0.55]) {
+            const u = c.toDataURL("image/jpeg", q);
+            if (u.length * 0.75 <= FB_IMG_MAX_BYTES) return { data: u, w: c.width, h: c.height };
+        }
+    }
+    return null;
+}
+async function fbAddFiles(files) {
+    const list = Array.from(files || []).filter(f => f && /^image\//.test(f.type || ""));
+    if (!list.length) { fbShowMsg("画像のファイルを選んでください。", true); return; }
+    for (const f of list) {
+        if (fbImages.length >= FB_MAX_IMAGES) { fbShowMsg("画像は、" + FB_MAX_IMAGES + "枚までです。", true); break; }
+        const u = URL.createObjectURL(f);
+        try {
+            const im = await fbLoadImg(u);
+            const e = fbEncode(im, im.naturalWidth || im.width, im.naturalHeight || im.height);
+            if (!e) throw new Error("big");
+            fbImages.push(e);
+            fbImgOkOn = false;
+            fbShowMsg("", false);
+        } catch (x) {
+            fbShowMsg("この画像は、読み込めませんでした（F-IMG-READ）。PNG・JPEGなどの画像を選んでください。", true);
+        } finally { URL.revokeObjectURL(u); }
+    }
+    fbRenderThumbs();
+}
+function fbRenderThumbs() {
+    const box = $id("fbThumbs");
+    if (!box) return;
+    const full = fbImages.length >= FB_MAX_IMAGES;
+    const pick = $id("fbPickBtn"); if (pick) pick.disabled = full;
+    if (!fbImages.length) { box.innerHTML = ""; return; }
+    box.innerHTML = '<div class="fb-thumbs">' + fbImages.map((im, i) =>
+        '<div class="fb-thumb"><img src="' + im.data + '" alt="画像' + (i + 1) + '"><div class="fb-thumb-btns"><button type="button" class="btn-secondary" data-fb="mask" data-i="' + i + '">隠す</button><button type="button" class="btn-secondary" data-fb="imgdel" data-i="' + i + '">消す</button></div></div>').join("") +
+        '</div><label class="fb-imgok"><input type="checkbox" id="fbImgOk"' + (fbImgOkOn ? " checked" : "") + '> 画像に、児童生徒の名前などが写っていないことを、確認しました</label>';
+}
+
+// ---- 黒塗り（名前などを隠す） ----
+function fbMaskOpen(i) {
+    const im = fbImages[i];
+    if (!im) return;
+    fbLoadImg(im.data).then(base => {
+        fbMask = { i, base, rects: [], cur: null };
+        const cv = $id("fbMaskCanvas");
+        cv.width = base.naturalWidth || base.width; cv.height = base.naturalHeight || base.height;
+        fbMaskDraw();
+        $id("fbMaskOverlay").style.display = "flex";
+    }).catch(() => fbShowMsg("画像を開けませんでした。", true));
+}
+function fbMaskDraw() {
+    const cv = $id("fbMaskCanvas");
+    if (!cv || !fbMask) return;
+    const x = cv.getContext("2d");
+    x.drawImage(fbMask.base, 0, 0, cv.width, cv.height);
+    x.fillStyle = "#000";
+    fbMask.rects.forEach(r => x.fillRect(r.x, r.y, r.w, r.h));
+    if (fbMask.cur) {
+        const r = fbMask.cur;
+        x.fillStyle = "rgba(0,0,0,0.6)"; x.fillRect(r.x, r.y, r.w, r.h);
+        x.strokeStyle = "#ef4444"; x.lineWidth = Math.max(2, cv.width / 400); x.strokeRect(r.x, r.y, r.w, r.h);
+    }
+}
+function fbMaskPos(ev) {
+    const cv = $id("fbMaskCanvas"), r = cv.getBoundingClientRect();
+    return { x: Math.max(0, Math.min(cv.width, (ev.clientX - r.left) * cv.width / r.width)), y: Math.max(0, Math.min(cv.height, (ev.clientY - r.top) * cv.height / r.height)) };
+}
+function fbMaskRect(a, b) { return { x: Math.min(a.x, b.x), y: Math.min(a.y, b.y), w: Math.abs(a.x - b.x), h: Math.abs(a.y - b.y) }; }
+function fbMaskClose() { const o = $id("fbMaskOverlay"); if (o) o.style.display = "none"; fbMask = null; }
+function fbMaskDone() {
+    if (!fbMask) return;
+    if (fbMask.rects.length) {
+        fbMask.cur = null; fbMaskDraw();
+        const cv = $id("fbMaskCanvas");
+        const e = fbEncode(cv, cv.width, cv.height);
+        if (e) { fbImages[fbMask.i] = e; fbImgOkOn = false; fbRenderThumbs(); }
+        else fbShowMsg("画像を保存できませんでした。", true);
+    }
+    fbMaskClose();
 }
 
 // ---- 下書き ----
@@ -202,6 +309,18 @@ const FB_CSS = `
 #fbOverlay .fb-done-title { font-size: 17px; font-weight: 800; margin-bottom: 8px; }
 #fbOverlay .fb-sent { list-style: none; margin: 6px 0; padding: 0; font-size: 13px; }
 #fbOverlay .fb-sent li { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 6px 0; border-bottom: 1px solid var(--seat-border); }
+#fbOverlay .fb-thumbs { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
+#fbOverlay .fb-thumb { width: 150px; border: 1px solid var(--seat-border); border-radius: 10px; padding: 6px; background: var(--card-bg); }
+#fbOverlay .fb-thumb img { width: 100%; height: 92px; object-fit: contain; background: #e5e7eb; border-radius: 6px; display: block; }
+#fbOverlay .fb-thumb-btns { display: flex; gap: 4px; margin-top: 5px; }
+#fbOverlay .modal-content .fb-thumb-btns button { height: auto !important; min-height: 30px; width: auto !important; flex: 1; margin: 0 !important; font-size: 12px; padding: 4px 6px; }
+#fbOverlay .fb-imgok { display: flex; gap: 6px; align-items: flex-start; font-size: 13px; margin: 6px 0; line-height: 1.5; }
+#fbOverlay .fb-hint { font-size: 12px; color: var(--text-sub); }
+#fbMaskOverlay { z-index: 2100; }
+#fbMaskOverlay .modal-content { max-width: 900px; width: 96%; }
+#fbMaskOverlay .fb-mask-wrap { border: 1px solid var(--seat-border); border-radius: 8px; background: #222; padding: 4px; text-align: center; }
+#fbMaskOverlay canvas { display: block; margin: 0 auto; max-width: 100%; max-height: 60vh; width: auto; height: auto; touch-action: none; cursor: crosshair; }
+#fbMaskOverlay .fb-mask-hint { font-size: 12.5px; color: var(--text-sub); margin: 0 0 8px; line-height: 1.6; }
 #fbOverlay .fb-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 body.theme-dark #fbOverlay .fb-notice, body.theme-blackboard #fbOverlay .fb-notice, body.theme-game #fbOverlay .fb-notice { background: #3a2a05; border-color: #92400e; color: #fde68a; }
 `;
@@ -212,6 +331,16 @@ function fbModalHtml() {
     <h4>不具合・要望を送る</h4>
     <div id="fbBody"></div>
     <div class="modal-btn-row" id="fbBtns"><button type="button" id="fbSendBtn" data-fb="send">送る</button><button type="button" data-fb="close">閉じる</button></div>
+  </div>
+</div>`;
+}
+function fbMaskModalHtml() {
+    return `<div id="fbMaskOverlay" class="modal-overlay" style="display: none;">
+  <div class="modal-content">
+    <h4>名前などを隠す</h4>
+    <p class="fb-mask-hint">隠したいところを、指かマウスでなぞって、四角く囲むと、黒く塗れます。「完了」を押すと、画像に反映されます（そのあとは、元に戻せません）。</p>
+    <div class="fb-mask-wrap"><canvas id="fbMaskCanvas" width="10" height="10"></canvas></div>
+    <div class="modal-btn-row"><button type="button" class="btn-secondary" data-fb="maskundo">ひとつ戻す</button><button type="button" id="fbMaskDoneBtn" data-fb="maskdone">完了</button><button type="button" data-fb="maskclose">閉じる</button></div>
   </div>
 </div>`;
 }
@@ -227,11 +356,12 @@ function fbRender(prefill) {
     const bar = $id("fbBtns");
     if (bar) { bar.style.display = ""; const sb = $id("fbSendBtn"); if (sb) sb.style.display = hasRelay ? "" : "none"; }
     body.innerHTML =
-        '<div class="fb-notice"><b>この内容は、公開されます（GitHub）。</b>児童生徒の名前・名簿・メールアドレス・電話番号は、書かないでください。送る前に、名前などが入っていないか、アプリが確認します。</div>' +
+        '<div class="fb-notice"><b>この内容は、公開されます（GitHub）。</b>児童生徒の名前・名簿・メールアドレス・電話番号は、書かないでください。送る前に、名前などが入っていないか、アプリが確認します。' + (hasRelay ? '画像をつけたときは、画像も公開されます（180日で消えます）。' : '') + '</div>' +
         '<div class="fb-kinds">' + FB_KINDS.map(x => '<button type="button" class="fb-kind' + (x.id === fbKind ? " on" : "") + '" data-fb-kind="' + x.id + '">' + x.label + '</button>').join("") + '</div>' +
         '<p class="fb-kind-hint" id="fbKindHint">' + fbEsc(k.hint) + '</p>' +
         '<textarea id="fbText" maxlength="2000" placeholder="' + (fbKind === "bug" ? "どの画面で、何をしたら、どうなりましたか？（例：席替えスタートを押すと、画面が止まる）" : fbKind === "idea" ? "どんなときに、どんな機能があると、助かりますか？" : "知りたいことを、書いてください。") + '">' + fbEsc(text) + '</textarea>' +
         '<div class="fb-count"><span id="fbCount">0</span> / 2000</div>' +
+        (hasRelay ? '<div class="fb-row"><button type="button" class="btn-secondary" id="fbPickBtn" data-fb="pick">画像をつける</button><span class="fb-hint">スクリーンショットなど（最大' + FB_MAX_IMAGES + '枚）。貼り付け（Ctrl+V）やドラッグでも付けられます</span><input type="file" id="fbFile" accept="image/*" multiple style="display:none;"></div><div id="fbThumbs"></div>' : '') +
         '<input type="text" id="fbHp" class="fb-hp" tabindex="-1" autocomplete="off" aria-hidden="true">' +
         '<div class="fb-row"><label><input type="checkbox" id="fbWithEnv" checked> 画面の状態もつける（版・ブラウザ・直前のエラーなど）</label></div>' +
         '<details><summary style="cursor:pointer;font-size:13px;">付ける内容を見る</summary><pre class="fb-env" id="fbEnvPre"></pre></details>' +
@@ -239,10 +369,11 @@ function fbRender(prefill) {
         '<div class="fb-msg" id="fbMsg" style="display:none;"></div>' +
         '<div class="fb-row"><button type="button" class="btn-secondary" data-fb="copy">内容をコピー</button><button type="button" class="btn-secondary" data-fb="github">GitHubで開く</button>' +
         (hasRelay ? '' : '<span style="font-size:12px;color:var(--text-sub);">（送り先を準備中です）</span>') + '</div>' +
-        (sent.length ? '<h5 style="margin:14px 0 4px;font-size:14px;">送った報告</h5><ul class="fb-sent">' + sent.slice(0, 5).map(s =>
+        (sent.length ? '<h5 style="margin:14px 0 4px;font-size:14px;">送った報告</h5><ul class="fb-sent">' + sent.slice(0, 10).map(s =>
             '<li><span>#' + fbEsc(s.n) + '</span><span>' + fbEsc(s.title) + '</span><a href="' + fbEsc(s.url) + '" target="_blank" rel="noopener">開く</a><span class="fb-state" data-n="' + fbEsc(s.n) + '"></span></li>').join("") +
             '</ul><button type="button" class="btn-secondary btn-compact" data-fb="status">状況を見る</button>' : '');
     fbUpdateLive();
+    fbRenderThumbs();
 }
 function fbUpdateLive() {
     const ta = $id("fbText");
@@ -282,8 +413,8 @@ function closeFeedback() { fbSaveDraft(); const o = $id("fbOverlay"); if (o) o.s
 SekigaeApp.registerPlugin({
     id: "feedback",
     name: "不具合・要望を送る",
-    version: "1.0",
-    description: "アプリの中から、不具合の報告や機能の要望を送ります。内容は、公開のGitHub（Issue）になります。名簿の名前などが入っていないか、送る前に確認します。",
+    version: "1.1",
+    description: "アプリの中から、不具合の報告や機能の要望を、続けて何件でも送れます。スクリーンショットも付けられます（名前などは黒く塗れます）。内容は、公開のGitHub（Issue）になります。名簿の名前などが入っていないか、送る前に確認します。",
     searchWords: "不具合 バグ 報告 要望 機能 リクエスト 問い合わせ 質問 フィードバック 意見 ご意見 送る",
     stubs: [],
     mount(app) {
@@ -291,7 +422,7 @@ SekigaeApp.registerPlugin({
         st.id = "feedbackStyle";
         st.textContent = FB_CSS;
         document.head.appendChild(st);
-        document.body.insertAdjacentHTML("beforeend", fbModalHtml());
+        document.body.insertAdjacentHTML("beforeend", fbModalHtml() + fbMaskModalHtml());
         app.insertInto("settings-system", '<button type="button" id="fbOpenBtn" class="btn-secondary" style="margin-top: 10px;">不具合・要望を送る</button>');
         app.insertInto("guide-faq", "<li><strong>不具合を見つけた・こんな機能がほしい</strong>：設定の「機能・プラグイン」にある「不具合・要望を送る」から送れます。同期のエラーが出たときは、エラーの欄の「このエラーを報告」からも送れます。内容は公開されるので、生徒の名前は書かないでください。</li>");
         document.addEventListener("click", ev => {
@@ -309,6 +440,13 @@ SekigaeApp.registerPlugin({
             if (act === "close") closeFeedback();
             else if (act === "send") fbSend();
             else if (act === "status") fbStatus();
+            else if (act === "again") { fbImages = []; fbImgOkOn = false; fbRender({ kind: fbKind, text: "" }); const ta = $id("fbText"); if (ta) ta.focus(); }
+            else if (act === "pick") { const f = $id("fbFile"); if (f) f.click(); }
+            else if (act === "imgdel") { fbImages.splice(parseInt(t.dataset.i, 10), 1); fbImgOkOn = false; fbRenderThumbs(); }
+            else if (act === "mask") fbMaskOpen(parseInt(t.dataset.i, 10));
+            else if (act === "maskundo") { if (fbMask) { fbMask.rects.pop(); fbMaskDraw(); } }
+            else if (act === "maskdone") fbMaskDone();
+            else if (act === "maskclose") fbMaskClose();
             else if (act === "copy" || act === "github") {
                 const text = (($id("fbText") || {}).value || "").trim();
                 const chk = fbCheckText(text);
@@ -323,12 +461,56 @@ SekigaeApp.registerPlugin({
                 else fbShowMsg("コピーできませんでした。", true);
             }
         });
+        document.addEventListener("change", ev => {
+            const t = ev.target;
+            if (!t) return;
+            if (t.id === "fbFile") { fbAddFiles(t.files).then(() => { try { t.value = ""; } catch (e) { /* 何もしない */ } }); }
+            if (t.id === "fbImgOk") fbImgOkOn = !!t.checked;
+        });
+        // スクリーンショットの貼り付け・ドラッグで、画像を付ける
+        document.addEventListener("paste", ev => {
+            const o = $id("fbOverlay");
+            if (!o || o.style.display === "none" || !$id("fbFile")) return;
+            const files = Array.from((ev.clipboardData && ev.clipboardData.files) || []).filter(f => /^image\//.test(f.type));
+            if (files.length) { ev.preventDefault(); fbAddFiles(files); }
+        });
+        document.addEventListener("dragover", ev => { const o = $id("fbOverlay"); if (o && o.style.display !== "none" && ev.target.closest && ev.target.closest("#fbOverlay")) ev.preventDefault(); });
+        document.addEventListener("drop", ev => {
+            const o = $id("fbOverlay");
+            if (!o || o.style.display === "none" || !$id("fbFile") || !(ev.target.closest && ev.target.closest("#fbOverlay"))) return;
+            ev.preventDefault();
+            if (ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files.length) fbAddFiles(ev.dataTransfer.files);
+        });
+        // 黒塗り：指やマウスで、四角く囲む
+        document.addEventListener("pointerdown", ev => {
+            if (!fbMask || ev.target.id !== "fbMaskCanvas") return;
+            ev.preventDefault();
+            try { ev.target.setPointerCapture(ev.pointerId); } catch (e) { /* 何もしない */ }
+            const p = fbMaskPos(ev);
+            fbMask.start = p; fbMask.cur = { x: p.x, y: p.y, w: 0, h: 0 };
+        });
+        document.addEventListener("pointermove", ev => {
+            if (!fbMask || !fbMask.start) return;
+            fbMask.cur = fbMaskRect(fbMask.start, fbMaskPos(ev));
+            fbMaskDraw();
+        });
+        const fbPointerEnd = ev => {
+            if (!fbMask || !fbMask.start) return;
+            const r = fbMaskRect(fbMask.start, fbMaskPos(ev));
+            fbMask.start = null; fbMask.cur = null;
+            if (r.w > 6 && r.h > 6) fbMask.rects.push(r);
+            fbMaskDraw();
+        };
+        document.addEventListener("pointerup", fbPointerEnd);
+        document.addEventListener("pointercancel", fbPointerEnd);
         document.addEventListener("input", ev => {
             if (ev.target && ev.target.id === "fbText") { fbShowMsg("", false); fbUpdateLive(); fbSaveDraft(); }
             if (ev.target && ev.target.id === "fbWithEnv") fbUpdateLive();
         });
         document.addEventListener("keydown", ev => {
             if (ev.key !== "Escape") return;
+            const mo = $id("fbMaskOverlay");
+            if (mo && mo.style.display !== "none") { fbMaskClose(); return; }
             const o = $id("fbOverlay");
             if (o && o.style.display !== "none") closeFeedback();
         });
