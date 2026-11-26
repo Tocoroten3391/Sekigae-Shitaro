@@ -74,12 +74,16 @@ function gasErrRender() {
         '<div class="gas-err-body"><p><b>原因</b>　' + gasErrEsc(info.cause) + '</p><p><b>対処</b>　' + gasErrEsc(info.fix) + '</p>' +
         (r.detail ? '<p><b>くわしい内容</b>　' + gasErrEsc(r.detail) + '</p>' : "") +
         '<p class="gas-err-meta">' + gasErrEsc(new Date(r.t).toLocaleString("ja-JP")) + (r.action ? "　操作：" + gasErrEsc(GAS_ACTION_NAMES[r.action] || r.action) : "") + '</p></div>' +
-        '<div class="gas-err-btns"><button type="button" class="btn-secondary btn-compact" data-gaserr="copy">内容をコピー</button><button type="button" class="btn-secondary btn-compact" data-gaserr="clear">消す</button></div>';
+        '<div class="gas-err-btns"><button type="button" class="btn-secondary btn-compact" data-gaserr="copy">内容をコピー</button><button type="button" class="btn-secondary btn-compact" data-gaserr="clear">消す</button>' + (typeof openFeedback === "function" ? '<button type="button" class="btn-secondary btn-compact" data-gaserr="report">このエラーを報告</button>' : "") + '</div>';
 }
 document.addEventListener("click", ev => {
     const b = ev.target.closest ? ev.target.closest("[data-gaserr]") : null;
     if (!b) return;
     if (b.dataset.gaserr === "clear") gasErrClearFor("");
+    else if (b.dataset.gaserr === "report") {
+        const r = gasReadLast();
+        if (r && typeof openFeedback === "function") openFeedback({ kind: "bug", text: "同期（スプレッドシート）で、エラーが出ました。\nエラーコード：" + r.code + (r.action ? "\n操作：" + (GAS_ACTION_NAMES[r.action] || r.action) : "") + "\n\n起きたときの様子：" });
+    }
     else if (b.dataset.gaserr === "copy") {
         const r = gasReadLast();
         if (!r) return;
