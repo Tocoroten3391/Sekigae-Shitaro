@@ -10,19 +10,19 @@
 const GAS_ERR_KEY = "gas_last_error_v1";
 const GAS_TIMEOUT_MS = 15000;
 const GAS_ERRORS = {
-    "E-URL-01": { kind: "URL", title: "GASのURLの形が正しくありません", cause: "URLが空か、途中で切れています。", fix: "GASの「デプロイ」→「ウェブアプリ」のURL（https://script.google.com/…/exec）を、全部コピーして貼り付けてください。" },
-    "E-URL-02": { kind: "URL", title: "テスト用のURL（/dev）が入っています", cause: "「テストデプロイ」のURLは、自分以外の端末では使えません。", fix: "「新しいデプロイ」で作った、末尾が /exec のURLを使ってください。" },
-    "E-NET-01": { kind: "通信", title: "GASに通信できませんでした", cause: "インターネットにつながっていない、学校のネットワークが script.google.com を止めている、URLが違う、のどれかです。", fix: "ほかのWebページが開けるか確認してください。開けるなら、URLを見直し、学校のネットワークの担当の先生に「script.google.com を許可できるか」を聞いてください。" },
-    "E-NET-02": { kind: "通信", title: "この端末は、いまオフラインです", cause: "端末が、インターネットにつながっていません。", fix: "Wi-Fiを確認してください。オフラインでも、座席表と、前回の名簿のキャッシュは使えます。" },
-    "E-NET-03": { kind: "通信", title: "GASから、時間内に返事がありませんでした", cause: "通信が遅いか、GASの処理に時間がかかっています。", fix: "少し待って、もう一度ためしてください。続くときは、スプレッドシートの行数が多すぎないか確認してください。" },
-    "E-AUTH-01": { kind: "権限", title: "GASが、データではなく別のページを返しました", cause: "GASのサーバーには届きましたが、データではなくWebページが返りました。多くは、ウェブアプリの公開範囲が合っていないためです（ログイン画面や、権限の確認画面が返っています）。URLの間違い、GAS側の実行エラーでも起きます。", fix: "まず、URLが、いまのデプロイのものか確認してください。次に、GASの「デプロイを管理」で、「実行するユーザー：自分」「アクセスできるユーザー：全員」（学校のアカウントだけで使うなら、その組織）になっているか確認してください。変えたら「新しいバージョン」でデプロイし直します。このブラウザで、Googleにログインしているかも確認してください。" },
-    "E-AUTH-02": { kind: "権限", title: "GASが、権限が足りないと返しました", cause: "GASが、スプレッドシートを開く許可を、まだ承認していません。", fix: "GASのエディタで、一度「実行」して、権限を承認してください。そのあと、デプロイし直します。" },
-    "E-SHEET-01": { kind: "シート", title: "名簿を、シートから取れませんでした", cause: "名簿のシートが空か、見ている列に、名前がありません。", fix: "スプレッドシートの名簿のシートに、名前が入っているか確認してください。" },
-    "E-SHEET-02": { kind: "シート", title: "このクラスの保存データが、シートにありません", cause: "このクラス名では、まだクラウドに保存していません。または、クラス名を変えました。", fix: "先に「シートに保存」を押してください。クラス名を変えた場合は、もとの名前で保存した履歴を確認してください。" },
-    "E-SHEET-03": { kind: "シート", title: "GASが、シートの処理でエラーを返しました", cause: "シート名（タブ名）や列が、GASのプログラムの想定と違います。", fix: "下の「くわしい内容」を見て、スプレッドシートのタブ名や列が、GASのプログラムと合っているか確認してください。" },
-    "E-SHEET-04": { kind: "シート", title: "シートに、保存できませんでした", cause: "GASが、保存できたと返しませんでした。シートが閲覧専用か、GASの実行エラーです。", fix: "スプレッドシートが、編集できる状態か確認してください。" },
-    "E-GAS-01": { kind: "GAS", title: "GASが、エラーを返しました", cause: "GASのプログラムの中で、エラーが起きました。", fix: "下の「くわしい内容」を、GASを作った人に伝えてください。GASの「実行数」から、ログも見られます。" },
-    "E-DATA-01": { kind: "データ", title: "GASからの返事を、読み取れませんでした", cause: "返ってきたデータの形が、アプリの想定と違います。GASのプログラムが古い可能性があります。", fix: "GASのプログラムが、最新か確認してください。" }
+    "E-URL-01": { kind: "URL", title: "GASのURLの形が正しくありません", cause: "URLが空か途中で切れています。", fix: "GASの「デプロイ」→「ウェブアプリ」にある https://script.google.com/…/exec のURLを全部コピーして貼り付けてください。" },
+    "E-URL-02": { kind: "URL", title: "テスト用の /dev のURLが入っています", cause: "「テストデプロイ」のURLは自分以外の端末では使えません。", fix: "「新しいデプロイ」で作った末尾が /exec のURLを使ってください。" },
+    "E-NET-01": { kind: "通信", title: "GASに通信できませんでした", cause: "インターネットにつながっていないか、学校のネットワークが script.google.com を止めているか、URLが違うかのどれかです。", fix: "ほかのWebページが開けるか確認してください。開けるならURLを見直して、学校のネットワークの担当の先生に「script.google.com を許可できるか」を聞いてください。" },
+    "E-NET-02": { kind: "通信", title: "この端末はいまオフラインです", cause: "端末がインターネットにつながっていません。", fix: "Wi-Fiを確認してください。オフラインでも座席表と前回の名簿のキャッシュは使えます。" },
+    "E-NET-03": { kind: "通信", title: "GASから時間内に返事がありませんでした", cause: "通信が遅いかGASの処理に時間がかかっています。", fix: "少し待ってもう一度ためしてください。続くときはスプレッドシートの行数が多すぎないか確認してください。" },
+    "E-AUTH-01": { kind: "権限", title: "GASがデータではなく別のページを返しました", cause: "GASのサーバーには届きましたが、データではなくWebページが返りました。多くはウェブアプリの公開範囲が合っていないためで、ログイン画面や権限の確認画面が返っています。URLの間違いやGAS側の実行エラーでも起きます。", fix: "まずURLがいまのデプロイのものか確認してください。次にGASの「デプロイを管理」で「実行するユーザー：自分」「アクセスできるユーザー：全員」になっているか確認してください。学校のアカウントだけで使う場合は、その組織を選びます。変えたら「新しいバージョン」でデプロイし直します。このブラウザでGoogleにログインしているかも確認してください。" },
+    "E-AUTH-02": { kind: "権限", title: "GASが権限が足りないと返しました", cause: "GASがスプレッドシートを開く許可をまだ承認していません。", fix: "GASのエディタで一度「実行」して権限を承認し、そのあとデプロイし直してください。" },
+    "E-SHEET-01": { kind: "シート", title: "名簿をシートから取れませんでした", cause: "名簿のシートが空か、見ている列に名前がありません。", fix: "スプレッドシートの名簿のシートに、名前が入っているか確認してください。" },
+    "E-SHEET-02": { kind: "シート", title: "このクラスの保存データがシートにありません", cause: "このクラス名ではまだクラウドに保存していないか、クラス名を変えました。", fix: "先に「シートに保存」を押してください。クラス名を変えた場合は、もとの名前で保存した履歴を確認してください。" },
+    "E-SHEET-03": { kind: "シート", title: "GASがシートの処理でエラーを返しました", cause: "タブ名や列がGASのプログラムの想定と違います。", fix: "下の「くわしい内容」を見て、スプレッドシートのタブ名や列がGASのプログラムと合っているか確認してください。" },
+    "E-SHEET-04": { kind: "シート", title: "シートに保存できませんでした", cause: "GASが保存できたと返しませんでした。シートが閲覧専用かGASの実行エラーです。", fix: "スプレッドシートが編集できる状態か確認してください。" },
+    "E-GAS-01": { kind: "GAS", title: "GASがエラーを返しました", cause: "GASのプログラムの中でエラーが起きました。", fix: "下の「くわしい内容」をGASを作った人に伝えてください。GASの「実行数」からログも見られます。" },
+    "E-DATA-01": { kind: "データ", title: "GASからの返事を読み取れませんでした", cause: "返ってきたデータの形がアプリの想定と違います。GASのプログラムが古い可能性があります。", fix: "GASのプログラムが、最新か確認してください。" }
 };
 const GAS_ACTION_NAMES = { save: "シートに保存", load: "前回を復元", history: "履歴の一覧", loadHistoryItem: "履歴から復元", specialSlots: "特別保存／接続の確認", saveSpecial: "特別保存", loadSpecial: "特別保存から復元", names: "名簿の読み込み" };
 let gasLastToastAt = 0;
@@ -46,7 +46,7 @@ function gasFail(code, opts) {
     const quiet = opts.quiet && Date.now() - gasLastToastAt < 600000;
     if (!quiet && !opts.noToast) {
         gasLastToastAt = Date.now();
-        showToast(info.title + "（エラーコード " + code + "）" + (opts.note ? " " + opts.note : ""), "error");
+        showToast(info.title + "。エラーコード " + code + (opts.note ? " " + opts.note : ""), "error");
     }
     gasErrRender();
 }
@@ -229,7 +229,7 @@ function fetchStudentData(url, presetName = "default") {
         if (!cachedData) return false;
         gasFail(code, { action: "names", noToast: true });
         updateStatus("connected", "キャッシュ復元"); 
-        showToast(`通信できないため、クラス【${activeLoadingPresetName}】の前の名簿（キャッシュ）を使いました。（エラーコード ${code}）`, "success"); 
+        showToast(`通信できないためクラス【${activeLoadingPresetName}】の前の名簿を使いました。エラーコード ${code}`, "success"); 
         applyStudentListToApp(JSON.parse(cachedData)); 
         return true;
     };
@@ -297,7 +297,7 @@ function sendServerRequest(url, params, callbackName, callbackFn) {
         if (callbackName === "handleChangelogManual") {
             if (typeof showLocalChangelog === "function") { showLocalChangelog(); return; }
             const infoBody = $id("updateInfoBody");
-            if (infoBody) infoBody.innerHTML = '<p style="color: var(--text-sub); font-size: 13px;">更新情報を取得できませんでした。通信できる場所で、もう一度ためしてください。</p>';
+            if (infoBody) infoBody.innerHTML = '<p style="color: var(--text-sub); font-size: 13px;">更新情報を取得できませんでした。通信できる場所でもう一度ためしてください。</p>';
             return;
         }
         gasLoadFailed(callbackName, script.src);

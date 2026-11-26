@@ -79,7 +79,7 @@ function examArrange(mode) {
     if (typeof isAppLocked === "function" && isAppLocked()) { showLockedToast(); return; }
     const cols = examCols();
     const movable = examStudentIdx().filter(i => !currentStudents[i].isFixed && !currentStudents[i].isAbsent && currentStudents[i].fixedType !== "area");
-    if (movable.length < 2) { showToast("並べ替える生徒が、座席表にいません。先に席替えをしてください。", "error"); return; }
+    if (movable.length < 2) { showToast("並べ替える生徒が座席表にいません。先に席替えをしてください。", "error"); return; }
     const people0 = examSortedByNo(movable).map(i => currentStudents[i]);
     const colMajor = list => list.slice().sort((x, y) => (x % cols) - (y % cols) || x - y);
     const place = pos => { const nx = currentStudents.slice(); pos.forEach((q, k) => { nx[q] = people0[k]; }); return nx; };
@@ -101,7 +101,7 @@ function examArrange(mode) {
     renderClassroom("none");
     const gap = examMinNeighborGap();
     const label = mode === "stagger" ? "千鳥配置" : mode === "col" ? "番号順（縦）" : "番号順（横）";
-    showToast(label + "に並べました。" + (gap !== null ? "隣どうしの番号の差は、いちばん近くて " + gap + " です。" : ""), "success");
+    showToast(label + "に並べました。" + (gap !== null ? "隣どうしの番号は最も近くて " + gap + " 離れています。" : ""), "success");
     examRender();
 }
 // 縦・横に隣り合う席の番号の差のうち、いちばん小さいもの
@@ -150,7 +150,7 @@ function examCardsHtml(cfg) {
 
 function examPrint() {
     const cfg = examCfg();
-    if (!examStudentIdx().length) { showToast("座席表に、生徒がいません。", "error"); return; }
+    if (!examStudentIdx().length) { showToast("座席表に生徒がいません。", "error"); return; }
     let area = $id("examPrintArea");
     if (!area) { area = document.createElement("div"); area.id = "examPrintArea"; document.body.appendChild(area); }
     area.innerHTML = examCardsHtml(cfg);
@@ -218,26 +218,26 @@ function examRender() {
     const opt = (v, cur, t) => '<option value="' + v + '"' + (String(v) === String(cur) ? " selected" : "") + '>' + t + '</option>';
     body.innerHTML =
         '<h5>① 席を並べる（いま座席表にいる ' + n + ' 人）</h5>' +
-        '<p class="config-note" style="margin:0 0 6px;">出席番号の順に、並べます。固定した席・空席・お休みの席は、動かしません。「1つ前に戻す」で、戻せます。</p>' +
+        '<p class="config-note" style="margin:0 0 6px;">出席番号の順に並べます。固定した席・空席・お休みの席は動かしません。「1つ前に戻す」で戻せます。</p>' +
         '<div class="exam-row">' +
         '<button type="button" class="btn-secondary" data-exam="stagger">千鳥配置にする</button>' +
         '<button type="button" class="btn-secondary" data-exam="row">番号順（横）</button>' +
         '<button type="button" class="btn-secondary" data-exam="col">番号順（縦）</button></div>' +
-        '<p class="config-note" style="margin:0;">千鳥配置：市松模様の片方の席に前半の番号、もう片方の席に後半の番号を入れます。縦横に隣り合う席の番号が、大きく離れます。' + (gap !== null ? '（いま、隣どうしの番号の差は、いちばん近くて ' + gap + '）' : '') + '</p>' +
+        '<p class="config-note" style="margin:0;">千鳥配置：市松模様の片方の席に前半の番号、もう片方の席に後半の番号を入れます。縦横に隣り合う席の番号が大きく離れます。' + (gap !== null ? 'いま隣どうしの番号は最も近くて ' + gap + ' 離れています。' : '') + '</p>' +
         '<h5>② A・B問題の割り当て</h5>' +
         '<div class="exam-row"><label>版の数 <select data-exam-cfg="n">' + opt(2, cfg.n, "2（A・B）") + opt(3, cfg.n, "3（A・B・C）") + opt(4, cfg.n, "4（A〜D）") + '</select></label>' +
         '<label>配り方 <select data-exam-cfg="pat">' + opt("check", cfg.pat, "市松（縦横どちらの隣も違う版）") + opt("col", cfg.pat, "列ごと（左右の隣が違う版）") + opt("row", cfg.pat, "行ごと（前後が違う版）") + '</select></label></div>' +
         '<div class="exam-row"><label><input type="checkbox" data-exam-cfg="show"' + (cfg.show ? " checked" : "") + '> 座席表に、版（A・B…）を出す</label></div>' +
         '<div class="exam-counts">' + cnt + '</div>' +
-        '<p class="config-note" style="margin:0;">版は、席の場所で決まります（席替えをしても、その席の版は変わりません）。問題用紙は、上の人数分を刷ってください。</p>' +
+        '<p class="config-note" style="margin:0;">版は席の場所で決まり、席替えをしてもその席の版は変わりません。問題用紙は上の人数分を刷ってください。</p>' +
         '<h5>③ 受験番号札を印刷する</h5>' +
         '<div class="exam-row"><label>A4 1枚の札の数 <select data-exam-cfg="per">' + opt(1, cfg.per, "1枚（特大）") + opt(2, cfg.per, "2枚") + opt(4, cfg.per, "4枚") + opt(8, cfg.per, "8枚") + '</select></label></div>' +
         '<div class="exam-row"><label><input type="checkbox" data-exam-cfg="name"' + (cfg.name ? " checked" : "") + '> 名前を入れる</label>' +
         '<label><input type="checkbox" data-exam-cfg="seat"' + (cfg.seat ? " checked" : "") + '> 席（B3など）を入れる</label>' +
         '<label><input type="checkbox" data-exam-cfg="ver"' + (cfg.ver ? " checked" : "") + '> 版を入れる（②で版を出しているとき）</label></div>' +
-        '<div class="exam-preview">' + (n ? examCardsHtml(cfg) : '<p class="config-note">座席表に、生徒がいません。</p>') + '</div>' +
+        '<div class="exam-preview">' + (n ? examCardsHtml(cfg) : '<p class="config-note">座席表に生徒がいません。</p>') + '</div>' +
         '<div class="exam-row"><button type="button" data-exam="print">印刷する</button></div>' +
-        '<p class="config-note" style="margin:0;">点線の枠が、切り取り線です。番号の順に並んで出ます。</p>';
+        '<p class="config-note" style="margin:0;">点線の枠が切り取り線です。番号の順に並んで出ます。</p>';
 }
 function openExamSeats() {
     if (typeof closeConfigMenuIfOpen === "function") closeConfigMenuIfOpen();
@@ -251,7 +251,7 @@ SekigaeApp.registerPlugin({
     id: "exam-seats",
     name: "テスト用の座席",
     version: "1.0",
-    description: "テストや検定のための座席づくり。番号が近い人どうしが隣にならない千鳥配置、A・B問題を交互に配る版の割り当て、机に置く受験番号札の印刷ができます。",
+    description: "テストや検定のための座席づくりです。番号が近い人どうしが隣にならない千鳥配置と、A・B問題を交互に配る版の割り当てと、机に置く受験番号札の印刷ができます。",
     backupKeys: [EXAM_KEY],
     searchWords: "テスト用座席 テスト 試験 千鳥 A問題 B問題 受験番号 番号札 検定 カンニング",
     stubs: [],
@@ -262,7 +262,7 @@ SekigaeApp.registerPlugin({
         document.head.appendChild(st);
         document.body.insertAdjacentHTML("beforeend", examModalHtml());
         app.insertInto("settings-seat", '<button type="button" id="examOpenBtn" class="btn-secondary" style="margin-top: 10px;">テスト用の座席（千鳥・A/B問題・番号札）</button>');
-        app.insertInto("guide-faq", "<li><strong>テストのとき、隣に番号の近い人を置きたくない</strong>：設定の「座席のレイアウト」の「テスト用の座席」を開いて、「千鳥配置にする」を押します。A・B問題の割り当てや、受験番号札の印刷もできます。</li>");
+        app.insertInto("guide-faq", "<li><strong>テストのとき隣に番号の近い人を置きたくない</strong>：設定の「座席のレイアウト」の「テスト用の座席」を開いて「千鳥配置にする」を押します。A・B問題の割り当てや受験番号札の印刷もできます。</li>");
         document.addEventListener("click", ev => {
             const t = ev.target.closest ? ev.target.closest("#examOpenBtn, [data-exam]") : null;
             if (!t) return;

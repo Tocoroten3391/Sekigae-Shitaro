@@ -131,7 +131,7 @@ function shotBusy(on, text) {
     b.textContent = text || "撮影しています";
 }
 
-const SHOT_ERR = "撮影できませんでした。もう一度ためしてください。続くときは、不具合として送ってください。F-SHOT";
+const SHOT_ERR = "撮影できませんでした。もう一度ためしてください。続くときは不具合として送ってください。F-SHOT";
 
 // 撮って、結果の画面を出します
 async function shotRun(opts) {
@@ -178,7 +178,7 @@ function shotShow(c) {
     if (!img) return;
     img.src = c.toDataURL("image/png");
     const n = c.shotMasked || 0;
-    $id("shotNote").textContent = n ? "名簿の名前を、" + n + "か所、✕にしました。ほかの人の名前や、自由に書いた文字は、そのままなので、送る前に見てください。" : "名簿の名前は、写っていませんでした。自由に書いた文字などは、そのままなので、送る前に見てください。";
+    $id("shotNote").textContent = n ? "名簿の名前を" + n + "か所✕にしました。ほかの人の名前や自由に書いた文字はそのままなので、送る前に見てください。" : "名簿の名前は写っていませんでした。自由に書いた文字などはそのままなので、送る前に見てください。";
     const rb = $id("shotReportBtn"); if (rb) rb.style.display = shotFeedbackOn() ? "" : "none";
     $id("shotOverlay").style.display = "flex";
 }
@@ -215,7 +215,7 @@ SekigaeApp.registerPlugin({
     id: "screenshot",
     name: "画面を撮る",
     version: "1.0",
-    description: "いまの画面を、アプリの中で、画像にします。名簿の名前とふりがなは、すべて「✕」になります。保存・コピー・不具合として送る、ができます。",
+    description: "いまの画面をアプリの中で画像にします。名簿の名前とふりがなはすべて「✕」になります。保存・コピー・不具合として送るができます。",
     searchWords: "スクリーンショット スクショ 画面 撮る 画像 保存 キャプチャ 名前 ばつ",
     stubs: [],
     mount(app) {
@@ -225,7 +225,7 @@ SekigaeApp.registerPlugin({
         document.head.appendChild(st);
         document.body.insertAdjacentHTML("beforeend", shotModalHtml());
         app.insertInto("settings-export", '<button type="button" id="shotOpenBtn" class="btn-secondary" style="margin-top: 10px;">画面を撮る</button>');
-        app.insertInto("guide-faq", "<li><strong>画面を画像にしたい</strong>：設定の「画面を撮る」を押すと、いまの画面を、画像にできます。名簿の名前とふりがなは、✕になります。保存したり、コピーしたり、不具合として送ったりできます。</li>");
+        app.insertInto("guide-faq", "<li><strong>画面を画像にしたい</strong>：設定の「画面を撮る」を押すといまの画面を画像にできます。名簿の名前とふりがなは✕になり、保存・コピー・不具合として送るができます。</li>");
         document.addEventListener("click", ev => {
             const t = ev.target.closest ? ev.target.closest("#shotOpenBtn, [data-shot]") : null;
             if (!t) return;

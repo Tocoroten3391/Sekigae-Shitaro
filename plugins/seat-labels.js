@@ -122,7 +122,7 @@ function slbPagesHtml(cfg) {
 
 function slbPrint() {
     const cfg = slbCfg();
-    if (!slbPeople(cfg).length) { showToast("座席表に、生徒がいません。名簿を入れて、席替えをしてください。", "error"); return; }
+    if (!slbPeople(cfg).length) { showToast("座席表に生徒がいません。名簿を入れて席替えをしてください。", "error"); return; }
     const r = slbPagesHtml(cfg);
     let area = $id("slbPrintArea");
     if (!area) { area = document.createElement("div"); area.id = "slbPrintArea"; document.body.appendChild(area); }
@@ -184,7 +184,7 @@ function slbRender() {
             '<label>幅mm ' + num("w", cu.w, 0.1, 10, 210) + '</label><label>高さmm ' + num("h", cu.h, 0.1, 8, 297) + '</label></div>' +
             '<div class="slb-row"><label>上の余白mm ' + num("mt", cu.mt, 0.1, 0, 200) + '</label><label>左の余白mm ' + num("ml", cu.ml, 0.1, 0, 200) + '</label>' +
             '<label>ラベルの横のすき間mm ' + num("gx", cu.gx, 0.1, 0, 50) + '</label><label>縦のすき間mm ' + num("gy", cu.gy, 0.1, 0, 50) + '</label></div>' : "") +
-        (d.fits ? "" : '<p class="slb-warn">この寸法だと、A4の用紙からはみ出します。寸法を見直してください。</p>') +
+        (d.fits ? "" : '<p class="slb-warn">この寸法だとA4の用紙からはみ出します。寸法を見直してください。</p>') +
         '<div class="slb-row"><label>中身 <select data-slb-cfg="kind">' + SLB_KINDS.map(k => opt(k.id, cfg.kind, k.label)).join("") + '</select></label>' +
         '<label>並び順 <select data-slb-cfg="order">' + opt("no", cfg.order, "出席番号順") + opt("seat", cfg.order, "座席順（前列の左から）") + '</select></label></div>' +
         '<div class="slb-row"><label>1人あたりの枚数 <input type="number" data-slb-cfg="copies" value="' + cfg.copies + '" min="1" max="10" step="1"></label>' +
@@ -192,8 +192,8 @@ function slbRender() {
         '<div class="slb-row"><label>位置の微調整 右へ <input type="number" data-slb-cfg="dx" value="' + cfg.dx + '" step="0.5" min="-10" max="10">mm</label>' +
         '<label>下へ <input type="number" data-slb-cfg="dy" value="' + cfg.dy + '" step="0.5" min="-10" max="10">mm</label>' +
         '<label><input type="checkbox" data-slb-cfg="border"' + (cfg.border ? " checked" : "") + '> 枠線も印刷する（ふつうの紙で試すとき）</label></div>' +
-        '<p class="config-note" style="margin:0 0 6px;">' + r.count + ' 枚（A4 ' + r.pages + ' 枚）。用紙の寸法は、目安です。まず、ふつうの紙に「枠線も印刷」で試し刷りして、ラベル用紙に重ねて光に透かし、ずれを「位置の微調整」で直してください。印刷ダイアログでは、倍率を「100％（実際のサイズ）」にしてください。</p>' +
-        '<div class="slb-preview">' + (r.count ? r.html : '<p class="config-note">座席表に、生徒がいません。</p>') + '</div>' +
+        '<p class="config-note" style="margin:0 0 6px;">' + r.count + ' 枚で、A4が ' + r.pages + ' 枚です。用紙の寸法は目安です。まずふつうの紙に「枠線も印刷」で試し刷りして、ラベル用紙に重ねて光に透かし、ずれを「位置の微調整」で直してください。印刷ダイアログでは倍率を、実際のサイズの100％にしてください。</p>' +
+        '<div class="slb-preview">' + (r.count ? r.html : '<p class="config-note">座席表に生徒がいません。</p>') + '</div>' +
         '<div class="slb-row"><button type="button" data-slb="print">印刷する</button></div>';
 }
 function openSeatLabels() {
@@ -208,7 +208,7 @@ SekigaeApp.registerPlugin({
     id: "seat-labels",
     name: "名札シール・席ラベル",
     version: "1.0",
-    description: "座席表の生徒の名札シールや席ラベルを、市販のラベル用紙（A4・10面〜65面）に合わせて印刷します。用紙の寸法は自分で決めることもでき、使いかけの用紙や、位置のずれにも対応します。",
+    description: "座席表の生徒の名札シールや席ラベルを、市販のA4・10面から65面のラベル用紙に合わせて印刷します。用紙の寸法は自分で決められ、使いかけの用紙や位置のずれにも対応します。",
     backupKeys: [SLB_KEY],
     searchWords: "名札 シール ラベル 席ラベル 名前シール ラベル用紙 A-one エーワン 面付け 印刷",
     stubs: [],
@@ -219,7 +219,7 @@ SekigaeApp.registerPlugin({
         document.head.appendChild(st);
         document.body.insertAdjacentHTML("beforeend", slbModalHtml());
         app.insertInto("settings-export", '<button type="button" id="slbOpenBtn" class="btn-secondary" style="margin-top: 10px;">名札シール・席ラベルを印刷</button>');
-        app.insertInto("guide-faq", "<li><strong>名札シールや席ラベルを、ラベル用紙に印刷したい</strong>：設定の「印刷・共有・書き出し」の「名札シール・席ラベルを印刷」を開きます。使うラベル用紙の面数を選ぶと、1枚ずつの位置を合わせて並べます。使いかけの用紙は、「最初の○枚は飛ばす」で使えます。</li>");
+        app.insertInto("guide-faq", "<li><strong>名札シールや席ラベルをラベル用紙に印刷したい</strong>：設定の「印刷・共有・書き出し」の「名札シール・席ラベルを印刷」を開きます。使うラベル用紙の面数を選ぶと1枚ずつの位置を合わせて並べます。使いかけの用紙は「最初の○枚は飛ばす」で使えます。</li>");
         document.addEventListener("click", ev => {
             const t = ev.target.closest ? ev.target.closest("#slbOpenBtn, [data-slb]") : null;
             if (!t) return;
