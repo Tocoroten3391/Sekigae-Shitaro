@@ -134,7 +134,7 @@ function deleteStickyNote() {
     stickySaveNotes(notes);
     closeStickyEditor();
     stickyDecorate();
-    showToast("付箋を消しました", "success");
+    showToast("付箋を消しました。", "success");
 }
 
 // ---- 付箋の一覧 ----
@@ -152,7 +152,7 @@ function renderStickyList() {
     const keys = Object.keys(notes);
     const cls = stickyClassName();
     $id("stickyListClass").textContent = cls ? `クラス：${cls}` : "今のクラス";
-    if (!keys.length) { body.innerHTML = '<p class="config-note" data-keep="1">付箋はまだありません</p>'; $id("stickyClearAllBtn").style.display = "none"; return; }
+    if (!keys.length) { body.innerHTML = '<p class="config-note" data-keep="1">付箋はまだありません。</p>'; $id("stickyClearAllBtn").style.display = "none"; return; }
     $id("stickyClearAllBtn").style.display = "";
     body.innerHTML = keys.map(k => {
         const n = notes[k];
@@ -171,7 +171,7 @@ function clearAllStickyNotes() {
     stickySaveNotes({});
     renderStickyList();
     stickyDecorate();
-    showToast("付箋を全て消しました", "success");
+    showToast("付箋を全て消しました。", "success");
 }
 
 const STICKY_HTML = `

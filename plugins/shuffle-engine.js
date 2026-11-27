@@ -67,22 +67,22 @@ function addNearPair() {
     const selA = $id("nearSelectA"), selB = $id("nearSelectB");
     if (!selA || !selB) return;
     const a = selA.value, b = selB.value;
-    if (!a || !b) { showToast("2人とも選んでください", "error"); return; }
-    if (a === b) { showToast("同じ人同士は指定できません", "error"); return; }
+    if (!a || !b) { showToast("2人とも選んでください。", "error"); return; }
+    if (a === b) { showToast("同じ人同士は指定できません。", "error"); return; }
     const same = p => (p.a === a && p.b === b) || (p.a === b && p.b === a);
-    if (nearPairs.some(same)) { showToast("その組み合わせはすでに登録されています", "error"); return; }
+    if (nearPairs.some(same)) { showToast("その組み合わせはすでに登録されています。", "error"); return; }
     if (separationPairs.some(same)) { showToast("その2人は「離す設定」に入っています。先に解除してください。", "error"); return; }
     nearPairs.push({ a: a, b: b });
     saveNearPairs();
     renderNearList();
-    showToast(`${a} と ${b} を近くに置く設定にしました`, "success");
+    showToast(`${a} と ${b} を近くに置く設定にしました。`, "success");
 }
 
 function removeNearPair(index) {
     nearPairs.splice(index, 1);
     saveNearPairs();
     renderNearList();
-    showToast("近くに置く設定を解除しました", "success");
+    showToast("近くに置く設定を解除しました。", "success");
 }
 
 function renderNearList() {
@@ -97,7 +97,7 @@ function renderNearList() {
     const body = $id("nearListBody");
     if (!body) return;
     if (nearPairs.length === 0) {
-        body.innerHTML = '<p style="color: var(--text-sub); font-size: 12px; padding: 6px 0;">まだ設定されていません</p>';
+        body.innerHTML = '<p style="color: var(--text-sub); font-size: 12px; padding: 6px 0;">まだ設定されていません。</p>';
         return;
     }
     body.innerHTML = nearPairs.map((p, i) => `
@@ -169,7 +169,7 @@ function clearSeatLayoutLog(showMessage) {
     seatLayoutLog = [];
     try { localStorage.removeItem("seat_layout_log"); } catch (error) { /* 何もしない */ }
     updateAvoidInfo();
-    if (showMessage) showToast("席替えの履歴を消しました", "success");
+    if (showMessage) showToast("席替えの履歴を消しました。", "success");
 }
 
 
@@ -415,10 +415,10 @@ function addSeparationPair() {
     const selB = $id("separationSelectB");
     if (!selA || !selB) return;
     const a = selA.value, b = selB.value;
-    if (!a || !b) { showToast("2人とも選んでください", "error"); return; }
-    if (a === b) { showToast("同じ人同士は指定できません", "error"); return; }
+    if (!a || !b) { showToast("2人とも選んでください。", "error"); return; }
+    if (a === b) { showToast("同じ人同士は指定できません。", "error"); return; }
     if (separationPairs.some(p => (p.a === a && p.b === b) || (p.a === b && p.b === a))) {
-        showToast("その組み合わせはすでに登録されています", "error"); return;
+        showToast("その組み合わせはすでに登録されています。", "error"); return;
     }
     if (nearPairs.some(p => (p.a === a && p.b === b) || (p.a === b && p.b === a))) {
         showToast("その2人は「近くに置く設定」に入っています。先に解除してください。", "error"); return;
@@ -426,14 +426,14 @@ function addSeparationPair() {
     separationPairs.push({ a: a, b: b });
     saveSeparationPairs();
     renderSeparationList();
-    showToast(`${a} と ${b} を離す設定にしました`, "success");
+    showToast(`${a} と ${b} を離す設定にしました。`, "success");
 }
 
 function removeSeparationPair(index) {
     separationPairs.splice(index, 1);
     saveSeparationPairs();
     renderSeparationList();
-    showToast("離す設定を解除しました", "success");
+    showToast("離す設定を解除しました。", "success");
 }
 
 function renderSeparationList() {
@@ -451,7 +451,7 @@ function renderSeparationList() {
     const body = $id("separationListBody");
     if (!body) return;
     if (separationPairs.length === 0) {
-        body.innerHTML = '<p style="color: var(--text-sub); font-size: 12px; padding: 6px 0;">まだ設定されていません</p>';
+        body.innerHTML = '<p style="color: var(--text-sub); font-size: 12px; padding: 6px 0;">まだ設定されていません。</p>';
         return;
     }
     body.innerHTML = separationPairs.map((p, i) => `
@@ -608,13 +608,13 @@ function shuffleWithSeparation(rawList, animMode) {
     recordShuffleInfo(result);
 
     if (result.violations > 0) {
-        showToast(`離す設定のうち${result.violations}組は席の都合で離せませんでした`, "error");
+        showToast(`離す設定のうち${result.violations}組は席の都合で離せませんでした。`, "error");
     }
     if (result.nearUnmet > 0) {
-        showToast(`近くに置く設定のうち${result.nearUnmet}組は席の都合で近くにできませんでした`, "error");
+        showToast(`近くに置く設定のうち${result.nearUnmet}組は席の都合で近くにできませんでした。`, "error");
     }
     if (result.avoiding && (result.same + result.pairs) > 0) {
-        showToast(`前回までと同じ席・同じ隣を、${result.same + result.pairs}件は避けきれませんでした`, "success");
+        showToast(`前回までと同じ席・同じ隣を、${result.same + result.pairs}件は避けきれませんでした。`, "success");
     }
 }
 
@@ -625,12 +625,12 @@ function shuffleSeats(options) {
     if (shuffleAnimating) return; // 演出の最中に、もう一度押されても無視する
     const announce = !!(options && options.announce);
     const inputEl = $id("studentInput");
-    if (!inputEl) { showToast("名簿を入力してください", "error"); return; }
+    if (!inputEl) { showToast("名簿を入力してください。", "error"); return; }
     
     const inputText = inputEl.value;
     lastRawList = splitRosterRaw(inputText).map(n => n.trim()).filter(n => n !== ""); 
     
-    if (lastRawList.length === 0) { showToast("名簿が空っぽです", "error"); return; }
+    if (lastRawList.length === 0) { showToast("名簿が空っぽです。", "error"); return; }
     
     saveSeatHistory(); 
     resetNominatedHistory(false); 
@@ -647,7 +647,7 @@ function shuffleSeats(options) {
     // 席替えが終わった時にすること（記録・自動保存・発表モード）
     const afterShuffle = () => {
         notifyShuffle("sekigae:shuffle-done");
-        showToast("席替えが完了しました", "success"); 
+        showToast("席替えが完了しました。", "success"); 
         recordSeatHistory();
         maybeAutoUploadAfterShuffle();
         if (announce) openAnnounce();
@@ -734,9 +734,9 @@ function applySecretFixedSeat(label, query) {
     if (found) { 
         const sInput = $id("studentInput");
         if(sInput) sInput.value = lastRawList.join(", "); 
-        showToast("ステルスコマンドを裏でセットしました", "success"); 
+        showToast("ステルスコマンドを裏でセットしました。", "success"); 
     } else { 
-        showToast(`「${query}」に当てはまる生徒がいません`, "error"); 
+        showToast(`「${query}」に当てはまる生徒がいません。`, "error"); 
     }
 }
 

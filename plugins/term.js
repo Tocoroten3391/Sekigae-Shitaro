@@ -80,19 +80,19 @@ function renderStatsSummary(data) {
     } else {
         const entries = timelineEntriesForPeriod(statsSummaryPeriod);
         if (entries.length === 0) {
-            html += '<p class="stats-empty">この期間の席替えの記録が、まだありません</p>';
+            html += '<p class="stats-empty">この期間の席替えの記録が、まだありません。</p>';
         } else {
             const sm = summarizeSeatTimeline(entries);
-            html += `<p class="stats-note">${entries.length}回分の席替えを集計しました</p>`;
+            html += `<p class="stats-note">${entries.length}回分の席替えを集計しました。</p>`;
             const pairs = Object.keys(sm.pairCount).filter(k => sm.pairCount[k] >= 2).sort((a, b) => sm.pairCount[b] - sm.pairCount[a]).slice(0, 8)
                 .map(k => [k.split("\u0001").join("・"), sm.pairCount[k]]);
             html += '<div class="stats-sub">何度も同じ隣になった組</div>';
-            html += entries.length < 2 ? '<p class="stats-note">席替えが2回分たまると、調べられます</p>'
-                : (pairs.length ? '<div class="stats-trend-list stats-list-short">' + topList(pairs, "回") + "</div>" : '<p class="stats-note">2回以上、同じ隣になった組はありません</p>');
+            html += entries.length < 2 ? '<p class="stats-note">席替えが2回分たまると、調べられます。</p>'
+                : (pairs.length ? '<div class="stats-trend-list stats-list-short">' + topList(pairs, "回") + "</div>" : '<p class="stats-note">2回以上、同じ隣になった組はありません。</p>');
             const frontTop = Object.keys(sm.front).sort((a, b) => sm.front[b] - sm.front[a]).slice(0, 5).map(k => [k, sm.front[k]]);
             const backTop = Object.keys(sm.back).sort((a, b) => sm.back[b] - sm.back[a]).slice(0, 5).map(k => [k, sm.back[k]]);
-            html += '<div class="stats-sub">一番前の列になった回数が多い人</div>' + (frontTop.length ? '<div class="stats-trend-list stats-list-short">' + topList(frontTop, "回") + "</div>" : '<p class="stats-note">記録がありません</p>');
-            html += '<div class="stats-sub">一番後ろの列になった回数が多い人</div>' + (backTop.length ? '<div class="stats-trend-list stats-list-short">' + topList(backTop, "回") + "</div>" : '<p class="stats-note">記録がありません</p>');
+            html += '<div class="stats-sub">一番前の列になった回数が多い人</div>' + (frontTop.length ? '<div class="stats-trend-list stats-list-short">' + topList(frontTop, "回") + "</div>" : '<p class="stats-note">記録がありません。</p>');
+            html += '<div class="stats-sub">一番後ろの列になった回数が多い人</div>' + (backTop.length ? '<div class="stats-trend-list stats-list-short">' + topList(backTop, "回") + "</div>" : '<p class="stats-note">記録がありません。</p>');
             if (entries.length >= 3) {
                 const noFront = sm.seen.filter(k => !sm.front[k]);
                 html += '<div class="stats-sub">一度も一番前の列になっていない人</div><p class="stats-note">' + (noFront.length ? esc(noFront.slice(0, 20).join("、")) + (noFront.length > 20 ? `　ほか${noFront.length - 20}人` : "") : "全員が一度は前の列になっています。") + "</p>";

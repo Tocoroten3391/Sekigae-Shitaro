@@ -93,7 +93,7 @@ function schedClear() {
     lsSet(SCHED_SHOWN_KEY, "");
     schedRefreshUi();
     schedHideBanner();
-    showToast("席替えの予約を消しました", "success");
+    showToast("席替えの予約を消しました。", "success");
 }
 
 function schedHideBanner() {

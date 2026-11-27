@@ -99,19 +99,19 @@ function nqShuffle() {
     const a = nqState().list.slice();
     for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
     nqSetList(a);
-    if (a.length > 1) showToast("順番をばらばらにしました", "success");
+    if (a.length > 1) showToast("順番をばらばらにしました。", "success");
 }
 function nqClear() {
     if (!nqState().list.length) return;
     nqSetList([]);
-    showToast("順番をからにしました", "success");
+    showToast("順番をからにしました。", "success");
 }
 function nqAddAll() {
     const s = nqState();
     const add = (typeof currentStudents !== "undefined" ? currentStudents : []).filter(x => x && x.type === "STUDENT" && x.text && !s.list.includes(x.text)).map(x => x.text);
     if (!add.length) return;
     nqSetList(s.list.concat(add));
-    showToast("全員を名簿の順に入れました", "success");
+    showToast("全員を名簿の順に入れました。", "success");
 }
 
 function nqClick(e) {

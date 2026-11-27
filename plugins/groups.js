@@ -30,7 +30,7 @@ function resetGroupColors() {
     }
     renderGroupColorPalette();
     renderClassroom("none");
-    showToast("班の色をデフォルトに戻しました", "success");
+    showToast("班の色をデフォルトに戻しました。", "success");
 }
 
 function initGroupNamesUI() {
@@ -108,7 +108,7 @@ function toggleGroupColorMode() {
     } else {
         if (panel) panel.style.display = "none";
         document.body.classList.remove("group-color-mode-active");
-        showToast("班の色を設定するモードをOFFにしました", "success");
+        showToast("班の色を設定するモードをOFFにしました。", "success");
     }
     renderClassroom("none");
 }
@@ -147,7 +147,7 @@ function applyGroupColorToSeat(label) {
     const seatData = currentStudents[idx];
 
     if (!seatData || seatData.type !== "STUDENT" || !seatData.text) {
-        showToast("その席には人がいません", "error");
+        showToast("その席には人がいません。", "error");
         return;
     }
 
@@ -156,7 +156,7 @@ function applyGroupColorToSeat(label) {
         showToast(`${groupNames[selectedGroupColorTarget] || selectedGroupColorTarget + "班"} の色にしました。`, "success");
     } else {
         delete manualGroupMap[label];
-        showToast("班の色を消しました", "success");
+        showToast("班の色を消しました。", "success");
     }
     renderClassroom("none");
 }

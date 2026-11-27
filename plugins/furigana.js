@@ -135,7 +135,7 @@ function updateFuriganaCount() {
 function applyFuriganaBulk() {
     const bulk = $id("furiganaBulkInput");
     const text = bulk ? bulk.value : "";
-    if (!text.trim()) { showToast("貼り付ける内容が空です", "error"); return; }
+    if (!text.trim()) { showToast("貼り付ける内容が空です。", "error"); return; }
     const keys = getRosterNameKeys();
     const keySet = new Set(keys);
     const noSpace = new Map(keys.map(k => [k.replace(/\s+/g, ""), k]));

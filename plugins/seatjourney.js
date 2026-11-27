@@ -96,7 +96,7 @@ function renderSeatJourney() {
     sjSteps = steps;
     const body = $id("sjBody"), stats = $id("sjStats");
     if (!steps.length) {
-        body.innerHTML = '<div class="sj-empty">この生徒が座っていた記録が、ありません</div>';
+        body.innerHTML = '<div class="sj-empty">この生徒が座っていた記録が、ありません。</div>';
         stats.textContent = "";
         $id("sjPlay").disabled = true;
         return;

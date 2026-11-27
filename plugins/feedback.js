@@ -178,7 +178,7 @@ function fbShowDone(d, attached) {
     if (!body) return;
     body.innerHTML = '<div class="fb-done"><div class="fb-done-title">送りました。ありがとうございます。</div>' +
         (d.number ? '<p>報告の番号は <b>#' + fbEsc(d.number) + '</b> です。返事や対応の様子は「送った報告」で見られます。</p>' : "") +
-        (attached && !(d.images >= attached) ? '<div class="fb-msg fb-msg-err" style="text-align:left;">文章は届きましたが画像は付けられませんでした。必要なら報告の番号を書いて、もう一度画像だけ送ってください。コード F-IMG' + (d.imageError ? "／" + fbEsc(d.imageError) : "") + '</div>' : (attached ? '<p>画像は ' + d.images + ' 枚付きました</p>' : "")) +
+        (attached && !(d.images >= attached) ? '<div class="fb-msg fb-msg-err" style="text-align:left;">文章は届きましたが画像は付けられませんでした。必要なら報告の番号を書いて、もう一度画像だけ送ってください。コード F-IMG' + (d.imageError ? "／" + fbEsc(d.imageError) : "") + '</div>' : (attached ? '<p>画像は ' + d.images + ' 枚付きました。</p>' : "")) +
         '<p>GitHubの公開の場所に載ります。生徒の名前などは入っていないはずですが、入っていたらすぐにお知らせください。</p>' +
         '<div class="fb-row" style="justify-content:center;"><button type="button" class="btn-secondary" data-fb="again">続けてもう1件書く</button></div></div>';
     const bar = $id("fbBtns"); if (bar) bar.style.display = "none";

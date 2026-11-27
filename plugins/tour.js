@@ -183,7 +183,7 @@ function tourAskStart() {
     card.innerHTML = '<div class="tour-title"></div><div class="tour-text"></div><div class="tour-btns"><button type="button" class="tour-skip" id="tourLater">後で</button><button type="button" class="tour-next" id="tourBegin">案内をはじめる</button></div>';
     card.querySelector(".tour-title").textContent = tourSteps[0].title;
     card.querySelector(".tour-text").textContent = tourSteps[0].text;
-    $id("tourLater").onclick = () => { tourFinish(true); showToast("案内は「設定」の「しくみ」から、いつでも見られます", "info"); };
+    $id("tourLater").onclick = () => { tourFinish(true); showToast("案内は「設定」の「しくみ」から、いつでも見られます。", "info"); };
     $id("tourBegin").onclick = () => startTour();
     tourPlace();
     $id("tourBegin").focus({ preventScroll: true });

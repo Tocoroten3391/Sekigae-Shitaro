@@ -70,7 +70,7 @@ function exportBackup() {
     lsSet("backup_snooze_until", "0");
     hideBackupReminder();
     updateBackupStatusText();
-    showToast(`設定・記録${count}件をバックアップしました`, "success");
+    showToast(`設定・記録${count}件をバックアップしました。`, "success");
 }
 
 // ==========================================
@@ -190,7 +190,7 @@ async function runAutoBackup(interactive, force) {
         lsSet("backup_snooze_until", "0");
         hideBackupReminder();
         updateBackupStatusText();
-        if (!isAppLocked()) showToast("自動バックアップを保存しました", "success");
+        if (!isAppLocked()) showToast("自動バックアップを保存しました。", "success");
         return true;
     } catch (error) {
         if (interactive) showToast("自動バックアップを保存できませんでした。保存先のフォルダを選び直してください。", "error");
@@ -205,7 +205,7 @@ function checkAutoBackup() {
 }
 
 async function chooseAutoBackupFolder() {
-    if (!autoBackupSupported()) { showToast("このブラウザではフォルダへの自動保存は使えません", "error"); return; }
+    if (!autoBackupSupported()) { showToast("このブラウザではフォルダへの自動保存は使えません。", "error"); return; }
     let handle;
     try { handle = await window.showDirectoryPicker({ mode: "readwrite", id: "seat-shuffler-backup" }); }
     catch (error) { return; }
@@ -222,14 +222,14 @@ async function onAutoBackupIntervalChange() {
     const v = parseInt(sel.value, 10);
     if (!AUTO_BACKUP_CHOICES.includes(v)) return;
     lsSet("auto_backup_days", String(v));
-    if (v > 0 && !(await loadAutoBackupHandle())) showToast("保存先のフォルダを選んでください", "success");
+    if (v > 0 && !(await loadAutoBackupHandle())) showToast("保存先のフォルダを選んでください。", "success");
     else if (v > 0) await runAutoBackup(true, false);
-    else showToast("自動バックアップを止めました", "success");
+    else showToast("自動バックアップを止めました。", "success");
     updateBackupStatusText();
 }
 
 async function autoBackupNowFromModal() {
-    if (!(await loadAutoBackupHandle())) { showToast("先に保存先のフォルダを選んでください", "error"); return; }
+    if (!(await loadAutoBackupHandle())) { showToast("先に保存先のフォルダを選んでください。", "error"); return; }
     await runAutoBackup(true, true);
     updateBackupStatusText();
 }
@@ -238,7 +238,7 @@ async function releaseAutoBackupFolder() {
     await clearAutoBackupHandle();
     lsSet("auto_backup_days", "0");
     updateBackupStatusText();
-    showToast("保存先を解除し、自動バックアップを止めました", "success");
+    showToast("保存先を解除し、自動バックアップを止めました。", "success");
 }
 
 async function updateAutoBackupUi() {
@@ -546,7 +546,7 @@ function buildRestorePreviewHtml(items, data, when, n) {
         + (notes.length ? `<ul class="rp-notes">${notes.join("")}</ul>` : "")
         + `<button type="button" class="btn-secondary btn-compact" onclick="exportBackup()" style="width: auto; margin-top: 6px; padding: 6px 12px; font-size: 12px;">📤 復元の前に、今の内容を書き出す</button>`
         + buildRestoreGroupsHtml(items)
-        + `<br><span style="color:#dc2626;">復元すると選んだ内容はこのバックアップの内容で上書きされます</span>`;
+        + `<br><span style="color:#dc2626;">復元すると選んだ内容はこのバックアップの内容で上書きされます。</span>`;
 }
 
 function onBackupFileChosen(input) {
@@ -562,7 +562,7 @@ function onBackupFileChosen(input) {
         let data = null;
         try { data = JSON.parse(String(reader.result)); } catch (error) { data = null; }
         if (!data || data.app !== "seat-shuffler-backup" || !data.items || typeof data.items !== "object") {
-            if (info) info.textContent = "このファイルは席替えし太郎のバックアップではないようです";
+            if (info) info.textContent = "このファイルは席替えし太郎のバックアップではないようです。";
             return;
         }
         const items = {};
@@ -572,14 +572,14 @@ function onBackupFileChosen(input) {
             if (isBackupKey(k) || (k === "saved_gas_url" && data.includesGasUrl === true)) items[k] = v;
         });
         const n = Object.keys(items).length;
-        if (n === 0) { if (info) info.textContent = "復元できる設定・記録が入っていませんでした"; return; }
+        if (n === 0) { if (info) info.textContent = "復元できる設定・記録が入っていませんでした。"; return; }
         pendingBackup = items;
         let when = "";
         try { const d = new Date(data.createdAt); if (!isNaN(d)) when = `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; } catch (error) { /* 日時は表示しない */ }
         if (info) info.innerHTML = buildRestorePreviewHtml(items, data, when, n);
         if (apply) apply.style.display = "";
     };
-    reader.onerror = () => { if (info) info.textContent = "ファイルを読み込めませんでした"; };
+    reader.onerror = () => { if (info) info.textContent = "ファイルを読み込めませんでした。"; };
     reader.readAsText(file);
 }
 
@@ -587,7 +587,7 @@ function applyBackupImport() {
     if (isAppLocked()) { showLockedToast(); return; }
     if (!pendingBackup) return;
     const sel = selectedRestoreGroups();   // null なら、全て
-    if (sel && sel.size === 0) { showToast("復元する内容を、1つ以上、選んでください", "error"); return; }
+    if (sel && sel.size === 0) { showToast("復元する内容を、1つ以上、選んでください。", "error"); return; }
     const items = {};
     Object.keys(pendingBackup).forEach(k => { if (!sel || sel.has(restoreGroupOf(k))) items[k] = pendingBackup[k]; });
     const includesClasses = !sel || sel.has("classes");

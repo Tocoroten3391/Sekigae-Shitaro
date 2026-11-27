@@ -62,7 +62,7 @@ function onUiScaleChange() {
     if (!sel) return;
     lsSet(DS_KEY, sel.value);
     dsApply();
-    showToast("画面の大きさを変えました", "success");
+    showToast("画面の大きさを変えました。", "success");
 }
 
 const DS_CSS = `

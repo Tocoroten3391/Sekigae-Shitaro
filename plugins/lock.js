@@ -83,7 +83,7 @@ function unlockApp() {
     lsSet("lock_fail_count", "0");
     lsSet("lock_until", "0");
     applyLockState();
-    showToast("ロックを解除しました", "success");
+    showToast("ロックを解除しました。", "success");
 }
 
 function onLockButton() {
@@ -110,7 +110,7 @@ function openLockModal(mode) {
     show("lockOptionRows", mode !== "unlock");
     if (mode === "unlock") {
         if (title) title.textContent = "ロックを解除";
-        if (desc) desc.textContent = "暗証番号を入れてください";
+        if (desc) desc.textContent = "暗証番号を入れてください。";
         if (ok) ok.textContent = "🔓 解除する";
     } else if (mode === "setup") {
         if (title) title.textContent = "ロックの暗証番号を決める";
@@ -191,7 +191,7 @@ async function submitLockModal() {
     closeLockModal();
     applyLockState();
     if (wasSetup) lockApp();
-    else showToast("ロックの設定を保存しました", "success");
+    else showToast("ロックの設定を保存しました。", "success");
 }
 
 // 自動ロック：しばらく何も操作がなかったら、ロックする

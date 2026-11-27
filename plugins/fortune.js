@@ -140,7 +140,7 @@ function renderFortuneResult() {
     const teacher = fortuneFor("先生", fortuneToday());
     $id("fortuneBest").innerHTML = `<div class="fortune-best-title">🌟 今日のベスト席（${fortuneStarText(best)}）</div>` +
         `<div>${tops.slice(0, 4).map(x => `<b>${fortuneEsc(x.label)}</b> ${fortuneEsc(x.name)}`).join("　")}${tops.length > 4 ? "　ほか" + (tops.length - 4) + "人" : ""}</div>` +
-        `<div class="fortune-teacher">先生のラッキーアイテムは「${fortuneEsc(teacher.item)}」、ラッキーカラーは「${fortuneEsc(teacher.color.n)}」です</div>`;
+        `<div class="fortune-teacher">先生のラッキーアイテムは「${fortuneEsc(teacher.item)}」、ラッキーカラーは「${fortuneEsc(teacher.color.n)}」です。</div>`;
     const rows = list.slice().sort((a, b) => b.f.stars - a.f.stars || a.idx - b.idx);
     $id("fortuneRows").innerHTML = rows.map((x, i) =>
         `<div class="fortune-row" style="animation-delay: ${Math.min(i, 30) * 45}ms">` +

@@ -83,7 +83,7 @@ function nbUndoLast() {
     const last = nbUndo.pop();
     if (!last) return;
     nbAddSpeech(last.key, -last.delta, true);
-    showToast("発言の記録を、1つ取り消しました", "success");
+    showToast("発言の記録を、1つ取り消しました。", "success");
 }
 function nbSetSpeechMode(on) {
     nbSpeechMode = !!on;
@@ -190,7 +190,7 @@ function nbRenderModal() {
             '<span class="nb-num">指名 ' + r.nom + "</span>" +
             (s.speech ? '<span class="nb-sp"><button type="button" class="nb-pm" data-k="' + nbEsc(r.st.key) + '" onclick="nbAddSpeech(this.dataset.k, -1)" aria-label="発言を1つ減らす">−</button><span class="nb-num">発言 ' + r.sp + '</span><button type="button" class="nb-pm" data-k="' + nbEsc(r.st.key) + '" onclick="nbAddSpeech(this.dataset.k, 1)" aria-label="発言を1つ増やす">＋</button></span>' : "") +
             "</div>";
-    }).join("") : '<p class="config-note" data-keep="1">名簿を読み込むとここに出ます</p>';
+    }).join("") : '<p class="config-note" data-keep="1">名簿を読み込むとここに出ます。</p>';
     $id("nbResetSpeech").style.display = Object.keys(nbSpeechMap()).length ? "" : "none";
 }
 function nbResetSpeech() {
@@ -199,7 +199,7 @@ function nbResetSpeech() {
     nbUndo = [];
     nbDecorate();
     nbRenderModal();
-    showToast("発言の回数を、0に戻しました", "success");
+    showToast("発言の回数を、0に戻しました。", "success");
 }
 
 const NB_CSS = `
@@ -264,7 +264,7 @@ function nbRenderStatsTab(data) {
         const nom = ((data.nom[name] || {}).count) || 0, sp = map[name] || 0;
         return { name: name, nom: nom, sp: sp, total: nom + (s.speech && !data.isArchive ? sp : 0) };
     }).sort((a, b) => a.total - b.total);
-    if (!rows.length) { body.innerHTML = '<p class="stats-empty">名簿にまだ誰もいません</p>'; return; }
+    if (!rows.length) { body.innerHTML = '<p class="stats-empty">名簿にまだ誰もいません。</p>'; return; }
     const max = Math.max(1, ...rows.map(r => r.total));
     const zero = rows.filter(r => r.total === 0);
     const avg = rows.reduce((a, r) => a + r.total, 0) / rows.length;

@@ -84,7 +84,7 @@ function chistDiff(p, cur) {
 
 function chistOpen() {
     const name = typeof getSelectedPresetName === "function" ? getSelectedPresetName() : "";
-    if (!name || !readPresetsSafe()[name]) { showToast("履歴を見たいクラスを選んでください", "error"); return; }
+    if (!name || !readPresetsSafe()[name]) { showToast("履歴を見たいクラスを選んでください。", "error"); return; }
     const list = chistAll()[name] || [];
     const cur = readPresetsSafe()[name];
     const body = document.createElement("div");
@@ -163,7 +163,7 @@ function chistRestore(name, idx) {
     savePresetsObject(presets);   // ここで、今の状態が履歴に残ります
     loadPreset(name);
     if (typeof updatePresetRadioButtons === "function") updatePresetRadioButtons();
-    showToast(`クラス「${name}」を、${chistWhen(e.t)}より前の状態に戻しました`, "success");
+    showToast(`クラス「${name}」を、${chistWhen(e.t)}より前の状態に戻しました。`, "success");
 }
 
 const CHIST_CSS = `

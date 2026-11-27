@@ -6,7 +6,7 @@
 function openRouletteMode() {
     let allActive = getNominationCandidates();
     if (allActive.length === 0) { 
-        showToast("座席に誰もいません", "error"); 
+        showToast("座席に誰もいません。", "error"); 
         return; 
     }
     
@@ -198,7 +198,7 @@ function spinRoulette(flickV) {
                 let cleanName = name.includes(".") ? name.split(".")[1].trim() : name;
                 return { fullText: s.text, cleanName: cleanName };
             });
-            showToast("全員一巡したので指名履歴をリセットしました", "success");
+            showToast("全員一巡したので指名履歴をリセットしました。", "success");
         }
         rAngle = getRouletteRestAngle();
         drawRoulette();
@@ -237,7 +237,7 @@ function finishRoulette(winnerIndex) {
     
     pushNominationUndo("roulette", winnerFull, nominatedHistoryList.slice(), recordNominationHistory(winnerFull));
     updateNominationProgress();
-    showToast(`🎯 ルーレット当選：【 ${winnerClean} 】 さんです`, "success");
+    showToast(`🎯 ルーレット当選：【 ${winnerClean} 】 さんです。`, "success");
 
 }
 // 円盤の物理は、画面の更新の速さに関係なく、同じ時間で止まるようにします（1/60秒を1コマとして、経過した時間の分だけ進めます）

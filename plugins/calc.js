@@ -1334,7 +1334,7 @@ function calcRender() {
         hl.hidden = !calc.histOpen;
         const clr = p.querySelector(".calc-hist-clear");
         if (clr) clr.hidden = !calc.histOpen || !calc.hist.length;
-        hl.innerHTML = calc.hist.length ? "" : '<div class="calc-hist-empty">まだ計算していません</div>';
+        hl.innerHTML = calc.hist.length ? "" : '<div class="calc-hist-empty">まだ計算していません。</div>';
         calc.hist.slice().reverse().forEach(h => {
             const b = document.createElement("button");
             b.type = "button";
@@ -1654,18 +1654,18 @@ function calcRestore(a) {
 }
 function calcUndo() {
     if (calc.phone) return;
-    if (calc.assign) { showToast("値を入れている間は元に戻せません", "warn"); return; }
+    if (calc.assign) { showToast("値を入れている間は元に戻せません。", "warn"); return; }
     const a = calc.undo.pop();
-    if (!a) { showToast("もどせる操作がありません", "warn"); return; }
+    if (!a) { showToast("もどせる操作がありません。", "warn"); return; }
     calc.redo.push(calcSnap(a.key)); // やり直す時のために、今の状態を取っておく
     calcRestore(a);
     calcRender();
 }
 function calcRedo() {
     if (calc.phone) return;
-    if (calc.assign) { showToast("値を入れている間はやり直せません", "warn"); return; }
+    if (calc.assign) { showToast("値を入れている間はやり直せません。", "warn"); return; }
     const a = calc.redo.pop();
-    if (!a) { showToast("やり直せる操作がありません", "warn"); return; }
+    if (!a) { showToast("やり直せる操作がありません。", "warn"); return; }
     calc.undo.push(calcSnap(a.key));
     calcRestore(a);
     calcRender();
@@ -1699,9 +1699,9 @@ function calcDoEq(form) {
     if (form === "factor") {
         ff = calcFactorForm(r.V);
         if (!ff) { showToast(r.V.p ? "この式は因数分解できません。" : "この答えは因数分解できません。大きすぎるか、小数や √ を含みます。", "warn"); return; }
-        if (ff.same) { showToast("これ以上は因数分解できません", "warn"); ff = null; }
+        if (ff.same) { showToast("これ以上は因数分解できません。", "warn"); ff = null; }
     }
-    if (form === "expand" && !r.V.p) showToast("展開する文字式ではありません", "warn");
+    if (form === "expand" && !r.V.p) showToast("展開する文字式ではありません。", "warn");
     let f;
     try { f = r.V.p ? NaN : calcToFloat(r.V); } catch (e) { calc.err = true; calc.done = true; calcRender(); return; }
     const hasFrac = /⁄/.test(calc.expr);
@@ -1720,10 +1720,10 @@ function calcSolveKey() {
     const e = calc.expr, i = e.indexOf("=");
     const side = t => { t = t.replace(CALC_TAIL, ""); return t ? calcEvaluate(t) : null; };
     const L = side(i < 0 ? e : e.slice(0, i)), Rr = i < 0 ? calcR(0n, 1n) : side(e.slice(i + 1));
-    if (L === null || Rr === null) { showToast("式を最後まで入れてから、解きます", "warn"); return; }
-    if (L === "math" || Rr === "math") { showToast("計算できない式です", "warn"); return; }
+    if (L === null || Rr === null) { showToast("式を最後まで入れてから、解きます。", "warn"); return; }
+    if (L === "math" || Rr === "math") { showToast("計算できない式です。", "warn"); return; }
     let f;
-    try { f = calcSubV(L, Rr); } catch (er) { showToast("計算できない式です", "warn"); return; }
+    try { f = calcSubV(L, Rr); } catch (er) { showToast("計算できない式です。", "warn"); return; }
     const fin = (sol, sub, text, plain, V) => {
         calc.sol = sol; calc.ansFF = null; calc.done = true; calc.err = false; calc.slot = null;
         if (V) { calc.ansV = V; calc.ans = V.p ? NaN : calcToFloat(V); calc.ansFrac = true; }
@@ -1743,7 +1743,7 @@ function calcSolveKey() {
     const un = ["ｘ", "ｙ", "ａ", "ｂ"].find(a => atoms.has(a));
     if (!un) { showToast("解く文字が式にありません。x y a b のどれかを入れてください。", "warn"); return; }
     let res;
-    try { res = calcSolveFor(f, un); } catch (er) { showToast("この式は解けませんでした", "warn"); return; }
+    try { res = calcSolveFor(f, un); } catch (er) { showToast("この式は解けませんでした。", "warn"); return; }
     { // 元の式に入れて、分母が 0 になる値は除きます（約分で消えた分母もここで見つかります）
         const nm = CALC_VAR_NAMES.find(n => CALC_VAR_CH[n] === un), keep = [];
         const lhsS = (i < 0 ? e : e.slice(0, i)).replace(CALC_TAIL, ""), rhsS = i < 0 ? "" : e.slice(i + 1).replace(CALC_TAIL, "");
@@ -1797,11 +1797,11 @@ function calcSysKey() {
     const e = calc.expr;
     if (!e) { showToast(calc.sys ? "2本目の式を入れてください。" : "1本目の式を入れてください。例　2x＋y＝5", "warn"); return; }
     const i = e.indexOf("=");
-    if (i < 0) { showToast("等号 ＝ のある式を入れてください", "warn"); return; }
+    if (i < 0) { showToast("等号 ＝ のある式を入れてください。", "warn"); return; }
     const side = t => { t = t.replace(CALC_TAIL, ""); return t ? calcEvaluate(t) : null; };
     const L = side(e.slice(0, i)), Rr = side(e.slice(i + 1));
-    if (L === null || Rr === null) { showToast("式を最後まで入れてから、押します", "warn"); return; }
-    if (L === "math" || Rr === "math") { showToast("計算できない式です", "warn"); return; }
+    if (L === null || Rr === null) { showToast("式を最後まで入れてから、押します。", "warn"); return; }
+    if (L === "math" || Rr === "math") { showToast("計算できない式です。", "warn"); return; }
     if (!calc.sys || calc.done) {
         calc.sys = e; calc.expr = ""; calc.done = false; calc.err = false; calc.slot = null; calc.sol = null; calc.ansFF = null;
         calcRender(); return;
@@ -1811,8 +1811,8 @@ function calcSysKey() {
     try {
         const s1 = e1.slice(0, j).replace(CALC_TAIL, ""), s2 = e1.slice(j + 1).replace(CALC_TAIL, "");
         f1 = calcSubV(calcEvaluate(s1), calcEvaluate(s2)); f2 = calcSubV(L, Rr);
-    } catch (er) { showToast("計算できない式です", "warn"); return; }
-    if (!/[ｘｙ]/.test(e1 + e)) { showToast("x か y の入った式を入れてください", "warn"); return; }
+    } catch (er) { showToast("計算できない式です。", "warn"); return; }
+    if (!/[ｘｙ]/.test(e1 + e)) { showToast("x か y の入った式を入れてください。", "warn"); return; }
     const q1 = calcLinXY(f1), q2 = calcLinXY(f2);
     if (!q1 || !q2) { showToast("x と y の1次式だけ解けます。x² や x×y は、まだ解けません。", "warn"); return; }
     const D = calcSubV(calcMul(q1.a, q2.b), calcMul(q2.a, q1.b));
@@ -1873,9 +1873,9 @@ function calcPressCore(k) {
     if (k === "view") {
         const cur = calcCurrent();
         if (!cur) return;
-        if (cur.V.p) { showToast("文字を含む答えは「展開」と「因数分解」で切り替えます", "warn"); return; }
-        if (!cur.V.r && !cur.V.s) { showToast("この答えは分数や√の形にできません", "warn"); return; }
-        if (cur.V.r && cur.V.d === 1n) { showToast("整数なので分数にしても同じです", "warn"); return; }
+        if (cur.V.p) { showToast("文字を含む答えは「展開」と「因数分解」で切り替えます。", "warn"); return; }
+        if (!cur.V.r && !cur.V.s) { showToast("この答えは分数や√の形にできません。", "warn"); return; }
+        if (cur.V.r && cur.V.d === 1n) { showToast("整数なので分数にしても同じです。", "warn"); return; }
         const eff = calcEffView(cur.V, cur.hasFrac, calc.view);
         const order = cur.V.s ? ["exact", "dec"] : (calcAbsB(cur.V.n) > cur.V.d ? ["frac", "mixed", "dec"] : ["frac", "dec"]);
         calc.view = order[(order.indexOf(eff) + 1) % order.length];
@@ -1905,12 +1905,12 @@ function calcPressCore(k) {
         let V = null;
         if (calc.done && calc.ansV) V = calc.ansV;
         else { const r = calcTry(calc.expr.replace(CALC_TAIL, "")); if (r.ok) V = r.V; }
-        if (!V) { showToast("先に計算できる式を入れてください", "warn"); return; }
+        if (!V) { showToast("先に計算できる式を入れてください。", "warn"); return; }
         try {
             const base = calc.hasMem ? calc.mem : calcR(0n, 1n);
             calc.mem = k === "mp" ? calcAdd(base, V) : calcSubV(base, V);
             calc.hasMem = true;
-        } catch (e) { showToast("メモリに入れられない数です", "warn"); }
+        } catch (e) { showToast("メモリに入れられない数です。", "warn"); }
         calcRender(); return;
     }
     if (k === "clear") { calc.expr = ""; calc.done = false; calc.err = false; calc.slot = null; calc.sys = null; calcRender(); return; }
@@ -1941,7 +1941,7 @@ function calcPressCore(k) {
     if (k === "graph") { calcGraphOpen(); return; }
     if (k === "expand" || k === "factor") {
         if (calc.assign || !calc.expr) return;
-        if (calc.expr.includes("=")) { showToast("等号のある式は「方程式を解く」で解きます", "warn"); return; }
+        if (calc.expr.includes("=")) { showToast("等号のある式は「方程式を解く」で解きます。", "warn"); return; }
         calcDoEq(k); return;
     }
     if (/^\d$/.test(k)) {
@@ -2035,7 +2035,7 @@ function calcPressCore(k) {
     if (fnMap[k]) { calcNewIfDone(); calc.expr += fnMap[k]; calcRender(); return; }
     if (k === "pi" || k === "e") { calcNewIfDone(); calc.expr += k === "pi" ? "π" : "e"; calcRender(); return; }
     if (k === "ans") {
-        if (!calc.ansV) { showToast("前の答えがまだありません", "warn"); return; }
+        if (!calc.ansV) { showToast("前の答えがまだありません。", "warn"); return; }
         calcNewIfDone(); calc.expr += "Ans"; calcRender(); return;
     }
     if (k === "sq" || k === "pow" || k === "inv") {
@@ -2057,10 +2057,10 @@ function calcPressCore(k) {
 
 async function calcCopy() {
     const cur = calcCurrent();
-    if (!cur) { showToast("コピーできる答えがまだありません", "warn"); return; }
+    if (!cur) { showToast("コピーできる答えがまだありません。", "warn"); return; }
     const t = calcShow(cur.V, cur.hasFrac, calc.view).main.replace("−", "-");
-    try { await navigator.clipboard.writeText(t); showToast("答えをコピーしました", "success"); }
-    catch (e) { showToast("コピーできませんでした", "warn"); }
+    try { await navigator.clipboard.writeText(t); showToast("答えをコピーしました。", "success"); }
+    catch (e) { showToast("コピーできませんでした。", "warn"); }
 }
 
 // 機能メニュー：分数、文字式、メモリのボタンを、ひとつのメニューにまとめています
@@ -2080,10 +2080,10 @@ function calcRingStop() {
 function calcRing() {
     if (calcRingTimer) { calcRingStop(); return; }
     const cur = calcCurrent();
-    if (!cur || cur.V.p) { showToast("数の答えが出ている時だけ、鳴らせます", "warn"); return; }
+    if (!cur || cur.V.p) { showToast("数の答えが出ている時だけ、鳴らせます。", "warn"); return; }
     const text = calcShow(cur.V, cur.hasFrac, "dec").main;
     const digits = Array.from(text).map(ch => ch === "−" || ch === "-" ? "#" : ch === "." ? "*" : /[0-9]/.test(ch) ? ch : "").join("").slice(0, 20);
-    if (!digits) { showToast("鳴らせる数字がありません", "warn"); return; }
+    if (!digits) { showToast("鳴らせる数字がありません。", "warn"); return; }
     calc.lastRing = digits;
     initAudio();
     const step = 0.26;
@@ -2119,12 +2119,12 @@ function calcGraphOpen() {
     if (calc.assign || calc.phone || calc.graph) return;
     const e = calc.expr.replace(CALC_TAIL, "");
     if (!e) { showToast("先に式を入れてください。たとえば 2x+1 です。", "warn"); return; }
-    if (e.includes("=")) { showToast("グラフには等号のない式を使います", "warn"); return; }
+    if (e.includes("=")) { showToast("グラフには等号のない式を使います。", "warn"); return; }
     const names = CALC_VAR_NAMES.filter(n => e.includes(CALC_VAR_CH[n]) && !calc.vars[n]);
     if (!names.length) { showToast("グラフにする文字が式にありません。x y a b のどれかを入れてください。", "warn"); return; }
     if (names.length > 1) { showToast(names.join(" と ") + " の2つの文字があります。片方に値を入れてください。", "warn"); return; }
     const V = calcEvaluate(e);
-    if (V === null) { showToast("式を最後まで入れてから、開きます", "warn"); return; }
+    if (V === null) { showToast("式を最後まで入れてから、開きます。", "warn"); return; }
     let lo = "-5", hi = "5", step = "1";
     try { const o = JSON.parse(lsGet("calc_graph", "null")); if (o && calcParseNum(o.lo) && calcParseNum(o.hi) && calcParseNum(o.step)) { lo = String(o.lo); hi = String(o.hi); step = String(o.step); } } catch (er) { /* 何もしない */ }
     calc.graph = { u: names[0], src: e, lo, hi, step };
@@ -2161,10 +2161,10 @@ function calcGraphDraw() {
     const msg = $id("cgMsg"), svg = $id("cgSvg"), tbl = $id("cgTable");
     svg.textContent = ""; tbl.textContent = "";
     $id("cgRead").textContent = "グラフの上をなぞると値が出ます";
-    if (!lo || !hi || !st) { msg.textContent = "はじめ、おわり、きざみには数を入れてください"; return; }
+    if (!lo || !hi || !st) { msg.textContent = "はじめ、おわり、きざみには数を入れてください。"; return; }
     const lof = calcToFloat(lo), hif = calcToFloat(hi), stf = calcToFloat(st);
-    if (!(hif > lof)) { msg.textContent = "おわりははじめより大きい数にしてください"; return; }
-    if (!(stf > 0)) { msg.textContent = "きざみは、0 より大きい数にしてください"; return; }
+    if (!(hif > lof)) { msg.textContent = "おわりははじめより大きい数にしてください。"; return; }
+    if (!(stf > 0)) { msg.textContent = "きざみは、0 より大きい数にしてください。"; return; }
     g.lo = $id("cgLo").value; g.hi = $id("cgHi").value; g.step = $id("cgStep").value;
     lsSet("calc_graph", JSON.stringify({ lo: g.lo, hi: g.hi, step: g.step }));
     // 表

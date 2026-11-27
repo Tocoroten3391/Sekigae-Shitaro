@@ -4,7 +4,7 @@
 // ==========================================
 function downloadAsCSV() {
     if (currentStudents.length === 0) { 
-        showToast("座席表が空です", "error"); 
+        showToast("座席表が空です。", "error"); 
         return; 
     }
     const cSel = $id("columnSelect");
@@ -28,7 +28,7 @@ function downloadAsCSV() {
     document.body.appendChild(a); 
     a.click(); 
     document.body.removeChild(a); 
-    showToast("CSVファイルとしてダウンロードしました", "success");
+    showToast("CSVファイルとしてダウンロードしました。", "success");
 }
 
 // 名簿の書き出し：座席・わがままの指定や欠席などの印は付けず、「番号.名前」だけを出す。
@@ -42,7 +42,7 @@ function getRosterNamesForExport() {
 function exportRosterFile(kind) {
     const names = getRosterNamesForExport();
     if (names.length === 0) {
-        showToast("書き出せる名簿がありません", "error");
+        showToast("書き出せる名簿がありません。", "error");
         return;
     }
     const baseName = getSelectedPresetName() || ($id("presetNameInput") && $id("presetNameInput").value.trim()) || "名簿";
@@ -71,7 +71,7 @@ function exportRosterFile(kind) {
     document.body.appendChild(a);
     a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
-    showToast(`名簿${names.length}人分を、${ext.toUpperCase()}で書き出しました`, "success");
+    showToast(`名簿${names.length}人分を、${ext.toUpperCase()}で書き出しました。`, "success");
 }
 
 // ==========================================
@@ -104,7 +104,7 @@ function importOfflineFile(input) {
         
         lastRawList = [...cleanedNames]; 
         parseAndSetSeats(cleanedNames, false, "initial"); 
-        showToast("ファイルから名簿を取り込みました", "success"); 
+        showToast("ファイルから名簿を取り込みました。", "success"); 
         const fileIssues = analyzeRosterStrings(cleanedNames).filter(i => i.level === "warn");
         if (fileIssues.length) showToast(`名簿に注意があります。${fileIssues[0].title}`, "error");
         input.value = ""; 
@@ -146,7 +146,7 @@ function welcomeStartWithCount() {
     if (!w || !q) return;
     q.value = w.value;
     generateNumbersOnlyList();
-    if (currentStudents && currentStudents.some(isRealStudentSeat)) showToast("「席替えスタート！」を押すと席が決まります", "success");
+    if (currentStudents && currentStudents.some(isRealStudentSeat)) showToast("「席替えスタート！」を押すと席が決まります。", "success");
 }
 
 function welcomeStartSample() {
@@ -179,7 +179,7 @@ function generateNumbersOnlyList() {
     const qInput = $id("quickCountInput");
     const count = qInput ? parseInt(qInput.value, 10) : 0; 
     if (!count || count < 1 || count > 100) { 
-        showToast("1〜100の範囲で入力してください", "error"); 
+        showToast("1〜100の範囲で入力してください。", "error"); 
         return; 
     }
     endTrialIfActive(true);
@@ -194,7 +194,7 @@ function generateNumbersOnlyList() {
     
     lastRawList = [...temporaryList]; 
     parseAndSetSeats(temporaryList, false, "initial"); 
-    showToast(`${count}人分の名簿を生成しました`, "success"); 
+    showToast(`${count}人分の名簿を生成しました。`, "success"); 
     
     if(qInput) qInput.value = "";
 }
@@ -205,7 +205,7 @@ function resetToNumberOrder() {
     
     const inputText = sInput.value; 
     if (!inputText) { 
-        showToast("名簿データがありません", "error"); 
+        showToast("名簿データがありません。", "error"); 
         return; 
     }
     
@@ -214,7 +214,7 @@ function resetToNumberOrder() {
     sInput.value = cleanList.join(", "); 
     
     parseAndSetSeats(cleanList, false, document.body.classList.contains("no-animation") ? "none" : "initial"); 
-    showToast("出席番号順にリセットしました", "success");
+    showToast("出席番号順にリセットしました。", "success");
 }
 
 function handleAdminToggle() {
@@ -247,10 +247,10 @@ function checkPassword() {
         const aSec = $id("adminSection");
         if(aSec) aSec.style.display = "block"; 
         
-        showToast("管理者認証に成功しました", "success"); 
+        showToast("管理者認証に成功しました。", "success"); 
     } 
     else { 
-        showToast("パスワードが違います", "error"); 
+        showToast("パスワードが違います。", "error"); 
         const tog = $id("adminToggle");
         if(tog) tog.checked = false; 
         

@@ -169,8 +169,8 @@ function onSoftKeypadToggle() {
     const t = $id("softKeypadToggle");
     if (!t) return;
     lsSet(SOFTKEYPAD_KEY, t.checked ? "1" : "0");
-    if (t.checked) { document.querySelectorAll('input[type="number"], input[type="time"], input[inputmode="numeric"]').forEach(skpMark); showToast("数字を入れる欄を押すと、画面のテンキーが出ます", "success"); }
-    else { skpHide(); skpUnmarkAll(); showToast("画面のテンキーは出さないようにしました", "success"); }
+    if (t.checked) { document.querySelectorAll('input[type="number"], input[type="time"], input[inputmode="numeric"]').forEach(skpMark); showToast("数字を入れる欄を押すと、画面のテンキーが出ます。", "success"); }
+    else { skpHide(); skpUnmarkAll(); showToast("画面のテンキーは出さないようにしました。", "success"); }
 }
 function setupSoftKeypad() {
     if (skpSetupDone) return;

@@ -220,7 +220,7 @@ function fairCopyFallback(text, done) {
     const ta = document.createElement("textarea");
     ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
     document.body.appendChild(ta); ta.select();
-    try { document.execCommand("copy"); done(); } catch (e) { showToast("コピーできませんでした", "error"); }
+    try { document.execCommand("copy"); done(); } catch (e) { showToast("コピーできませんでした。", "error"); }
     ta.remove();
 }
 // 印刷：見えない枠の中に、報告用の表を作って、印刷します
@@ -241,7 +241,7 @@ function fairPrint() {
     const doc = fr.contentWindow.document;
     doc.open(); doc.write(html); doc.close();
     setTimeout(() => {
-        try { fr.contentWindow.focus(); fr.contentWindow.print(); } catch (e) { showToast("印刷を始められませんでした", "error"); }
+        try { fr.contentWindow.focus(); fr.contentWindow.print(); } catch (e) { showToast("印刷を始められませんでした。", "error"); }
         setTimeout(() => fr.remove(), 2000);
     }, 200);
 }
@@ -278,7 +278,7 @@ const FAIR_HTML = `
             <div><label for="fairPeriodSelect">数える期間</label>
                 <select id="fairPeriodSelect" onchange="fairSettingChanged()"><option value="all">記録の全て</option><option value="10">直近10回</option><option value="5">直近5回</option></select></div>
         </div>
-        <p id="fairWinNote" class="config-note" style="margin: -4px 0 8px;">窓の位置を選ぶと窓側と廊下側も数えます</p>
+        <p id="fairWinNote" class="config-note" style="margin: -4px 0 8px;">窓の位置を選ぶと窓側と廊下側も数えます。</p>
         <label class="input-label">好まれやすい席</label>
         <div id="fairFav" class="fair-chips"></div>
         <label class="input-label">いやがられやすい席</label>

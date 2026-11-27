@@ -50,14 +50,14 @@ function applyAbsentModal() {
         changed++;
         return want ? raw.replace(/\s+$/, "") + " [休]" : raw.replace(/\s*\[休\]/g, "").trim();
     });
-    if (changed === 0) { closeAbsentModal(); showToast("欠席の変更はありません", "success"); return; }
+    if (changed === 0) { closeAbsentModal(); showToast("欠席の変更はありません。", "success"); return; }
     saveSeatHistory(); // 「戻す」で、変更前に戻せる
     lastRawList = next;
     const sInput = $id("studentInput");
     if (sInput) sInput.value = lastRawList.join(", ");
     closeAbsentModal();
     onLayoutChange();
-    showToast(`今日の欠席者を${absentDraft.size}人にしました`, "success");
+    showToast(`今日の欠席者を${absentDraft.size}人にしました。`, "success");
 }
 
 // ---- 本体への登録 ----

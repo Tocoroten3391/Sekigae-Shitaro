@@ -279,7 +279,7 @@ function clearWishAll() {
     wishRenderRows();
     wishDecorate();
     if (typeof updateSeatCheckButton === "function") updateSeatCheckButton();
-    showToast("希望と配慮メモを全て消しました", "success");
+    showToast("希望と配慮メモを全て消しました。", "success");
 }
 
 const WISH_CSS = `

@@ -109,7 +109,7 @@ function restoreTimelineLayout(id) {
     });
     renderClassroom("none");
     closeStatsModal();
-    showToast("過去の席順に戻しました", "success");
+    showToast("過去の席順に戻しました。", "success");
 }
 function deleteTimelineEntry(id) {
     seatTimeline = seatTimeline.filter(x => x.id !== id);
@@ -121,7 +121,7 @@ function clearSeatTimeline() {
     seatTimeline = [];
     saveSeatTimeline();
     renderTimeline();
-    showToast("席替えの履歴を消しました", "success");
+    showToast("席替えの履歴を消しました。", "success");
 }
 
 // ---- 本体への登録 ----

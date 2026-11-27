@@ -85,7 +85,7 @@ function savePresetsObject(presets) { localStorage.setItem("seat_shuffler_preset
 function toggleArchiveSelectedClass() {
     if (isAppLocked()) { showLockedToast(); return; }
     const name = getSelectedPresetName();
-    if (!name) { showToast("クラスを選んでください", "error"); return; }
+    if (!name) { showToast("クラスを選んでください。", "error"); return; }
     const presets = readPresetsSafe();
     if (!presets[name]) return;
     const now = !presets[name].archived;
@@ -117,7 +117,7 @@ function getRecordsForClass(name) {
 
 function exportSelectedClassYearCsv() {
     const name = getSelectedPresetName();
-    if (!name) { showToast("クラスを選んでください", "error"); return; }
+    if (!name) { showToast("クラスを選んでください。", "error"); return; }
     const rec = getRecordsForClass(name);
     const parse = key => { try { const v = JSON.parse(rec[key] || "{}"); return (v && typeof v === "object") ? v : {}; } catch (error) { return {}; } };
     const nom = parse("nomination_history_log"), seat = parse("seat_history_log");
@@ -127,7 +127,7 @@ function exportSelectedClassYearCsv() {
     let rosterNames = [];
     if (presets[name] && presets[name].students) rosterNames = splitRosterRaw(presets[name].students).map(x => getCleanStudentKey(x.trim())).filter(x => x);
     const names = [...new Set(rosterNames.concat(Object.keys(nom), Object.keys(seat)))];
-    if (names.length === 0 || (!hasMeaningfulRecords(rec) && rosterNames.length === 0)) { showToast("このクラスには書き出せる記録がありません", "error"); return; }
+    if (names.length === 0 || (!hasMeaningfulRecords(rec) && rosterNames.length === 0)) { showToast("このクラスには書き出せる記録がありません。", "error"); return; }
     const q = v => `"${String(v).replace(/"/g, '""')}"`;
     const lines = [["クラス", "名前", "指名回数", "最終指名", "よく座る席", "席替えの回数"].map(q).join(",")];
     names.forEach(n => {
@@ -140,7 +140,7 @@ function exportSelectedClassYearCsv() {
     document.body.appendChild(a);
     a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
-    showToast(`クラス「${name}」の1年間の記録を書き出しました`, "success");
+    showToast(`クラス「${name}」の1年間の記録を書き出しました。`, "success");
 }
 
 // ==========================================
@@ -212,7 +212,7 @@ function updatePresetRadioButtons() {
     if (tools) tools.hidden = Object.keys(presets).length < 2;
 
     if (Object.keys(presets).length === 0) {
-        container.innerHTML = `<span style="font-size: 12px; color: var(--text-sub); font-weight: 600; text-align: center; padding: 10px 0; display: block;">保存されたクラスはありません</span>`;
+        container.innerHTML = `<span style="font-size: 12px; color: var(--text-sub); font-weight: 600; text-align: center; padding: 10px 0; display: block;">保存されたクラスはありません。</span>`;
         updateArchiveButton();
         return;
     }
@@ -434,7 +434,7 @@ function requestClassSwitch(name, onDone, onCancel) {
                 { label: "保存して切り替える", value: "save", cls: "btn-connect is-primary", primary: true }
             ]
         }, v => {
-            if (v === "save") { saveCurrentIntoPreset(cur); showToast(`クラス「${cur}」を保存しました`, "success"); doSwitch(); }
+            if (v === "save") { saveCurrentIntoPreset(cur); showToast(`クラス「${cur}」を保存しました。`, "success"); doSwitch(); }
             else if (v === "discard") doSwitch();
             else if (onCancel) onCancel();
         });
@@ -458,7 +458,7 @@ function validatePresetNewName(text, presets, self) {
 function renameSelectedClass() {
     if (isAppLocked()) { showLockedToast(); return; }
     const old = getSelectedPresetName();
-    if (!old) { showToast("名前を変えるクラスを選んでください", "error"); return; }
+    if (!old) { showToast("名前を変えるクラスを選んでください。", "error"); return; }
     const ask = (value, err) => presetDialog({
         title: "クラスの名前を変える",
         message: err || `クラス「${old}」の新しい名前を入れてください。記録も一緒に引き継がれます。`,
@@ -521,13 +521,13 @@ function applyRenameClass(old, next) {
     if (typeof nqRenameClass === "function") nqRenameClass(old, next);
     if (typeof chistRenameClass === "function") chistRenameClass(old, next);
     updatePresetRadioButtons();
-    showToast(`クラス「${old}」を、「${next}」に名前変更しました`, "success");
+    showToast(`クラス「${old}」を、「${next}」に名前変更しました。`, "success");
 }
 
 function duplicateSelectedClass() {
     if (isAppLocked()) { showLockedToast(); return; }
     const old = getSelectedPresetName();
-    if (!old) { showToast("複製するクラスを選んでください", "error"); return; }
+    if (!old) { showToast("複製するクラスを選んでください。", "error"); return; }
     const presets0 = readPresetsSafe();
     let base = `${old}のコピー`, n = 2, def = base;
     while (Object.prototype.hasOwnProperty.call(presets0, def)) def = base + (n++);
@@ -586,11 +586,11 @@ function getSelectedPresetName() {
 function deletePreset() { 
     const name = getSelectedPresetName(); 
     if (!name) { 
-        showToast("削除するクラスを選択してください", "error"); 
+        showToast("削除するクラスを選択してください。", "error"); 
         return; 
     } 
     const msg = $id("deleteModalMessage");
-    if (msg) msg.textContent = `本当にクラス「${name}」のデータを完全に消去してもよろしいですか？このクラスの記録も、一緒に消えます`; 
+    if (msg) msg.textContent = `本当にクラス「${name}」のデータを完全に消去してもよろしいですか？このクラスの記録も、一緒に消えます。`; 
     const overlay = $id("deleteModalOverlay");
     if (overlay) overlay.style.display = "flex"; 
 }
@@ -618,7 +618,7 @@ function confirmDeletePresetAction() {
     updatePresetRadioButtons(); 
     onLayoutChange(); 
     closeDeleteModal(); 
-    showToast(`プリセット「${name}」を完全に消去しました`, "success"); 
+    showToast(`プリセット「${name}」を完全に消去しました。`, "success"); 
 }
 
 // いまの画面の内容から、クラス1件ぶんのデータを作る（保存と、保存していない変更の確認で使う）
@@ -652,7 +652,7 @@ function savePreset() {
     const input = $id("presetNameInput");
     const name = input ? input.value.trim() : "";
     if (!name) {
-        showToast("プリセット名を入力してください", "error");
+        showToast("プリセット名を入力してください。", "error");
         return;
     }
     const presets = readPresetsSafe();
@@ -660,7 +660,7 @@ function savePreset() {
     savePresetsObject(presets);
     adoptRecordsForSavedClass(name);
     updatePresetRadioButtons();
-    showToast(`プリセット「${name}」を保存しました`, "success");
+    showToast(`プリセット「${name}」を保存しました。`, "success");
 }
 
 // ---- 本体への登録（必須：オン・オフの切り替えはできません） ----

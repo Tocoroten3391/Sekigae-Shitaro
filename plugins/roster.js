@@ -123,7 +123,7 @@ function renumberEditorRows() {
     rosterEditorRows.forEach(r => { r.no = r.name.trim() ? String(n++) : ""; });
     renderRosterEditor();
     commitRosterEditorState();
-    showToast("名前のある行に上から順に番号をつけ直しました", "success");
+    showToast("名前のある行に上から順に番号をつけ直しました。", "success");
 }
 function sortEditorRowsByReading() {
     const keyOf = r => (r.furi || r.name || "").trim();
@@ -167,7 +167,7 @@ function onRosterEditorPaste(ev, startIdx) {
     rosterEditorRows.forEach(r => { if (r.name.trim() && !r.no) r.no = String(n); n++; });
     renderRosterEditor();
     commitRosterEditorState();
-    showToast(`${lines.length}行を表に入れました`, "success");
+    showToast(`${lines.length}行を表に入れました。`, "success");
 }
 function getRosterEditorList() {
     const named = rosterEditorRows.filter(r => r.name.trim());
@@ -182,7 +182,7 @@ function updateRosterEditorCheck() {
     const list = getRosterEditorList();
     ul.innerHTML = "";
     if (go) go.disabled = list.length === 0;
-    if (list.length === 0) { sum.textContent = "名前を入れてください"; sum.className = "rp-summary"; return; }
+    if (list.length === 0) { sum.textContent = "名前を入れてください。"; sum.className = "rp-summary"; return; }
     // 表では、ふりがなが別の欄なので、姓と名の間の空白の注意は出さない
     const issues = analyzeRosterStrings(list).filter(i => !i.title.startsWith("名前に空白が入っている行"));
     const warn = issues.filter(i => i.level === "warn").length;
@@ -233,7 +233,7 @@ function downloadRosterTemplate() {
 }
 function exportRosterEditor(kind) {
     const named = rosterEditorRows.filter(r => r.name.trim());
-    if (named.length === 0) { showToast("書き出せる名簿がありません", "error"); return; }
+    if (named.length === 0) { showToast("書き出せる名簿がありません。", "error"); return; }
     const list = getRosterEditorList();
     const base = ($id("presetNameInput") && $id("presetNameInput").value.trim()) || "名簿";
     if (kind === "txt") {
@@ -603,7 +603,7 @@ function updateRosterMapCheck() {
     pv.innerHTML = "";
     if (go) go.disabled = people.length === 0;
     if (people.length === 0) {
-        sum.textContent = "名前の列を選んでください";
+        sum.textContent = "名前の列を選んでください。";
         sum.className = "rp-summary is-warn";
         return;
     }

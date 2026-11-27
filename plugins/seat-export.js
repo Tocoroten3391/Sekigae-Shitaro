@@ -35,12 +35,12 @@ function seDownload(blob, filename) {
 
 function seSavePng() {
     closePopMenus();
-    if (!seHasChart()) { showToast("座席表が空です", "error"); return; }
+    if (!seHasChart()) { showToast("座席表が空です。", "error"); return; }
     const canvas = seMakeCanvas();
     canvas.toBlob(blob => {
-        if (!blob) { showToast("画像を作れませんでした", "error"); return; }
+        if (!blob) { showToast("画像を作れませんでした。", "error"); return; }
         seDownload(blob, seFileBase() + ".png");
-        showToast("座席表を画像で保存しました", "success");
+        showToast("座席表を画像で保存しました。", "success");
     }, "image/png");
 }
 
@@ -77,16 +77,16 @@ function seBuildPdf(jpeg, imgW, imgH) {
 
 function seSavePdf() {
     closePopMenus();
-    if (!seHasChart()) { showToast("座席表が空です", "error"); return; }
+    if (!seHasChart()) { showToast("座席表が空です。", "error"); return; }
     const canvas = seMakeCanvas();
     canvas.toBlob(async blob => {
-        if (!blob) { showToast("PDFを作れませんでした", "error"); return; }
+        if (!blob) { showToast("PDFを作れませんでした。", "error"); return; }
         try {
             const jpeg = new Uint8Array(await blob.arrayBuffer());
             seDownload(seBuildPdf(jpeg, canvas.width, canvas.height), seFileBase() + ".pdf");
-            showToast("座席表をPDFで保存しました", "success");
+            showToast("座席表をPDFで保存しました。", "success");
         } catch (error) {
-            showToast("PDFを作れませんでした", "error");
+            showToast("PDFを作れませんでした。", "error");
         }
     }, "image/jpeg", 0.95);
 }

@@ -286,7 +286,7 @@
         <div class="config-section" data-sec="rules" data-group="クラスと席" data-kw="席替え 条件 離す 近くに置く 座席設定 わがまま 運の貯金 ルール">
             <h3>席替えのルール</h3>
             <button onclick="openSeatSettingsModal()" class="btn-secondary btn-tint-gray" style="margin-top: 10px; background-color: #6b7280; color: white;">座席設定</button>
-            <p class="config-note">席替えで離す人と近くに置く人などを決めます</p>
+            <p class="config-note">席替えで離す人と近くに置く人などを決めます。</p>
             <div data-plugin-slot="settings-rules"></div>
         </div>
         <div class="config-group-title" data-group="班・グループ">班・グループ</div>
@@ -341,7 +341,7 @@
                 <span class="switch-label" style="color: var(--lbl-green); font-weight: bold;">班の色を設定するモード</span>
             </div>
             <div id="groupColorModePanel" style="display: none; margin-top: 8px;">
-                <label style="font-size: 12px; font-weight: bold; color: var(--lbl-green); display: block; margin-bottom: 6px;">塗りたい班を選んで座席表の座席をクリック</label>
+                <label style="font-size: 12px; font-weight: bold; color: var(--lbl-green); display: block; margin-bottom: 6px;">塗りたい班を選んで座席表の座席をクリック。</label>
                 <div id="groupColorPaletteContainer" class="group-color-palette"></div>
             </div>
         </div>
@@ -743,7 +743,7 @@
 
         <div class="config-section usage-section" id="usageSection">
             <h3>使い方</h3>
-            <p class="usage-lead">気になる項目をタップすると、説明が開きます</p>
+            <p class="usage-lead">気になる項目をタップすると、説明が開きます。</p>
             <input type="search" id="usageSearchInput" class="usage-search" placeholder="説明をさがす　例：ロック、欠席、バックアップ" oninput="onUsageSearch()" aria-label="説明をさがす" autocomplete="off">
             <p id="usageSearchEmpty" class="usage-lead" hidden>見つかりませんでした。別の言葉で試してください。</p>
             <div class="usage-guide">
@@ -759,7 +759,7 @@
                         <p>設定が見つからない時は、設定の一番上の「設定をさがす」を使ってください。「⛶ 拡大」を押すとメニューが広がり、左にセクションの一覧、右に選んだセクションの設定が大きく出ます。もう一度押すと元の幅に戻ります。よく使う設定はスイッチやボタンの右にある星を押すと、設定の一番上の「よく使う設定」にも出ます。元の場所にもそのまま残ります。もう一度星を押すと上から外れます。たまにしか使わない設定は、各項目の「詳しい設定」の中にあります。</p>
                         <p>設定の「テーマと背景」で、着せ替えテーマを選べます。「季節おまかせ」を選ぶと日付に合わせて、テーマが自動で変わります。サクラ、新学期、サマー、オータム、ハロウィン、ウィンター、クリスマスでは「季節の飾りを背景に舞わせる」で、花びらや落ち葉、雪が背景にゆっくり舞います。</p>
                         <p>オンとオフの切り替えには、2種類あります。つまみのスイッチは押すとすぐに設定が変わり、そのまま保存されます。四角いチェックは「保存する」や「この名簿にする」のようなボタンを押した時に、はじめて決まります。画面を閉じれば、取り消せます。</p>
-                        <p>記録がたまってきたら、「設定・記録のバックアップ／復元」で、ファイルに書き出しておくと安心です</p>
+                        <p>記録がたまってきたら、「設定・記録のバックアップ／復元」で、ファイルに書き出しておくと安心です。</p>
                     </details>
                 </div>
 
@@ -768,14 +768,14 @@
                     <details>
                         <summary>席替え</summary>
                         <ul>
-                            <li>「席替えスタート！」で、固定やわがまま指定を守りながら、席を決め直します</li>
+                            <li>「席替えスタート！」で、固定やわがまま指定を守りながら、席を決め直します。</li>
                             <li>席替えの後は「戻す」で、1つ前の席順に戻せます。最大5回前までです。</li>
                             <li>席はドラッグ＆ドロップで入れ替えられます。席をタップすると固定・空席・お休みなどを選べます。</li>
                             <li>「⋯ 他の操作」の「プレビュー」を押すと結果を3案作って見比べられます。気に入った案を選ぶとその席順になります。「作り直す」で、別の3案も出せます。</li>
                             <li>「⋯ 他の操作」の「発表モードで席替え」を押すと席替えをして、電子黒板いっぱいに「？」の席が並びます。「▶ 次の人」か、スペースキー、画面タップで、1人ずつ「○○さんは B3 の席です」と発表できます。発表の順番と効果音は画面の下で選べます。</li>
                             <li>発表モードの画面の下で、「📣 普通に発表」と「☁️ 天気予報風に発表」を選べます。天気予報風にすると席の位置に合わせて、天気の絵文字と「おしゃべり注意報」つきの予報が出ます。全員の発表が終わったら、「🍀 ラッキー席」を押すと今日のラッキー席が1つ選ばれ、大吉とラッキーアイテムが出ます。</li>
-                            <li>席替えをせずに今の座席を発表したい時は、「印刷・共有・書き出し」の「今の座席を発表モードで見せる」を使います</li>
-                            <li>席替えの後に「⋯ 他の操作」の「前回と比べる」を押すと前の席から動いた人がひと目で分かります</li>
+                            <li>席替えをせずに今の座席を発表したい時は、「印刷・共有・書き出し」の「今の座席を発表モードで見せる」を使います。</li>
+                            <li>席替えの後に「⋯ 他の操作」の「前回と比べる」を押すと前の席から動いた人がひと目で分かります。</li>
                             <li>「⋯ 他の操作」の「結果のチェック」で、前回と同じ席や同じ隣、何度も隣になった組、離す設定と近くに置く設定、わがまま指定、2回続けて前や後ろの列の人をまとめて確かめます。気になる点があると「他の操作」のボタンに ⚠️ の印が付いて、メニューの中に「注意」の件数が出ます。「もう一度席替えする」で、その場でやり直せます。「この席替えの決め方」では何通りの席を作って選んだか、どの条件を使ったかが分かります。守れなかった条件があると、その場で優先順位を選び直せます。</li>
                             <li>欠席の人は席の設定で「お休み」にします。席替えや指名の対象から外れます。</li>
                         </ul>
@@ -799,8 +799,8 @@
                     <details data-plugin="timer">
                         <summary>タイマー</summary>
                         <ul>
-                            <li>画面上部の時計をタップすると、タイマーのパネルが開きます</li>
-                            <li>プリセット・手動の追加ボタン・分と秒の入力で時間をセットし、「▶ スタート」を押します</li>
+                            <li>画面上部の時計をタップすると、タイマーのパネルが開きます。</li>
+                            <li>プリセット・手動の追加ボタン・分と秒の入力で時間をセットし、「▶ スタート」を押します。</li>
                             <li>「時刻を指定して鳴らす」では目覚ましのように「10:45」と決めると、10:45:00ちょうどに鳴ります。それまでの残り時間もカウントダウンで見られます。</li>
                             <li>「ステップタイマー」は、名前と時間の組み合わせを保存して、いつでも呼び出せます。「作成・編集」で作ります。時間になったら自動で次へ進むか、ボタンで進めるかを選べます。</li>
                             <li>「巨大表示」で、大きく映せます。アラーム音の種類と音量は、「アラームとチャイム」で変えられます。</li>
@@ -822,7 +822,7 @@
                         <ul>
                             <li>右上の「ロック」を押すと席替え・座席の移動・設定メニューなどが使えなくなります。解除には決めた4〜8桁の数字の暗証番号が必要です。ロックはページを読み込み直しても続きます。</li>
                             <li>最初に「ロック」を押した時に暗証番号を決めます。「ロックと管理」の「ロックの設定」で、「ロック中に使えるもの」と「自動ロック」を変えられます。使えるものはタイマー、指名・ルーレット、全画面表示から選べます。自動ロックは何も操作がない時に自動でロックします。</li>
-                            <li>暗証番号を5回続けて間違えると、30秒間は試せなくなります</li>
+                            <li>暗証番号を5回続けて間違えると、30秒間は試せなくなります。</li>
                             <li>暗証番号を忘れた時はこのブラウザのサイトデータを消すと解除できます。ただし、座席表のキャッシュや記録も消えるので、先に「シートに保存」や、「設定・記録のバックアップ／復元」で書き出しておくのがお勧めです。</li>
                         </ul>
                     </details>
@@ -833,10 +833,10 @@
                     <details>
                         <summary>名簿</summary>
                         <ul>
-                            <li>名簿は「1.田中」「2.佐藤」のように番号と名前を「.」でつなぐと番号つきで表示されます</li>
+                            <li>名簿は「1.田中」「2.佐藤」のように番号と名前を「.」でつなぐと番号つきで表示されます。</li>
                             <li data-plugin="roster">「名簿を作る・直す」で、番号、名前、ふりがなを表の形で入れたり、今の名簿を直したりできます。行の入れ替え、番号のつけ直し、ふりがな順の並べ替えができます。間違えた時は「元に戻す」と「やり直す」が使えます。表計算ソフトの列は名前の欄に貼り付けると、まとめて入ります。「ひな形をダウンロード」で、表計算ソフトで書き込めるひな形も手に入ります。ふりがなの列も読み込みと書き出しに使えます。学校の名簿のように列がたくさんある表のファイルを読み込むと、番号、名前、ふりがなの列を選ぶ画面が開きます。Excelで保存した、Shift_JISのCSVも読めます。選んだ列は覚えておき、同じ見出しのファイルでは、次から自動で使います。</li>
                             <li data-plugin="roster">「名簿を貼り付ける」で、表計算ソフトの列やメモの名簿を、そのまま貼り付けられます。貼り付けると読み取った人数の他、同じ名前、同じ番号、飛んでいる番号、名前に空白が入っている行を、その場で教えてくれます。「CSV・TXTの名簿ファイルを読み込む」でも注意があれば知らせます。</li>
-                            <li>「CSV・TXTの名簿ファイルを読み込む」で、ファイルから読み込めます</li>
+                            <li>「CSV・TXTの名簿ファイルを読み込む」で、ファイルから読み込めます。</li>
                             <li>「番号名簿をクイック生成」に人数を入れて「生成」を押すと番号だけの名簿ができます。番号名簿の時は自動で座席が番号のみの表示になります。</li>
                             <li>クラス名を入れて「保存」を押すとクラスとして保存できます。保存したクラスは選ぶだけで呼び出せます。クラウドへは自動接続しません。</li>
                             <li>新しい学年になったら、「進級の切り替え」を押します。新しいクラスの名前を入れ、クラス替えがあるかを選ぶと、新しいクラスができます。前の学年のクラスとその記録はそのまま残ります。新しいクラスの記録はまっさらから始まります。</li>
@@ -854,7 +854,7 @@
                     </details>
                     <details>
                         <summary>席の指定と並べ方</summary>
-                        <p>座席をタップして、生徒を選ぶと「席のわがまま指定」を決められます</p>
+                        <p>座席をタップして、生徒を選ぶと「席のわがまま指定」を決められます。</p>
                         <ul>
                             <li><strong>絶対固定</strong>：その席に固定します。</li>
                             <li><strong>行／列</strong>：その行・列の中でランダムに座ります。</li>
@@ -865,7 +865,7 @@
                         <ul>
                             <li>「座席設定」の「前回までと同じ席・同じ隣を避ける」をONにすると席替えの履歴をもとに前と同じ席や、前に隣だった人とまた隣になるのをできるだけ避けます。隣は上下左右です。名簿で席を指定した人は、動かせないので対象外です。</li>
                             <li>「座席設定」の「近くに置く設定」で2人を登録すると席替えのたびにその2人がなるべく、斜めも含めて隣になります。支援が必要な子と頼れる子、見えにくい子と前の席の子などに使えます。席の指定がある人は動かせないので、近くにできないこともあります。</li>
-                            <li>離す設定、近くに置く設定、前回と同じ席や隣を避ける設定が、全ては守れない時は「座席設定」の「条件がぶつかった時に先に守るもの」で、どれを優先するかを選べます</li>
+                            <li>離す設定、近くに置く設定、前回と同じ席や隣を避ける設定が、全ては守れない時は「座席設定」の「条件がぶつかった時に先に守るもの」で、どれを優先するかを選べます。</li>
                             <li>「離す設定」で2人を登録すると席替えのたびにその2人がなるべく隣にならないようにします。「近くに置く設定」と同じ2人は登録できません。</li>
                         </ul>
                     </details>
@@ -882,7 +882,7 @@
                             <li>「班の表示と色」の「班の番号と模様も表示する」をONにすると班分けカラーの座席に班の番号と模様が付きます。色が見分けにくい人にも、班が伝わります。出す場所は「班の番号と模様を出す場所」で選べます。座席表の他、プレビュー、発表モード、印刷・画像保存にも入れられます。印刷・画像保存の画面では、「班の色、番号、模様を入れる」で、その場でも切り替えられます。</li>
                             <li>「座席の見え方」の「座席の文字の大きさ」で、座席の文字を大きめやとても大きいに変えられます。電子黒板で遠くから見る時に使います。文字の大きさは「普通」の1.2倍と1.4倍になります。座席の横幅は変わらないので、長い名前は、2行に分けて表示します。「座席を番号のみで巨大表示する」をオンにした時はこの設定に関わらず、座席の横幅はそのままで、数字が一番大きくなります。</li>
                             <li>「テーマと背景」の「端末がダークモードの時は、自動でダークモードにする」をONにすると端末がダークモードの間は、選んだテーマの代わりにダークモードで表示します。端末が元に戻ると選んだテーマに戻ります。</li>
-                            <li>「座席のズーム」を使うと座席全体を大きくしたり、小さくしたりできます</li>
+                            <li>「座席のズーム」を使うと座席全体を大きくしたり、小さくしたりできます。</li>
                             <li>画面の上のタイトルは「画面のタイトル」の「画面の上のタイトル」で、好きな言葉に変えられます。空にすると「席替えし太郎」に戻ります。長いタイトルは入りきらない時に左右にゆっくり動いて、全部読めます。「タイトルを表示する」をOFFにするとタイトルが消えて、座席表の場所が広がります。</li>
                             <li>座席の大きさは画面に合わせて自動で決まります。画面の幅が900px以上のパソコンや電子黒板では、余っている場所に合わせて、座席と文字が大きくなります。狭い画面では座席が小さくなって、全体が収まります。</li>
                             <li>スマホなど、狭い画面では上のボタンが折り返して並びます。座席表も画面の幅に合わせて小さくなります。</li>
@@ -896,7 +896,7 @@
                             <li>「自分で止めるスロット」は、列ごとにバラバラの速さで回り続けます。座席表の下の赤いボタンを押した列だけが止まります。押さなくても、30秒以内に残りの列が左から自動で止まります。キーボードで列の文字キーを押しても止められます。この演出は「毎回ランダム」には入りません。</li>
                             <li>「▶ 席順を変えずに演出を試す」を押すと席順を変えずに選んだ演出だけを確かめられます。演出の効果音は「演出に効果音を付ける」で切り替えられます。「完全サイレントモード」がONの間は鳴りません。選んだ演出は次に開いた時も覚えています。</li>
                             <li>「席替えの演出」の「詳しい設定」で、「お気に入り」に演出を入れると「毎回ランダム」が「お気に入りからランダム」に変わります。「マイ演出」には演出・速さ・効果音をまとめて、名前を付けて保存できます。</li>
-                            <li>「毎回ランダムで選ぶ範囲」で、「基本・定番だけ」「激しい・ダイナミックだけ」「個性的・特殊だけ」を選べます</li>
+                            <li>「毎回ランダムで選ぶ範囲」で、「基本・定番だけ」「激しい・ダイナミックだけ」「個性的・特殊だけ」を選べます。</li>
                             <li>「毎回ランダム」は、前回と同じ演出が続けて出ません。端末の「視差効果を減らす」設定がONの場合はどの演出も短いフェードになります。</li>
                             <li>「スロット」は、全体が回って、左の列から1列ずつ止まります。「ドラムロール」は、だんだん加速して、一瞬の静けさの後、ドン！と一斉に決まります。「バウンド」はボールのようにはずみ、「振り子」は上の辺から揺れて止まります。「コイン」はくるくる回って止まり、「カーテン」は中央から左右へ開きます。「スキャン」は上から下へ光が走り、「氷」は震えてとけて現れます。「レインボー」は虹色に光りながら現れます。</li>
                             <li>「前の席から移動」は、名前が前の席から新しい席へ滑って移動します。「うずまき」は中心から渦を巻いて現れ、「シャボン玉」はふわふわ浮かんで弾けます。「カードディール」はカードを配るように飛んできて、「花火」は下から打ち上がって開きます。「ドミノ」はドミノのように立ち上がります。</li>
@@ -1058,7 +1058,7 @@
             </div>
             <div id="modalYaochoShowFixedSection" style="border-top: 1px solid var(--seat-border); padding-top: 12px; margin-bottom: 16px;">
                 <label class="chart-opt"><input type="checkbox" id="modalYaochoShowFixedToggle"><span style="font-weight: bold; font-size: 13px;">八百長中も指定席として表示</span></label>
-                <p style="font-size: 12px; color: var(--text-sub); margin: 6px 0 0; line-height: 1.6;">この席だけ、八百長モード中でも「固定済み」として表示します</p>
+                <p style="font-size: 12px; color: var(--text-sub); margin: 6px 0 0; line-height: 1.6;">この席だけ、八百長モード中でも「固定済み」として表示します。</p>
             </div>
             <div id="modalReasonSection" style="border-top: 1px solid var(--seat-border); padding-top: 12px; margin-bottom: 16px; display: none;">
                 <label for="modalReasonInput" class="input-label" style="color: var(--lbl-orange);">固定する理由のメモ：</label>
@@ -1099,7 +1099,7 @@
     <div data-plugin="timer" id="stepSetModalOverlay" class="modal-overlay" style="display: none;">
         <div class="modal-content" style="max-width: 460px; width: 95%;">
             <h4 style="color: var(--lbl-purple);">ステップタイマーの作成・編集</h4>
-            <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 12px; line-height: 1.5;">「説明5分 → 作業15分 → まとめ5分」のように順番に進む時間割を保存できます</p>
+            <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 12px; line-height: 1.5;">「説明5分 → 作業15分 → まとめ5分」のように順番に進む時間割を保存できます。</p>
             <label for="stepSetEditSelect" class="input-label">編集するステップ：</label>
             <select id="stepSetEditSelect" onchange="selectStepSetForEdit(this.value)"></select>
             <label for="stepSetNameInput" class="input-label" style="margin-top: 10px;">名前：</label>
@@ -1213,7 +1213,7 @@
             <div id="furiganaRows" class="furi-rows"></div>
             <details class="furi-bulk">
                 <summary>まとめて貼り付ける</summary>
-                <p style="font-size: 12px; color: var(--text-sub); margin: 6px 0; line-height: 1.5;">1行に1人ずつ、「田中太郎,たなかたろう」のように名前とふりがなを「,」か空白で区切って貼り付けてください</p>
+                <p style="font-size: 12px; color: var(--text-sub); margin: 6px 0; line-height: 1.5;">1行に1人ずつ、「田中太郎,たなかたろう」のように名前とふりがなを「,」か空白で区切って貼り付けてください。</p>
                 <textarea id="furiganaBulkInput" rows="4" placeholder="田中太郎,たなかたろう&#10;佐藤花子,さとうはなこ"></textarea>
                 <button type="button" onclick="applyFuriganaBulk()" class="btn-secondary btn-compact" style="width: auto; padding: 6px 12px; font-size: 12px;">⬆️ 上の一覧に入れる</button>
             </details>
@@ -1557,7 +1557,7 @@
             </div>
 
             <div style="border-top: 1px solid var(--seat-border); padding-top: 14px;">
-            <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 14px; line-height: 1.5;">事前に座席を仕込んでおくと、「席替え」を押した時に見た目はいつも通りランダムに見えて、実際は仕込んでおいた結果になります</p>
+            <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 14px; line-height: 1.5;">事前に座席を仕込んでおくと、「席替え」を押した時に見た目はいつも通りランダムに見えて、実際は仕込んでおいた結果になります。</p>
             <div data-plugin="yaocho" class="switch-container" style="margin-bottom: 14px;">
                 <label class="switch"><input type="checkbox" id="yaochoModeToggle" onchange="toggleYaochoMode()"><span class="slider"></span></label>
                 <span class="switch-label" style="color: #d97706; font-weight: bold;">八百長モード</span>
@@ -1566,7 +1566,7 @@
                 <label class="switch"><input type="checkbox" id="yaochoShowFixedToggle" onchange="toggleYaochoShowFixed()"><span class="slider"></span></label>
                 <span class="switch-label" style="font-weight: bold;">八百長中も指定席を表示</span>
             </div>
-            <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 14px; line-height: 1.6;">ONにすると八百長モード中でも座席メニューや名簿で席を指定した生徒を、その指定席に座らせて「固定済み」として表示します</p>
+            <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 14px; line-height: 1.6;">ONにすると八百長モード中でも座席メニューや名簿で席を指定した生徒を、その指定席に座らせて「固定済み」として表示します。</p>
             <p data-plugin="yaocho" id="yaochoStatusText" style="font-size: 13px; color: var(--text-main); font-weight: bold; margin: 0 0 8px;">仕込み結果：未保存</p>
             <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 14px; line-height: 1.6;">今、座席表に表示されている配置をそのまま仕込み結果として保存します。先に座席をクリックするなどして、仕込みたい配置に整えてから押してください。</p>
             <button data-plugin="yaocho" onclick="saveYaochoResult()" class="btn-secondary btn-tint-amber" style="width: 100%; padding: 10px 16px; font-size: 13px; border-radius: 8px; margin: 0 0 8px; background-color: #d97706; color: white;">💾 今の配置を仕込み結果として保存</button>
@@ -1575,13 +1575,13 @@
 
             <div data-plugin="reasons" style="border-top: 1px solid var(--seat-border); padding-top: 14px; margin-bottom: 14px;">
                 <label style="font-size: 12px; font-weight: bold; color: #d97706; display: block; margin-bottom: 6px;">固定理由メモ</label>
-                <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 10px; line-height: 1.6;">座席の固定やわがまま指定に付けたメモを、まとめて確認・編集できます</p>
+                <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 10px; line-height: 1.6;">座席の固定やわがまま指定に付けたメモを、まとめて確認・編集できます。</p>
                 <button type="button" onclick="openMemoListModal()" class="btn-secondary btn-compact" style="width: auto; padding: 6px 12px; font-size: 12px; background-color: #d97706;">📒 メモの一覧を開く</button>
             </div>
 
             <div style="border-top: 1px solid var(--seat-border); padding-top: 14px;">
                 <label style="font-size: 12px; font-weight: bold; color: #f43f5e; display: block; margin-bottom: 6px;">離す設定</label>
-                <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 10px; line-height: 1.6;">席替えのたびにこの2人が斜めも含めて隣や同じ班にならないよう自動で調整します</p>
+                <p style="font-size: 12px; color: var(--text-sub); margin: 0 0 10px; line-height: 1.6;">席替えのたびにこの2人が斜めも含めて隣や同じ班にならないよう自動で調整します。</p>
                 <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 6px;">
                     <select id="separationSelectA" style="flex: 1; min-width: 0;"></select>
                     <span style="flex-shrink: 0; font-size: 12px; color: var(--text-sub);">↔</span>
@@ -1667,7 +1667,7 @@
             <div id="rmSummary" class="rp-summary"></div>
             <ul id="rmIssues" class="rp-issues"></ul>
             <div id="rmPreview" class="rp-preview"></div>
-            <p class="config-note" data-keep="1">この名簿にすると今の名簿は置き換わります</p>
+            <p class="config-note" data-keep="1">この名簿にすると今の名簿は置き換わります。</p>
             <div class="modal-btn-row">
                 <button type="button" onclick="closeRosterMapModal()" class="btn-secondary">キャンセル</button>
                 <button type="button" onclick="applyRosterMap()" class="btn-connect-mini" id="btnRosterMapGo" disabled>✅ この名簿にする</button>
@@ -1718,7 +1718,7 @@
             <div id="rosterPasteSummary" class="rp-summary"></div>
             <ul id="rosterPasteIssues" class="rp-issues"></ul>
             <div id="rosterPastePreview" class="rp-preview"></div>
-            <p class="config-note" data-keep="1">この名簿にすると今の名簿は置き換わります</p>
+            <p class="config-note" data-keep="1">この名簿にすると今の名簿は置き換わります。</p>
             <div class="modal-btn-row">
                 <button type="button" onclick="closeRosterPasteModal()" class="btn-secondary">キャンセル</button>
                 <button type="button" onclick="applyRosterPaste()" class="btn-connect-mini" id="btnRosterPasteGo" disabled>✅ この名簿にする</button>
@@ -1736,7 +1736,7 @@
             <div class="input-label" style="margin-top: 10px;">名簿：</div>
             <label class="chart-opt" style="display: flex; gap: 8px; align-items: flex-start; text-align: left; margin: 6px 0;"><input type="radio" name="promoteRoster" value="reset" checked style="width: auto; margin-top: 4px;"><span>クラス替えがある。名簿は空にして、新しい名簿を入れます。</span></label>
             <label class="chart-opt" style="display: flex; gap: 8px; align-items: flex-start; text-align: left; margin: 6px 0;"><input type="radio" name="promoteRoster" value="keep" style="width: auto; margin-top: 4px;"><span>クラス替えがない。名簿はそのまま引き継ぎます。</span></label>
-            <label class="chart-opt" style="display: flex; gap: 8px; align-items: flex-start; text-align: left; margin: 10px 0 4px;"><input type="checkbox" id="promoteArchiveOld" checked style="width: auto; margin-top: 4px;"><span>前のクラスを「去年度のクラス」にまとめます</span></label>
+            <label class="chart-opt" style="display: flex; gap: 8px; align-items: flex-start; text-align: left; margin: 10px 0 4px;"><input type="checkbox" id="promoteArchiveOld" checked style="width: auto; margin-top: 4px;"><span>前のクラスを「去年度のクラス」にまとめます。</span></label>
             <p class="config-note" data-keep="1">どちらも新しいクラスの記録はまっさらから始まります。席の履歴、指名の記録、統計の保存は前のクラスに残ります。お休みの印と指名から外す設定は外します。座席の列数と行数、班の設定は引き継ぎます。「クラス替えがある」を選ぶと離す設定、近くに置く設定、班の手動の色分けも消えます。離す設定と近くに置く設定は、クラスごとに分けて持っていないので、前のクラスに戻っても消えたままです。</p>
             <div class="modal-btn-row">
                 <button onclick="closePromoteModal()" class="btn-secondary">キャンセル</button>

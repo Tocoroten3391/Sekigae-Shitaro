@@ -456,7 +456,7 @@ function musicIsAudioFile(f) {
 function musicTrackName(f) { return String(f.name || "曲").replace(/\.[^.]+$/, ""); }
 async function musicAddFiles(fileList) {
     const files = Array.from(fileList || []).filter(musicIsAudioFile).sort((a, b) => (a.webkitRelativePath || a.name).localeCompare(b.webkitRelativePath || b.name, "ja", { numeric: true }));
-    if (!files.length) { showToast("音楽のファイルが見つかりませんでした", "error"); return; }
+    if (!files.length) { showToast("音楽のファイルが見つかりませんでした。", "error"); return; }
     let added = 0, saveFailed = false;
     const newOnes = [];
     const wasEmpty = musicTracks.length === 0;
@@ -471,9 +471,9 @@ async function musicAddFiles(fileList) {
     }
     musicRenderList();
     if (wasEmpty && musicTracks.length && musicIndex < 0) { musicIndex = 0; musicRenderNow(); }
-    if (added === 0) showToast("すでに入っている曲でした", "info");
+    if (added === 0) showToast("すでに入っている曲でした。", "info");
     else if (saveFailed) showToast(`${added}曲を追加しました。このパソコンには保存できなかったので、今回だけ使えます。`, "info");
-    else showToast(`${added}曲を追加しました`, "success");
+    else showToast(`${added}曲を追加しました。`, "success");
     if (added) {
         await musicEnrichPending();
         musicNormAnalyzeAll();
@@ -508,7 +508,7 @@ function musicClearAll() {
     musicPlSave(musicPlLoad().map(p => Object.assign({}, p, { ids: [] })));
     musicRenderList();
     musicRenderNow();
-    showToast("曲を全て消しました", "success");
+    showToast("曲を全て消しました。", "success");
 }
 
 // ---- 再生
@@ -554,7 +554,7 @@ function musicPlayIndex(i) {
         musicUpdateUi();
         if (err && err.name === "AbortError") return;      // すぐに別の曲へ切り替えた時は、エラーにしない
         if (err && err.name === "NotAllowedError") showToast("再生できませんでした。もう一度、再生ボタンを押してください。", "error");
-        else showToast(`「${t.name}」を再生できませんでした`, "error");
+        else showToast(`「${t.name}」を再生できませんでした。`, "error");
     }); else ok();
     musicRenderList();
     musicRenderNow();
@@ -605,7 +605,7 @@ function musicPrev() {
 }
 function musicIsPlaying() { return !!(musicAudio && musicAudio.src && !musicAudio.paused && !musicAudio.ended); }
 function musicToggle() {
-    if (!musicTracks.length) { showToast("まず、「曲を追加」から、音楽のファイルを入れてください", "info"); return; }
+    if (!musicTracks.length) { showToast("まず、「曲を追加」から、音楽のファイルを入れてください。", "info"); return; }
     if (musicIsPlaying()) {
         musicFade(0, MUSIC_FADE_MS, () => { try { musicAudio.pause(); } catch (e) { /* 何もしない */ } musicAudio.volume = musicVolume(); musicUpdateUi(); });
         return;
@@ -770,7 +770,7 @@ function musicUpdateBatchBtn() {
 }
 async function musicLookupBatch(list, auto) {
     if (musicBatchBusy) { musicBatchStop = true; return; }
-    if (musicOffline()) { if (!auto) showToast("オフラインモードの間は、ネットで調べられません", "info"); return; }
+    if (musicOffline()) { if (!auto) showToast("オフラインモードの間は、ネットで調べられません。", "info"); return; }
     const targets = list.filter(t => t.meta && !t.meta.looked && musicNeedsInfo(t.meta));
     if (!targets.length) { if (!auto) showToast("調べる曲はありません。曲の情報はそろっています。", "info"); return; }
     musicBatchBusy = true; musicBatchStop = false; musicUpdateBatchBtn();
@@ -899,7 +899,7 @@ function musicAlbRenderTargets() {
 function musicOpenAlbum(targets, seed) {
     musicAlb = { checked: new Set(targets.map(t => t.id)), initial: targets.map(t => t.id), album: null, songs: [], match: new Map(), cover: null };
     $id("musicAlbQ").value = seed || "";
-    $id("musicAlbMsg").textContent = "アルバム名や歌手名で探してください";
+    $id("musicAlbMsg").textContent = "アルバム名や歌手名で探してください。";
     $id("musicAlbCands").innerHTML = "";
     $id("musicAlbSel").textContent = "";
     $id("musicAlbOverwrite").checked = false;
@@ -913,14 +913,14 @@ async function musicAlbSearch() {
     const msg = $id("musicAlbMsg"), box = $id("musicAlbCands");
     if (musicOffline()) { msg.textContent = "オフラインモードの間は、ネットで調べられません。設定でオンラインモードにしてください。"; return; }
     const q = $id("musicAlbQ").value.trim();
-    if (!q) { msg.textContent = "アルバム名か歌手名を入れてください"; return; }
+    if (!q) { msg.textContent = "アルバム名か歌手名を入れてください。"; return; }
     const btn = $id("musicAlbSearchBtn");
     btn.disabled = true; msg.textContent = "ネットで調べています…"; box.innerHTML = "";
     try {
         const list = await musicItunesAlbums(q);
         if (!musicAlb) return;
         if (!list.length) { msg.textContent = "見つかりませんでした。アルバム名や歌手名を直して、もう一度調べてみてください。"; return; }
-        msg.textContent = "このアルバムだ、と思うものを選んでください";
+        msg.textContent = "このアルバムだ、と思うものを選んでください。";
         box.innerHTML = list.map((c, k) => `<button type="button" class="music-cand" data-k="${k}"><span class="music-cand-img">${c.thumb ? `<img src="${musicEsc(c.thumb)}" alt="" loading="lazy">` : "💿"}</span><span class="music-cand-text"><b>${musicEsc(c.name)}</b><small>${musicEsc(c.artist)}${c.year ? " ・ " + musicEsc(c.year) : ""}${c.count ? " ・ " + c.count + "曲" : ""}</small></span></button>`).join("");
         box._cands = list;
     } catch (e) {
@@ -1031,7 +1031,7 @@ async function musicEditSave() {
     await musicSaveMeta(t);
     musicCloseEdit();
     musicRefreshAll();
-    showToast("曲の情報を保存しました", "success");
+    showToast("曲の情報を保存しました。", "success");
 }
 async function musicEditSearch() {
     if (!musicEditing) return;
@@ -1039,14 +1039,14 @@ async function musicEditSearch() {
     const t = musicTracks.find(x => x.id === musicEditing.id);
     if (musicOffline()) { msg.textContent = "オフラインモードの間は、ネットで調べられません。設定でオンラインモードにしてください。"; return; }
     const q = musicBuildQuery($id("musicFTitle").value.trim(), $id("musicFArtist").value.trim(), t ? t.name : "");
-    if (!q) { msg.textContent = "曲名か歌手名を入れてください"; return; }
+    if (!q) { msg.textContent = "曲名か歌手名を入れてください。"; return; }
     const sb = $id("musicSearchBtn");
     sb.disabled = true; msg.textContent = "ネットで調べています…"; box.innerHTML = "";
     try {
         const list = await musicItunesSearch(q);
         if (!musicEditing) return;
         if (!list.length) { msg.textContent = "見つかりませんでした。曲名や歌手名を直して、もう一度調べてみてください。"; return; }
-        msg.textContent = "これだ、と思うものを選んでください";
+        msg.textContent = "これだ、と思うものを選んでください。";
         box.innerHTML = list.map((c, k) => `<button type="button" class="music-cand" data-k="${k}"><span class="music-cand-img">${c.thumb ? `<img src="${musicEsc(c.thumb)}" alt="" loading="lazy">` : "♪"}</span><span class="music-cand-text"><b>${musicEsc(c.title)}</b><small>${musicEsc([c.artist, c.album].filter(Boolean).join(" ・ "))}${c.year ? "（" + musicEsc(c.year) + "）" : ""}</small></span></button>`).join("");
         box._cands = list;
     } catch (e) {
@@ -1363,7 +1363,7 @@ function musicSpinStop() {
     }, 30);
 }
 function musicSpinStart() {
-    if (!musicTracks.length) { showToast("まず、曲を追加してください", "info"); return; }
+    if (!musicTracks.length) { showToast("まず、曲を追加してください。", "info"); return; }
     if (!musicAudio.src || musicIndex < 0) { musicToggle(); return; }
     if (musicIsPlaying()) return;
     musicClearSpin();
@@ -1410,7 +1410,7 @@ function musicLoopIn() {
 function musicLoopOut() {
     if (!musicAudio || !musicAudio.src || musicLoop.a === null) return;
     const b = musicAudio.currentTime;
-    if (b < musicLoop.a + 0.2) { showToast("OUT は、IN より、あとの場所にしてください", "info"); return; }
+    if (b < musicLoop.a + 0.2) { showToast("OUT は、IN より、あとの場所にしてください。", "info"); return; }
     musicLoop.b = b; musicLoop.on = true;
     musicLoopStartTimer(); musicLoopUpdateUi();
 }
@@ -1434,7 +1434,7 @@ function musicCuesRefreshUi() {
 }
 function musicCue(n, clear) {
     const t = musicTracks[musicIndex];
-    if (!t || !musicAudio || !musicAudio.src) { showToast("曲を選んで再生してから使ってください", "info"); return; }
+    if (!t || !musicAudio || !musicAudio.src) { showToast("曲を選んで再生してから使ってください。", "info"); return; }
     if (!t.meta) t.meta = musicEmptyMeta();
     const cues = musicCuesOf(t).slice();
     while (cues.length < 4) cues.push(null);
@@ -1517,7 +1517,7 @@ const MUSIC_PADS = {
 function musicPad(kind) {
     const p = MUSIC_PADS[kind];
     const e = musicEngineEnsure();
-    if (!p || !e) { if (!e) showToast("この ブラウザでは、効果音を鳴らせませんでした", "error"); return; }
+    if (!p || !e) { if (!e) showToast("この ブラウザでは、効果音を鳴らせませんでした。", "error"); return; }
     try { p.play(e.ctx, e.ctx.currentTime + 0.02); } catch (err) { return; }
     // 効果音の間は、音楽を小さくする
     const t = e.ctx.currentTime;
@@ -1595,7 +1595,7 @@ function musicRenderList() {
     const ul = $id("musicList");
     if (!ul) return;
     musicRenderScenes();
-    if (!musicTracks.length) { ul.innerHTML = '<li class="music-empty">曲はまだありません</li>'; return; }
+    if (!musicTracks.length) { ul.innerHTML = '<li class="music-empty">曲はまだありません。</li>'; return; }
     const vis = new Set(musicQueue());
     if (!vis.size) { ul.innerHTML = '<li class="music-empty">この場面には曲が入っていません。「✎ この場面を直す」で入れてください。</li>'; return; }
     const mode = musicGroupMode();
@@ -1918,7 +1918,7 @@ function musicSceneClick(id) {
 function musicPlTrackRows() {
     const box = $id("musicPlTracks");
     if (!box || !musicPlEditing) return;
-    box.innerHTML = musicTracks.map(t => `<label class="music-alb-row"><input type="checkbox" data-id="${musicEsc(t.id)}"${musicPlEditing.ids.has(t.id) ? " checked" : ""}><span class="music-alb-text"><span class="music-alb-name">${musicEsc(musicTitle(t))}</span>${musicSubText(t) ? `<small>${musicEsc(musicSubText(t))}</small>` : ""}</span></label>`).join("") || '<div class="music-empty">曲はまだありません</div>';
+    box.innerHTML = musicTracks.map(t => `<label class="music-alb-row"><input type="checkbox" data-id="${musicEsc(t.id)}"${musicPlEditing.ids.has(t.id) ? " checked" : ""}><span class="music-alb-text"><span class="music-alb-name">${musicEsc(musicTitle(t))}</span>${musicSubText(t) ? `<small>${musicEsc(musicSubText(t))}</small>` : ""}</span></label>`).join("") || '<div class="music-empty">曲はまだありません。</div>';
 }
 function musicOpenPlEdit(id) {
     const pl = id ? musicPlLoad().find(p => p.id === id) : null;
@@ -1947,7 +1947,7 @@ function musicPlEditSave() {
     musicBag = [];
     musicClosePlEdit();
     musicRefreshAll();
-    showToast(`場面「${name}」を保存しました`, "success");
+    showToast(`場面「${name}」を保存しました。`, "success");
 }
 function musicPlEditDelete() {
     if (!musicPlEditing || !musicPlEditing.id) return;
@@ -2098,7 +2098,7 @@ function musicPersistTrack(t) {
     return musicDbRun("readwrite", (st, ms) => { st.put({ id: t.id, name: t.name, size: t.size, blob: t.blob, order: t.order }); if (t.meta) ms.put(musicMetaRecord(t)); });
 }
 async function musicExportBackup() {
-    if (!musicTracks.length && !musicPads.length) { showToast("書き出す曲や効果音がありません", "info"); return; }
+    if (!musicTracks.length && !musicPads.length) { showToast("書き出す曲や効果音がありません。", "info"); return; }
     const btn = $id("musicExportBtn");
     if (btn) btn.disabled = true;
     try {
@@ -2126,7 +2126,7 @@ async function musicExportBackup() {
         setTimeout(() => URL.revokeObjectURL(a.href), 120000);
         const what = `${musicTracks.length}曲と効果音${musicPads.length}個`;
         musicSetStatus(`${what}を、書き出しました。`);
-        showToast(`${what}を、バックアップのファイルに書き出しました`, "success");
+        showToast(`${what}を、バックアップのファイルに書き出しました。`, "success");
     } catch (e) {
         musicSetStatus("");
         showToast(e && e.message === "too big" ? "大きすぎて、書き出せませんでした。曲を減らして、もう一度やってください。" : "書き出しに失敗しました。", "error");
@@ -2140,7 +2140,7 @@ async function musicImportBackup(file) {
         const mf = entries.get("manifest.json");
         m = JSON.parse(await file.slice(mf.start, mf.start + mf.csize).text());
         if (!m || m.app !== "sekigae-music" || !Array.isArray(m.tracks)) throw new Error("format");
-    } catch (e) { showToast("このファイルは席替えし太郎の音楽バックアップではないようです", "error"); return; }
+    } catch (e) { showToast("このファイルは席替えし太郎の音楽バックアップではないようです。", "error"); return; }
     const padCount = Array.isArray(m.pads) ? m.pads.length : 0;
     if (!confirm(`このバックアップから、${m.tracks.length}曲と効果音${padCount}個を読み込みます。同じ曲（名前と大きさが同じ）は、そのままにします。場面と設定はバックアップの内容になります。よろしいですか？`)) return;
     const idMap = new Map();
@@ -2195,7 +2195,7 @@ async function musicImportBackup(file) {
     musicSyncControls();
     musicRefreshAll();
     musicSetStatus("");
-    showToast(`バックアップから、${added}曲と効果音${padsAdded}個を読み込みました`, "success");
+    showToast(`バックアップから、${added}曲と効果音${padsAdded}個を読み込みました。`, "success");
     if (musicNormOn()) musicNormAnalyzeAll();
     musicEngineApplyEq();
 }
@@ -2521,7 +2521,7 @@ async function musicPadPlay(id, opts) {
     const p = musicPadFind(id);
     if (!p) return;
     const e = musicEngineEnsure();
-    if (!e) { showToast("この ブラウザでは、効果音を鳴らせませんでした", "error"); return; }
+    if (!e) { showToast("この ブラウザでは、効果音を鳴らせませんでした。", "error"); return; }
     const mode = (opts && opts.mode) || p.mode;
     if (mode === "loop" && p.voices.size && !(opts && opts.test)) { musicPadStopOne(p); return; }
     if (mode === "once" && p.voices.size) musicPadStopOne(p);
@@ -2550,7 +2550,7 @@ async function musicPadPlay(id, opts) {
 }
 async function musicPadAdd(fileList) {
     const files = Array.from(fileList || []).filter(musicIsAudioFile).sort((a, b) => a.name.localeCompare(b.name, "ja", { numeric: true }));
-    if (!files.length) { showToast("音のファイルが見つかりませんでした", "error"); return; }
+    if (!files.length) { showToast("音のファイルが見つかりませんでした。", "error"); return; }
     let added = 0, big = 0, full = false, dup = 0, bad = 0;
     for (const f of files) {
         if (musicPads.length >= MUSIC_PAD_MAX) { full = true; break; }
@@ -2582,7 +2582,7 @@ function musicPadClearAll() {
     musicPadDbRun("readwrite", st => st.clear());
     musicPadRender();
     musicLinkRefreshOptions();
-    showToast("効果音を全て消しました", "success");
+    showToast("効果音を全て消しました。", "success");
 }
 // ---- 効果音を直す
 function musicPadEditFill() {
@@ -2616,7 +2616,7 @@ async function musicPadEditSave() {
     musicClosePadEdit();
     musicPadRender();
     musicLinkRefreshOptions();
-    showToast("効果音を保存しました", "success");
+    showToast("効果音を保存しました。", "success");
 }
 function musicPadEditDelete() {
     const ed = musicPadEditing, p = ed && musicPadFind(ed.id);
@@ -2760,7 +2760,7 @@ function musicBuild() {
         <input type="file" id="musicImportInput" accept=".zip,application/zip" hidden>
         <input type="file" id="musicFileInput" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.opus,.flac" multiple hidden>
         <input type="file" id="musicFolderInput" webkitdirectory multiple hidden>
-        <p class="music-note" id="musicNote">音楽のファイルはここにドラッグしても追加できます</p>
+        <p class="music-note" id="musicNote">音楽のファイルはここにドラッグしても追加できます。</p>
         </div>
         <div id="musicEqView" hidden>
             <canvas class="music-spec" width="600" height="72" aria-hidden="true"></canvas>
@@ -2769,7 +2769,7 @@ function musicBuild() {
             <div class="music-eq-scale"><span>低い音</span><span>高い音</span></div>
             <div class="music-eq-pre"><span>全体の音量</span><input type="range" id="musicEqPre" min="-12" max="12" step="1" value="0" aria-label="全体の音量の調整"><span id="musicEqPreVal">0 dB</span></div>
             <div class="music-edit-actions"><button type="button" class="music-btn" id="musicEqReset">リセット</button></div>
-            <p class="music-note" id="musicEqNote">上げすぎて音がわれないように、自動で抑えます</p>
+            <p class="music-note" id="musicEqNote">上げすぎて音がわれないように、自動で抑えます。</p>
         </div>
         <div id="musicDjView" hidden>
             <canvas class="music-spec" width="600" height="72" aria-hidden="true"></canvas>
@@ -2784,7 +2784,7 @@ function musicBuild() {
                 <div class="music-dj-row"><button type="button" class="music-btn" id="musicSpinStop">レコードストップ</button><button type="button" class="music-btn" id="musicSpinStart">スピンアップ</button></div></section>
             <section class="music-dj-sec"><h4>ループ</h4>
                 <div class="music-dj-row"><button type="button" class="music-btn" id="musicLoopIn">IN</button><button type="button" class="music-btn" id="musicLoopOut">OUT</button><button type="button" class="music-btn" id="musicLoop4">4秒</button><button type="button" class="music-btn" id="musicLoopClear" disabled>解除</button></div>
-                <p class="music-status" id="musicLoopInfo">ループはしていません</p></section>
+                <p class="music-status" id="musicLoopInfo">ループはしていません。</p></section>
             <section class="music-dj-sec"><h4>キュー</h4>
                 <div class="music-dj-row"><button type="button" class="music-btn" id="musicToStart">頭</button>${[0, 1, 2, 3].map(n => `<button type="button" class="music-btn music-cue" data-cue="${n}">${n + 1}：－</button>`).join("")}</div>
                 <p class="music-status">空のキューを押すと今の場所を覚えます。覚えたキューを押すとそこへ飛びます。消すには、Shift を押しながら押します。</p></section>
@@ -2801,7 +2801,7 @@ function musicBuild() {
                 <div class="music-dj-row"><span>音量</span><input type="range" id="musicPadMaster" min="0" max="100" step="1" value="100" aria-label="効果音ぜんたいの音量"><span class="music-dj-val" id="musicPadMasterVal">100%</span></div>
                 <label class="music-alb-over" id="musicPadDuckLabel"><input type="checkbox" id="musicPadDuckOn"><span>鳴らす間は音楽を小さくする</span></label>
                 <label class="music-alb-over" id="musicPadKeysLabel"><input type="checkbox" id="musicPadKeysOn"><span>数字キーで鳴らす</span></label></section>
-            <p class="music-note" id="musicPadNote">音のファイルはここにドラッグしても追加できます</p>
+            <p class="music-note" id="musicPadNote">音のファイルはここにドラッグしても追加できます。</p>
         </div>
         <div id="musicLinkView" hidden>
             <section class="music-dj-sec"><h4 id="musicSeatHead">🪑 席替えの演出と連動</h4>
@@ -2881,7 +2881,7 @@ function musicBuild() {
         $id("musicSeatHead").appendChild(makeInfoTip("スロット、ストップボタン式スロット、ドラムロールは演出が終わった時に効果音が鳴ります。他の演出は下の秒数の後に鳴ります。演出なしの時はすぐに鳴ります。"));
         $id("musicStopHead").appendChild(makeInfoTip("曲が流れている間、画面で名前が高速に入れ替わります。「STOP！」を押すか、Spaceキーを押した時に出ていた人が、指名されます。休みの人は出ません。この指名は指名機能の履歴には残りません。"));
         $id("musicPadDuckLabel").appendChild(makeInfoTip("効果音を鳴らしている間だけ、音楽を小さくします。くり返す効果音は小さくしません。"));
-        $id("musicPadKeysLabel").appendChild(makeInfoTip("オンの間は画面の入力欄の外で数字キーの 1 から 0 を押すと、左から10個までの効果音が鳴ります"));
+        $id("musicPadKeysLabel").appendChild(makeInfoTip("オンの間は画面の入力欄の外で数字キーの 1 から 0 を押すと、左から10個までの効果音が鳴ります。"));
         $id("musicPadNote").appendChild(makeInfoTip("取り込んだ効果音はこのパソコンのブラウザの中に残ります。1つ10MBまで長さ2分までです。40個まで入れられます。鳴らし方は各効果音の「✎」で選べます。席替えの結果の効果音にも使えます。"));
         $id("musicNormLabel").appendChild(makeInfoTip("大きすぎる曲だけを小さくします。小さい曲を大きくはしません。最初に曲を調べるので少し時間がかかります。大きすぎるファイルは調べません。"));
     }

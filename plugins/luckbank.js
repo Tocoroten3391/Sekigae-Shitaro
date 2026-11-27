@@ -181,13 +181,13 @@ function luckUndoLast() {
     list.shift();
     luckSaveEntries(list);
     renderLuckModal();
-    showToast("最後の記録を取り消しました", "success");
+    showToast("最後の記録を取り消しました。", "success");
 }
 function luckClearAll() {
     if (!confirm("このクラスの、運の貯金の記録を全て消します。よろしいですか？")) return;
     luckSaveEntries([]);
     renderLuckModal();
-    showToast("運の貯金の記録を全て消しました", "success");
+    showToast("運の貯金の記録を全て消しました。", "success");
 }
 
 const LUCK_HTML = `

@@ -115,7 +115,7 @@ function switchRecordClass(newId) {
     activeClassId = newId;
     lsSet("active_class_id", newId);
     reloadRecordsIntoMemory();
-    if (adopted) showToast(`これまでの記録をクラス「${newId}」の記録として引き継ぎました`, "success");
+    if (adopted) showToast(`これまでの記録をクラス「${newId}」の記録として引き継ぎました。`, "success");
     return true;
 }
 
@@ -149,7 +149,7 @@ function endTrialFromBar() {
     try { localStorage.removeItem("seat_undo_v1"); } catch (error) { /* そのまま続ける */ }
     try { localStorage.removeItem(WORK_STATE_KEY); } catch (error) { /* そのまま続ける */ }
     renderClassroom("none");
-    showToast("サンプルのクラスを終わりました", "success");
+    showToast("サンプルのクラスを終わりました。", "success");
 }
 
 // ==========================================
@@ -177,7 +177,7 @@ function openPromoteModal() {
         return;
     }
     const from = $id("promoteFromText");
-    if (from) from.textContent = `今のクラス「${activeClassId}」から、新しい学年のクラスを作ります`;
+    if (from) from.textContent = `今のクラス「${activeClassId}」から、新しい学年のクラスを作ります。`;
     const inp = $id("promoteNewName");
     if (inp) inp.value = suggestNextGradeName(activeClassId);
     const ra = document.querySelector('input[name="promoteRoster"][value="reset"]');
@@ -294,7 +294,7 @@ function adoptRecordsForSavedClass(name) {
             lsSet("legacy_records_pending", "0");
             try { localStorage.removeItem("trial_return_class"); } catch (error) { /* そのまま続ける */ }
             reloadRecordsIntoMemory();
-            showToast(`今の記録をクラス「${name}」の記録にしました`, "success");
+            showToast(`今の記録をクラス「${name}」の記録にしました。`, "success");
             return;
         }
         lsSet("legacy_records_pending", "0");

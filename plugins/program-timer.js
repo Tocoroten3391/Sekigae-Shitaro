@@ -218,11 +218,11 @@ function ptRenderToday() {
     const label = { pre: "予鈴", start: "始まり", end: "終わり" };
     box.innerHTML = evs.length
         ? evs.map(ev => '<span class="pt-ev pt-ev-' + ev.kind + '">' + ptFmtSec(ev.sec) + " " + label[ev.kind] + (ev.kind === "pre" ? "" : "　" + ptEsc(ev.name)) + "</span>").join("")
-        : '<span class="config-note" data-keep="1">今日の曜日に合う時間割が、ありません</span>';
+        : '<span class="config-note" data-keep="1">今日の曜日に合う時間割が、ありません。</span>';
 }
 function ptTest(which) {
     try { initAudio(); } catch (e) { /* 何もしない */ }
-    if (typeof isSilentTestMode !== "undefined" && isSilentTestMode) { showToast("サイレントモードなので、音は鳴りません", "info"); return; }
+    if (typeof isSilentTestMode !== "undefined" && isSilentTestMode) { showToast("サイレントモードなので、音は鳴りません。", "info"); return; }
     if (which === "pre") ptPlay("ding", true);
     else ptPlay(which === "start" ? $id("ptStartSound").value : $id("ptEndSound").value, false);
 }
@@ -261,7 +261,7 @@ function ptReadEdit() {
 }
 function ptAddRow() {
     ptReadEdit();
-    if (ptEdit.rows.length >= 20) { showToast("時間は最大20個までです", "error"); return; }
+    if (ptEdit.rows.length >= 20) { showToast("時間は最大20個までです。", "error"); return; }
     const last = ptEdit.rows[ptEdit.rows.length - 1];
     const start = last && last.e ? ptFmtSec(ptSec(last.e) + 5 * 60) : "08:45";
     ptEdit.rows.push({ s: start, e: ptFmtSec(ptSec(start) + 45 * 60), n: (ptEdit.rows.length + 1) + "時間目" });
@@ -281,9 +281,9 @@ function ptApplyTemplate() {
 function ptSaveSet() {
     ptReadEdit();
     const rows = ptEdit.rows.filter(r => ptSec(r.s) >= 0).sort((a, b) => ptSec(a.s) - ptSec(b.s));
-    if (!rows.length) { showToast("始まりの時刻が入った時間を、1つ以上作ってください", "error"); return; }
-    if (rows.some(r => r.e && ptSec(r.e) <= ptSec(r.s))) { showToast("終わりの時刻は始まりより後にしてください", "error"); return; }
-    if (!ptEdit.days.length) { showToast("曜日を、1つ以上選んでください", "error"); return; }
+    if (!rows.length) { showToast("始まりの時刻が入った時間を、1つ以上作ってください。", "error"); return; }
+    if (rows.some(r => r.e && ptSec(r.e) <= ptSec(r.s))) { showToast("終わりの時刻は始まりより後にしてください。", "error"); return; }
+    if (!ptEdit.days.length) { showToast("曜日を、1つ以上選んでください。", "error"); return; }
     const set = { id: ptEditId || "pt_" + Date.now().toString(36), name: ptEdit.name, days: ptEdit.days, rows: rows };
     const at = ptData.sets.findIndex(s => s.id === set.id);
     if (at >= 0) ptData.sets[at] = set; else ptData.sets.push(set);
@@ -301,7 +301,7 @@ function ptDeleteSet() {
     ptSave();
     ptSelectSet("");
     ptRenderToday();
-    showToast("削除しました", "success");
+    showToast("削除しました。", "success");
 }
 
 const PT_CSS = `

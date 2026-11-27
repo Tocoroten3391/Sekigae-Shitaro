@@ -130,7 +130,7 @@ function diagRender() {
     const body = $id("diagBody");
     if (!body || diagBusy) return;
     const r = diagResult;
-    if (!r) { body.innerHTML = '<p class="config-note" data-keep="1">「診断する」を押すとこの端末での動きの速さを測ります</p>'; $id("diagCopyBtn").disabled = true; return; }
+    if (!r) { body.innerHTML = '<p class="config-note" data-keep="1">「診断する」を押すとこの端末での動きの速さを測ります。</p>'; $id("diagCopyBtn").disabled = true; return; }
     $id("diagCopyBtn").disabled = false;
     const card = (label, value, level, note) => '<div class="diag-card diag-' + level + '"><span class="diag-label">' + label + '</span><strong>' + value + '</strong><span class="diag-note">' + note + "</span></div>";
     const lvl = { good: "速い", mid: "普通", bad: "遅め", none: "測れませんでした" };
@@ -158,9 +158,9 @@ function diagCopy() {
         "描画の速さ：" + (r.frames ? r.frames.fps + " コマ/秒、カクつき " + r.frames.slow + " 回、最大 " + r.frames.worst + "ミリ秒" : "-"),
         "メモリ：" + (r.mem.heapMB !== null ? r.mem.heapMB + "MB" : "-") + "　端末：" + (r.mem.deviceGB ? r.mem.deviceGB + "GB" : "-") + "　CPUコア：" + (r.mem.cores || "-"),
         "使っている機能：" + r.plugins + "/" + r.pluginsAll + "　座席：" + r.seats + "席　保存データ：" + (r.storageKB === null ? "-" : r.storageKB + "KB") + "　軽量モード：" + (r.lite ? "オン" : "オフ")].join("\n");
-    const done = () => showToast("診断の結果をコピーしました", "success");
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => showToast("コピーできませんでした", "error"));
-    else showToast("コピーできませんでした", "error");
+    const done = () => showToast("診断の結果をコピーしました。", "success");
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => showToast("コピーできませんでした。", "error"));
+    else showToast("コピーできませんでした。", "error");
 }
 
 const DIAG_CSS = `

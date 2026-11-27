@@ -1546,7 +1546,7 @@ function uisClassMenuToggle() {
     const live = names.filter(n => !(presets[n] && presets[n].archived));
     const old = names.filter(n => presets[n] && presets[n].archived);
     live.forEach(n => menu.appendChild(mk(n)));
-    if (!names.length) { const d = document.createElement("div"); d.className = "uis-cm-head"; d.style.fontWeight = "600"; d.textContent = "保存されたクラスはありません"; menu.appendChild(d); }
+    if (!names.length) { const d = document.createElement("div"); d.className = "uis-cm-head"; d.style.fontWeight = "600"; d.textContent = "保存されたクラスはありません。"; menu.appendChild(d); }
     if (old.length) {
         const det = document.createElement("details");
         det.open = old.includes(cur);
@@ -1888,7 +1888,7 @@ function uisNomSync() {
         const items = list ? list.slice(-24).map(t => { const q = typeof nominationNameParts === "function" ? nominationNameParts(t) : { no: "", name: String(t) }; return (q.no ? q.no + " " : "") + q.name; }) : uisNomSeen.slice(-24).map(t => t.replace(/^(\d+)番\s*/, "$1 "));
         const chips = items.map((t, i, a) => "<span" + (i === a.length - 1 ? ' class="is-last"' : "") + ">" + esc(t) + "</span>").join("");
         const cnt = useApp ? pr.done + " / " + pr.total + "人" : uisNomSeen.length + "回";
-        uisSetHtml(hist, '<div class="uis-nh-head"><span>指名済み</span><span>' + cnt + '</span></div><div class="uis-nh-bar"><i style="width:' + pct + '%"></i></div><div class="uis-nh-chips">' + chips + '</div><div class="uis-nh-note">欠席の人は自動で飛ばします</div>');
+        uisSetHtml(hist, '<div class="uis-nh-head"><span>指名済み</span><span>' + cnt + '</span></div><div class="uis-nh-bar"><i style="width:' + pct + '%"></i></div><div class="uis-nh-chips">' + chips + '</div><div class="uis-nh-note">欠席の人は自動で飛ばします。</div>');
     }
     const hd = $id("uisNomHeader");
     if (hd) {
@@ -2139,7 +2139,7 @@ function onUiStyleChange() {
     lsSet(UIS_KEY, sel.value);
     uisApply();
     uisSyncSettingsLayout(sel.value);
-    showToast("画面スタイルを変えました", "success");
+    showToast("画面スタイルを変えました。", "success");
 }
 
 SekigaeApp.registerPlugin({

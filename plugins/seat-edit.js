@@ -254,7 +254,7 @@ function swapSeats(fromIndex, toIndex, cols) {
     if (currentStudents[toIndex] && currentStudents[toIndex].type === "STUDENT") currentStudents[toIndex].isFixed = true;
     
     renderClassroom("none"); 
-    showToast("座席を入れ替えて固定しました", "success");
+    showToast("座席を入れ替えて固定しました。", "success");
 }
 
 // 席替えの演出は、最初の席が動き出してから最後の席が止まるまで、最長でも5秒に収める

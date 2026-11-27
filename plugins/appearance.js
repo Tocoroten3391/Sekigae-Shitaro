@@ -161,7 +161,7 @@ function changeTheme() {
     const r = applyTheme();
     if (r.auto) showToast("テーマを選びました。端末がダークモードの間は、ダークモードで表示します。", "success");
     else if (r.chosen === "theme-auto") showToast(`季節おまかせにしました。今は「${THEME_LABELS[r.resolved] || ""}」です。`, "success");
-    else showToast("テーマを着せ替えました", "success");
+    else showToast("テーマを着せ替えました。", "success");
 }
 
 // ---- 季節の飾り（背景に、花びら・あわ・落ち葉・雪をゆっくり舞わせる）
@@ -322,7 +322,7 @@ document.addEventListener('fullscreenchange', () => {
     if (tbtn) tbtn.textContent = document.fullscreenElement ? "✖ 全画面表示を終える" : "全画面表示";
     if (document.fullscreenElement) {
         if (btn) btn.innerHTML = "✖ 全画面表示を終える";
-        showToast("全画面モードになりました", "success");
+        showToast("全画面モードになりました。", "success");
     } else {
         if (btn) btn.innerHTML = "全画面表示";
     }

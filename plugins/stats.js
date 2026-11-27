@@ -240,7 +240,7 @@ function renderStatsCharts(data, rows) {
     if (barBox) {
         const max = rows.reduce((m, r) => Math.max(m, r.count), 0);
         if (rows.length === 0 || max === 0) {
-            barBox.innerHTML = '<p class="stats-empty">指名の記録がまだありません</p>';
+            barBox.innerHTML = '<p class="stats-empty">指名の記録がまだありません。</p>';
         } else {
             barBox.innerHTML = rows.map(r => {
                 const pct = Math.round((r.count / max) * 100);
@@ -274,7 +274,7 @@ function renderStatsCharts(data, rows) {
             maxCount = Math.max(maxCount, counts[lb]);
         });
         if (maxCount === 0) {
-            heatBox.innerHTML = '<p class="stats-empty">座席の記録がまだありません</p>';
+            heatBox.innerHTML = '<p class="stats-empty">座席の記録がまだありません。</p>';
         } else {
             let html = `<div class="stats-heatmap-grid" style="grid-template-columns: repeat(${maxCol}, minmax(0, 1fr));">`;
             for (let r = 1; r <= maxRow; r++) {
@@ -296,7 +296,7 @@ function renderStatsArchiveList(archives) {
     const box = $id("statsArchiveList");
     if (!box) return;
     if (archives.length === 0) {
-        box.innerHTML = '<p class="stats-empty">まだアーカイブはありません</p>';
+        box.innerHTML = '<p class="stats-empty">まだアーカイブはありません。</p>';
         return;
     }
     box.innerHTML = archives.slice().reverse().map(a => {
@@ -307,7 +307,7 @@ function renderStatsArchiveList(archives) {
 
 function saveStatsArchive() {
     const hasData = Object.keys(nominationHistoryLog).length > 0 || Object.keys(seatHistoryLog).length > 0;
-    if (!hasData) { showToast("アーカイブできる記録がまだありません", "error"); return; }
+    if (!hasData) { showToast("アーカイブできる記録がまだありません。", "error"); return; }
     const nameInput = $id("statsArchiveName");
     const name = (nameInput && nameInput.value.trim()) || getDefaultTermName();
     const resetToggle = $id("statsArchiveResetToggle");
@@ -351,7 +351,7 @@ function deleteStatsArchive(id) {
     saveStatsArchives(archives.filter(a => a.id !== id));
     if (statsViewSource === id) statsViewSource = "current";
     renderStatsDashboard();
-    showToast("アーカイブを削除しました", "success");
+    showToast("アーカイブを削除しました。", "success");
 }
 
 // 今表示している記録をCSVで保存する（Excelで開けるようBOM付き）
@@ -380,7 +380,7 @@ function resetHistoryLogs() {
     localStorage.removeItem("seat_history_log");
     clearSeatLayoutLog(false);
     renderStatsDashboard();
-    showToast("記録をリセットしました", "success");
+    showToast("記録をリセットしました。", "success");
 }
 
 function openStatsModal() {

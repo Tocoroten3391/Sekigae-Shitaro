@@ -673,7 +673,7 @@ function runSlotSeatAnimation(onDone, finalOverride) {
     const finish = () => {
         if (classroom) classroom.classList.remove("slot-spinning");
         if (sevens.jackpot) { playSlotJackpotSound(); launchConfetti(120); showToast("🎰 ラッキーセブン！7がそろいました！", "success"); }
-        else if (sevens.reach) { playSlotFinishSound(); launchConfetti(36); showToast("リーチ！7が2つ並びました", "success"); }
+        else if (sevens.reach) { playSlotFinishSound(); launchConfetti(36); showToast("リーチ！7が2つ並びました。", "success"); }
         else playSlotFinishSound();
         endShuffleAnim();
         onDone();
@@ -728,10 +728,10 @@ function runSlotSeatAnimation(onDone, finalOverride) {
 function previewShuffleAnimation(forcedType) {
     if (isAppLocked()) { showLockedToast(); return; }
     if (shuffleAnimating) return;
-    if (!currentStudents || !currentStudents.some(isRealStudentSeat)) { showToast("先に席替えをするか、名簿を用意してください", "error"); return; }
+    if (!currentStudents || !currentStudents.some(isRealStudentSeat)) { showToast("先に席替えをするか、名簿を用意してください。", "error"); return; }
     const sel = $id("animationSelect");
     let type = forcedType || (sel ? sel.value : "initial");
-    if (type === "none" || document.body.classList.contains("no-animation")) { showToast("演出なしか、全体アニメーションがOFFになっています", "error"); return; }
+    if (type === "none" || document.body.classList.contains("no-animation")) { showToast("演出なしか、全体アニメーションがOFFになっています。", "error"); return; }
     if (type === "random") type = pickRandomShuffleAnimation();
     const base = currentStudents;
     if (type === "slot") { runSlotAnimation(() => {}, base); return; }

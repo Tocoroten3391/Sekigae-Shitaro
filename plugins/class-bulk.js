@@ -129,14 +129,14 @@ function cbParse(text) {
 }
 function cbHandleFile(file) {
     if (!file) return;
-    if (file.size > CB_MAX_BYTES) { showToast("ファイルが大きすぎて、読み込めません", "error"); return; }
+    if (file.size > CB_MAX_BYTES) { showToast("ファイルが大きすぎて、読み込めません。", "error"); return; }
     const fr = new FileReader();
     fr.onload = () => {
         const res = cbParse(String(fr.result || ""));
         if (res.error) { showToast(res.error, "error"); return; }
         cbImportDialog(res.classes);
     };
-    fr.onerror = () => showToast("ファイルを読めませんでした", "error");
+    fr.onerror = () => showToast("ファイルを読めませんでした。", "error");
     fr.readAsText(file);
 }
 function cbImportDialog(classes) {
@@ -176,7 +176,7 @@ function cbImportDialog(classes) {
     });
 }
 function cbApplyImport(picked, policy) {
-    if (!picked.length) { showToast("読み込むクラスが選ばれていません", "error"); return; }
+    if (!picked.length) { showToast("読み込むクラスが選ばれていません。", "error"); return; }
     if (isAppLocked()) { showLockedToast(); return; }
     const presets = readPresetsSafe();
     const store = readClassRecordStore();
@@ -216,7 +216,7 @@ function cbPromoteAll() {
     if (isAppLocked()) { showLockedToast(); return; }
     const presets = readPresetsSafe();
     const names = Object.keys(presets).filter(n => !presets[n].archived);
-    if (!names.length) { showToast("進級させられるクラスがありません", "error"); return; }
+    if (!names.length) { showToast("進級させられるクラスがありません。", "error"); return; }
     const body = document.createElement("div");
     const rows = names.map((n, i) => {
         const row = document.createElement("div");
@@ -245,7 +245,7 @@ function cbPromoteAll() {
     }, v => {
         if (v !== "ok") return;
         const sel = [...body.querySelectorAll(".cb-promo-pick input:checked")].map(e => parseInt(e.dataset.i, 10));
-        if (!sel.length) { showToast("進級させるクラスが選ばれていません", "error"); return; }
+        if (!sel.length) { showToast("進級させるクラスが選ばれていません。", "error"); return; }
         const used = new Set(Object.keys(readPresetsSafe()));
         const pairs = [];
         for (const i of sel) {

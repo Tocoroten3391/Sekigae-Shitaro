@@ -213,7 +213,7 @@ function saveTimerBtnModal() {
     
     renderTimerButtons();
     closeTimerBtnModal();
-    showToast("保存しました", "success");
+    showToast("保存しました。", "success");
 }
 function updateClock() {
     const clockEl = $id("realtimeClock");
@@ -350,7 +350,7 @@ function startStepSet() {
         return;
     }
     if (isStopwatchMode) {
-        showToast("タイマーのモードに切り替えてから使ってください", "error");
+        showToast("タイマーのモードに切り替えてから使ってください。", "error");
         return;
     }
     stepRun = { name: set.name, total: set.steps.length };
@@ -358,11 +358,11 @@ function startStepSet() {
     const first = queue.shift();
     routineQueue = queue;
     beginStepPhase(first);
-    showToast(`「${set.name}」を開始します`, "success");
+    showToast(`「${set.name}」を開始します。`, "success");
 }
 function advanceStep() {
     if (!stepRun || routineQueue.length === 0) {
-        showToast("次のステップはありません", "error");
+        showToast("次のステップはありません。", "error");
         return;
     }
     stopAlarmSound();
@@ -444,7 +444,7 @@ function renderStepRows() {
 }
 function addStepRow() {
     readStepRowsFromDom();
-    if (stepEditRows.length >= STEP_MAX) { showToast(`ステップは最大${STEP_MAX}個までです`, "error"); return; }
+    if (stepEditRows.length >= STEP_MAX) { showToast(`ステップは最大${STEP_MAX}個までです。`, "error"); return; }
     stepEditRows.push({ label: "", min: 5, sec: 0 });
     renderStepRows();
 }
@@ -458,7 +458,7 @@ function saveStepSet() {
     const nameInput = $id("stepSetNameInput");
     const name = (nameInput && nameInput.value.trim()) || "ステップタイマー";
     const steps = stepEditRows.map(r => ({ label: r.label, sec: r.min * 60 + r.sec })).filter(st => st.sec > 0);
-    if (steps.length === 0) { showToast("時間が入ったステップを1つ以上作ってください", "error"); return; }
+    if (steps.length === 0) { showToast("時間が入ったステップを1つ以上作ってください。", "error"); return; }
     if (stepEditId) {
         const set = stepSets.find(x => x.id === stepEditId);
         if (set) { set.name = name; set.steps = steps; }
@@ -470,7 +470,7 @@ function saveStepSet() {
     const sel = $id("stepSetSelect");
     if (sel) sel.value = stepEditId;
     closeStepSetModal();
-    showToast(`「${name}」を保存しました`, "success");
+    showToast(`「${name}」を保存しました。`, "success");
 }
 function deleteStepSet() {
     const set = stepSets.find(x => x.id === stepEditId);
@@ -479,7 +479,7 @@ function deleteStepSet() {
     stepSets = stepSets.filter(x => x.id !== stepEditId);
     saveStepSets();
     selectStepSetForEdit("");
-    showToast("削除しました", "success");
+    showToast("削除しました。", "success");
 }
 function toggleContinuousAlarm() {
     const tog = $id('continuousAlarmToggle');
@@ -655,7 +655,7 @@ function setTimerTime(seconds) {
 let timerAlarmAt = 0;
 function setTimerToClockTime(inputId) {
     if (isStopwatchMode) {
-        showToast("タイマーのモードに切り替えてから使ってください", "error");
+        showToast("タイマーのモードに切り替えてから使ってください。", "error");
         return;
     }
     const el = $id(inputId);
@@ -667,7 +667,7 @@ function setTimerToClockTime(inputId) {
     const th = parseInt(parts[0], 10);
     const tm = parseInt(parts[1], 10);
     if (isNaN(th) || isNaN(tm)) {
-        showToast("正しい時刻を入力してください", "error");
+        showToast("正しい時刻を入力してください。", "error");
         return;
     }
 
@@ -681,7 +681,7 @@ function setTimerToClockTime(inputId) {
 
     const diffMs = target.getTime() - now.getTime();
     if (diffMs <= 0) {
-        showToast("その時刻はもう過ぎています", "error");
+        showToast("その時刻はもう過ぎています。", "error");
         return;
     }
 
@@ -698,7 +698,7 @@ function setTimerToClockTime(inputId) {
 
     const eh = String(target.getHours()).padStart(2, '0');
     const em = String(target.getMinutes()).padStart(2, '0');
-    showToast(`⏰ ${eh}:${em}:00 に鳴るようにセットしました`, "success");
+    showToast(`⏰ ${eh}:${em}:00 に鳴るようにセットしました。`, "success");
 }
 let tickRenderAt = 0, tickRenderSec = NaN;     // 最後に画面を書きかえた時刻と、その時の秒
 function toggleTimer() {
@@ -712,7 +712,7 @@ function toggleTimer() {
         if(overlay) overlay.classList.remove("focus-active");
     } else {
         if (!isStopwatchMode && timerMilliseconds === 0) {
-            showToast("時間を追加してからスタートしてください", "error");
+            showToast("時間を追加してからスタートしてください。", "error");
             return;
         }
         
@@ -768,7 +768,7 @@ function toggleTimer() {
                     const autoNext = !stepRun || !stepAutoToggle || stepAutoToggle.checked;
                     if (routineQueue.length > 0 && autoNext) {
                         clearInterval(timerIntervalId); 
-                        showToast("次の項目へ進みます", "success");
+                        showToast("次の項目へ進みます。", "success");
                         setTimeout(() => {
                             stopAlarmSound();
                             let next = routineQueue.shift(); 
@@ -852,7 +852,7 @@ function switchTimerMode() {
         }
         if(lapBtn) lapBtn.style.display = "inline-block";
         if(lapContainer) lapContainer.style.display = "block";
-        showToast("ストップウォッチのモードに切り替えました", "success");
+        showToast("ストップウォッチのモードに切り替えました。", "success");
     } else {
         if(switchBtn) { 
             switchBtn.innerHTML = "ストップウォッチに切替"; 
@@ -862,7 +862,7 @@ function switchTimerMode() {
         }
         if(lapBtn) lapBtn.style.display = "none";
         if(lapContainer) lapContainer.style.display = "none";
-        showToast("タイマーのモードに切り替えました", "success");
+        showToast("タイマーのモードに切り替えました。", "success");
     }
     updateTimerDisplay();
     updateClock(); 

@@ -23,9 +23,9 @@ function openShufflePreview() {
     if (isAppLocked()) { showLockedToast(); return; }
     if (yaochoMode) { shuffleSeats(); return; }
     const inputEl = $id("studentInput");
-    if (!inputEl) { showToast("名簿を入力してください", "error"); return; }
+    if (!inputEl) { showToast("名簿を入力してください。", "error"); return; }
     lastRawList = splitRosterRaw(inputEl.value).map(n => n.trim()).filter(n => n !== "");
-    if (lastRawList.length === 0) { showToast("名簿が空っぽです", "error"); return; }
+    if (lastRawList.length === 0) { showToast("名簿が空っぽです。", "error"); return; }
     previewBaseSeats = currentStudents;
     generatePreviewCandidates();
     const overlay = $id("shufflePreviewModalOverlay");
@@ -109,8 +109,8 @@ function applyShufflePreview(announce) {
     currentStudents = seats;
     recordShuffleInfo(cand);
     renderClassroom(document.body.classList.contains("no-animation") ? "none" : "wave");
-    showToast("選んだ案で席替えが完了しました", "success");
-    if (violations > 0) showToast(`離す設定のうち${violations}組は席の都合で離せませんでした`, "error");
+    showToast("選んだ案で席替えが完了しました。", "success");
+    if (violations > 0) showToast(`離す設定のうち${violations}組は席の都合で離せませんでした。`, "error");
     recordSeatHistory();
     maybeAutoUploadAfterShuffle();
     if (announce === true) openAnnounce();

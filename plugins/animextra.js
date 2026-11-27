@@ -56,7 +56,7 @@ function refreshFavAnimUI() {
 }
 function toggleFavAnim() {
     const sel = $id("animationSelect");
-    if (!sel || sel.value === "none" || sel.value === "random") { showToast("お気に入りにする演出を、先に選んでください", "error"); return; }
+    if (!sel || sel.value === "none" || sel.value === "random") { showToast("お気に入りにする演出を、先に選んでください。", "error"); return; }
     let favs = getFavAnims();
     const was = favs.includes(sel.value);
     favs = was ? favs.filter(v => v !== sel.value) : favs.concat(sel.value);
@@ -68,7 +68,7 @@ function toggleFavAnim() {
 function clearFavAnims() {
     saveFavAnims([]);
     refreshFavAnimUI();
-    showToast("お気に入りを全て外しました", "success");
+    showToast("お気に入りを全て外しました。", "success");
 }
 
 // ---- マイ演出（演出・速さ・効果音のセットに名前を付けて保存）
@@ -95,7 +95,7 @@ function saveMyAnim() {
     const nameInput = $id("myAnimName");
     if (!animSel) return;
     const name = (nameInput ? nameInput.value : "").trim();
-    if (!name) { showToast("マイ演出の名前を入力してください", "error"); return; }
+    if (!name) { showToast("マイ演出の名前を入力してください。", "error"); return; }
     const snd = $id("shuffleSoundToggle");
     const spd = $id("animSpeedSelect");
     const item = { id: "", name: name, type: animSel.value, speed: parseFloat(spd ? spd.value : "1") || 1, sound: !!(snd && snd.checked) };
@@ -125,7 +125,7 @@ function applyMyAnim() {
     const snd = $id("shuffleSoundToggle");
     if (snd) { snd.checked = !!p.sound; lsSet("shuffle_sound", String(!!p.sound)); }
     refreshFavAnimUI();
-    showToast(`マイ演出「${p.name}」に切り替えました`, "success");
+    showToast(`マイ演出「${p.name}」に切り替えました。`, "success");
 }
 function deleteMyAnim() {
     const sel = $id("myAnimSelect");
@@ -136,7 +136,7 @@ function deleteMyAnim() {
     if (!confirm(`マイ演出「${target.name}」を削除します。よろしいですか？`)) return;
     saveMyAnims(list.filter(p => p.id !== id));
     refreshMyAnimUI("");
-    showToast("マイ演出を削除しました", "success");
+    showToast("マイ演出を削除しました。", "success");
 }
 
 // ==========================================

@@ -7,7 +7,7 @@ let announceState = { open: false, snapshot: [], cols: 6, order: [], cursor: 0, 
 function isAnnounceOpen() { return announceState.open; }
 function openAnnounce() {
     if (!currentStudents || !currentStudents.some(seat => seat && seat.type === "STUDENT" && seat.text)) {
-        showToast("座席表が空です", "error");
+        showToast("座席表が空です。", "error");
         return;
     }
     const colSel = $id("columnSelect");
@@ -123,7 +123,7 @@ function toggleAnnounceFullscreen(event) {
     try {
         if (document.fullscreenElement) document.exitFullscreen();
         else if (overlay.requestFullscreen) overlay.requestFullscreen();
-    } catch (error) { showToast("全画面にできませんでした", "error"); }
+    } catch (error) { showToast("全画面にできませんでした。", "error"); }
 }
 function capNameHtml(text, p) {
     const furi = getFuriganaFor(text);

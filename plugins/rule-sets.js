@@ -123,13 +123,13 @@ function rsetSaveNew() {
     }, (v, o) => {
         if (v !== "ok") return;
         const name = (o.text || "").slice(0, 30);
-        if (!name) { showToast("名前を入れてください", "error"); return; }
+        if (!name) { showToast("名前を入れてください。", "error"); return; }
         const cur = rsetLoad();
         if (cur.some(s => s.name === name)) { showToast(`「${name}」という条件セットはもうあります。上書きしたい時は一覧の「上書き」を使ってください。`, "error"); return; }
         const keys = RSET_BASE_KEYS.concat(o.checked ? RSET_PAIR_KEYS : []);
         const vals = rsetCurrentVals(keys);
         cur.push({ id: rsetNewId(), name: name, t: Date.now(), keys: keys, vals: vals, sig: rsetSig(keys, vals) });
-        if (rsetSave(cur)) { rsetRender(); showToast(`条件セット「${name}」を保存しました`, "success"); }
+        if (rsetSave(cur)) { rsetRender(); showToast(`条件セット「${name}」を保存しました。`, "success"); }
     });
 }
 
@@ -157,7 +157,7 @@ function rsetOverwrite(id) {
         s.vals = rsetCurrentVals(s.keys);
         s.sig = rsetSig(s.keys, s.vals);
         s.t = Date.now();
-        if (rsetSave(cur)) { rsetRender(); showToast(`条件セット「${s.name}」を上書きしました`, "success"); }
+        if (rsetSave(cur)) { rsetRender(); showToast(`条件セット「${s.name}」を上書きしました。`, "success"); }
     });
 }
 
@@ -175,7 +175,7 @@ function rsetDelete(id) {
         ]
     }, v => {
         if (v !== "ok") return;
-        if (rsetSave(rsetLoad().filter(s => s.id !== id))) { rsetRender(); showToast(`条件セット「${set.name}」を消しました`, "success"); }
+        if (rsetSave(rsetLoad().filter(s => s.id !== id))) { rsetRender(); showToast(`条件セット「${set.name}」を消しました。`, "success"); }
     });
 }
 
@@ -187,7 +187,7 @@ function rsetRender() {
     if (!list.length) {
         const p = document.createElement("p");
         p.className = "rset-empty";
-        p.textContent = "まだ、保存した条件セットはありません";
+        p.textContent = "まだ、保存した条件セットはありません。";
         box.appendChild(p);
         return;
     }

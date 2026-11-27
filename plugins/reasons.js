@@ -140,7 +140,7 @@ function removeWagamamaTag(targetIdx) {
     let displayName = cleanName.replace(/\[休\]/g, "").replace(/[（\(].*?[）\)]/g, ""); 
     if (displayName.includes(".")) displayName = displayName.split(".")[1].trim(); 
     
-    showToast(`${displayName} のわがまま指定を解除しました`, "success"); 
+    showToast(`${displayName} のわがまま指定を解除しました。`, "success"); 
     openWagamamaModal(); 
     onLayoutChange(); 
 }

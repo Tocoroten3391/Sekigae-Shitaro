@@ -97,7 +97,7 @@ function csetStatus() {
     const el = $id("csetStatus");
     if (!el) return;
     const name = (typeof activeClassId !== "undefined") ? activeClassId : "";
-    if (csetTrial(name)) { el.textContent = "クラスを保存して選ぶと、そのクラスの設定を覚えられます"; return; }
+    if (csetTrial(name)) { el.textContent = "クラスを保存して選ぶと、そのクラスの設定を覚えられます。"; return; }
     const p = readPresetsSafe()[name];
     const c = p && p.csettings;
     if (!c) { el.textContent = `クラス「${name}」：まだ覚えていません。このクラスを離れる時に、今の設定を覚えます。`; return; }
@@ -142,17 +142,17 @@ function csetCatChange() {
 function csetRemember() {
     if (typeof isAppLocked === "function" && isAppLocked()) { showLockedToast(); return; }
     const name = typeof activeClassId !== "undefined" ? activeClassId : "";
-    if (csetTrial(name)) { showToast("クラスを保存して、選んでから使ってください", "error"); return; }
+    if (csetTrial(name)) { showToast("クラスを保存して、選んでから使ってください。", "error"); return; }
     csetCaptureFor(name, true);
     csetStatus();
-    showToast(`今の設定をクラス「${name}」に覚えさせました`, "success");
+    showToast(`今の設定をクラス「${name}」に覚えさせました。`, "success");
 }
 
 function csetClear() {
     if (typeof isAppLocked === "function" && isAppLocked()) { showLockedToast(); return; }
     const name = typeof activeClassId !== "undefined" ? activeClassId : "";
     const presets = readPresetsSafe();
-    if (csetTrial(name) || !presets[name] || !presets[name].csettings) { showToast("このクラスはまだ設定を覚えていません", "error"); return; }
+    if (csetTrial(name) || !presets[name] || !presets[name].csettings) { showToast("このクラスはまだ設定を覚えていません。", "error"); return; }
     delete presets[name].csettings;
     savePresetsObject(presets);
     csetStatus();

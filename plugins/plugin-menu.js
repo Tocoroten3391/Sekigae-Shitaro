@@ -353,7 +353,7 @@ function pmUndoChanges() {
     if (typeof isAppLocked === "function" && isAppLocked()) { if (typeof showLockedToast === "function") showLockedToast(); return; }
     pmChanges().forEach(c => SekigaeApp.setEnabled(c.id, !c.on));
     SekigaeApp.renderPluginList();
-    showToast("変更をもとに戻しました", "success");
+    showToast("変更をもとに戻しました。", "success");
 }
 
 // ---- 使っていない機能 ----

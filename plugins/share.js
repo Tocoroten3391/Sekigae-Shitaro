@@ -306,7 +306,7 @@ function shareDownload(blob, name) {
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
 }
 function openShareModal() {
-    if (!shareHasSeats()) { showToast("座席表が空です", "error"); return; }
+    if (!shareHasSeats()) { showToast("座席表が空です。", "error"); return; }
     const t = $id("shareTitle");
     if (t && !t.value) t.value = shareDefaultTitle();
     const imgBox = $id("shareImageBtns");
@@ -329,7 +329,7 @@ function shareRefreshPreview() {
 }
 async function shareCopyText() {
     const text = shareText(shareOptions(), false);
-    try { await navigator.clipboard.writeText(text); showToast("座席表をテキストでコピーしました", "success"); }
+    try { await navigator.clipboard.writeText(text); showToast("座席表をテキストでコピーしました。", "success"); }
     catch (e) {
         const pre = $id("sharePreview");
         if (pre) { const r = document.createRange(); r.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
@@ -341,10 +341,10 @@ function shareCanvasBlob() {
 }
 async function shareCopyImage() {
     const blob = await shareCanvasBlob();
-    if (!blob) { showToast("画像を作れませんでした", "error"); return; }
+    if (!blob) { showToast("画像を作れませんでした。", "error"); return; }
     try {
         await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-        showToast("座席表を画像でコピーしました", "success");
+        showToast("座席表を画像でコピーしました。", "success");
     } catch (e) {
         shareDownload(blob, shareFileName("png"));
         showToast("この環境では画像をコピーできませんでした。画像を保存しました。", "info");
@@ -352,27 +352,27 @@ async function shareCopyImage() {
 }
 async function shareSaveImage() {
     const blob = await shareCanvasBlob();
-    if (!blob) { showToast("画像を作れませんでした", "error"); return; }
+    if (!blob) { showToast("画像を作れませんでした。", "error"); return; }
     shareDownload(blob, shareFileName("png"));
-    showToast("座席表を画像で保存しました", "success");
+    showToast("座席表を画像で保存しました。", "success");
 }
 async function shareNative() {
     const blob = await shareCanvasBlob();
-    if (!blob) { showToast("画像を作れませんでした", "error"); return; }
+    if (!blob) { showToast("画像を作れませんでした。", "error"); return; }
     const file = new File([blob], shareFileName("png"), { type: "image/png" });
     const data = { files: [file], title: shareOptions().title || "座席表" };
     try {
-        if (navigator.canShare && !navigator.canShare(data)) { shareDownload(blob, shareFileName("png")); showToast("共有に使えなかったので、画像を保存しました", "info"); return; }
+        if (navigator.canShare && !navigator.canShare(data)) { shareDownload(blob, shareFileName("png")); showToast("共有に使えなかったので、画像を保存しました。", "info"); return; }
         await navigator.share(data);
     } catch (e) {
         if (e && e.name === "AbortError") return;
         shareDownload(blob, shareFileName("png"));
-        showToast("共有できなかったので画像を保存しました", "info");
+        showToast("共有できなかったので画像を保存しました。", "info");
     }
 }
 function shareSaveHtml() {
     shareDownload(new Blob([shareHtml(shareOptions())], { type: "text/html" }), shareFileName("html"));
-    showToast("スマホでも見やすいHTMLで保存しました", "success");
+    showToast("スマホでも見やすいHTMLで保存しました。", "success");
 }
 function shareShowQr() {
     const box = $id("shareQrBox"), canvas = $id("shareQrCanvas"), note = $id("shareQrNote");

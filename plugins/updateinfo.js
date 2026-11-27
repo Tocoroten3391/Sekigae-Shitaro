@@ -28,7 +28,7 @@ function changelogSource() { return CHANGELOG_JSON_URL || CHANGELOG_GAS_URL; }
 function showLocalChangelog() {
     const body = $id("updateInfoBody");
     if (typeof LOCAL_CHANGELOG === "undefined" || !LOCAL_CHANGELOG.length) {
-        if (body) body.innerHTML = '<p style="color: var(--text-sub); font-size: 13px;">更新情報を取得できませんでした</p>';
+        if (body) body.innerHTML = '<p style="color: var(--text-sub); font-size: 13px;">更新情報を取得できませんでした。</p>';
         return;
     }
     renderUpdateInfoModal(sortChangelogEntriesDesc(LOCAL_CHANGELOG));
@@ -208,12 +208,12 @@ function renderNewUpdateModal(latestEntry, allSorted) {
     const SHOW = 5;
     const multi = newer.length > 1;
     let html = newer.slice(0, SHOW).map(e => {
-        const list = updBulletsHtml(e) || '<p class="upd-none">この版の説明はありません</p>';
+        const list = updBulletsHtml(e) || '<p class="upd-none">この版の説明はありません。</p>';
         return multi
             ? `<div class="upd-ver"><div class="upd-ver-head"><span class="upd-ver-no">Ver.${updEsc(e.version)}</span><span class="upd-ver-date">${updEsc(formatChangelogDate(e.date))}</span></div>${list}</div>`
             : list;
     }).join("");
-    if (newer.length > SHOW) html += `<p class="upd-more">ほか ${newer.length - SHOW}回分の更新は「更新履歴を見る」で見られます</p>`;
+    if (newer.length > SHOW) html += `<p class="upd-more">ほか ${newer.length - SHOW}回分の更新は「更新履歴を見る」で見られます。</p>`;
     notesEl.innerHTML = html;
     const howto = $id("newUpdateHowto");
     if (howto) howto.innerHTML = updHowtoHtml();
@@ -391,7 +391,7 @@ function updCheckWhatsNew(retried) {
             ? `<div class="upd-ver"><div class="upd-ver-head"><span class="upd-ver-no">Ver.${updEsc(e.version)}</span><span class="upd-ver-date">${updEsc(formatChangelogDate(e.date))}</span></div>${list}</div>`
             : list;
     }).join("");
-    if (items.length > SHOW) html += `<p class="upd-more">ほか ${items.length - SHOW}回分は「更新履歴を見る」で見られます</p>`;
+    if (items.length > SHOW) html += `<p class="upd-more">ほか ${items.length - SHOW}回分は「更新履歴を見る」で見られます。</p>`;
     $id("whatsNewBody").innerHTML = html;
     overlay.style.display = "flex";
     updSaveSeen();

@@ -253,7 +253,7 @@ function scrStop() {
 function scrCheckClosed() {
     if (scrWin && !scrIsOpen()) {
         scrStop();
-        showToast("拡張画面の表示が閉じられました", "success");
+        showToast("拡張画面の表示が閉じられました。", "success");
     }
 }
 
@@ -285,7 +285,7 @@ function scrToggle() {
     scrPaused = false;
     scrHeld = false;
     scrFoundExtended = null;
-    try { scrBuildWindow(win); } catch (e) { console.warn("拡張画面の準備に失敗しました:", e); try { win.close(); } catch (e2) { /* 何もしない */ } scrWin = null; showToast("拡張画面を開けませんでした", "error"); return; }
+    try { scrBuildWindow(win); } catch (e) { console.warn("拡張画面の準備に失敗しました:", e); try { win.close(); } catch (e2) { /* 何もしない */ } scrWin = null; showToast("拡張画面を開けませんでした。", "error"); return; }
     scrStart();
     scrSyncNow();
     scrRefreshUi();
@@ -300,7 +300,7 @@ function scrClose() {
     const w = scrWin;
     scrStop();
     try { if (w) w.close(); } catch (e) { /* 何もしない */ }
-    showToast("拡張画面への表示をやめました", "success");
+    showToast("拡張画面への表示をやめました。", "success");
 }
 
 // 席替えが始まったら、結果を確認するまで、拡張画面を止めておきます
@@ -316,15 +316,15 @@ function scrRelease() {
     scrHeld = false;
     scrSyncNow();
     scrRefreshUi();
-    showToast("席替えの結果を拡張画面に映しました", "success");
+    showToast("席替えの結果を拡張画面に映しました。", "success");
 }
 
 function scrTogglePause() {
     if (!scrIsOpen()) return;
     scrPaused = !scrPaused;
     scrRefreshUi();
-    if (scrPaused) showToast("拡張画面を今の表示のまま止めました", "success");
-    else { scrSyncNow(); showToast("拡張画面の表示を再開しました", "success"); }
+    if (scrPaused) showToast("拡張画面を今の表示のまま止めました。", "success");
+    else { scrSyncNow(); showToast("拡張画面の表示を再開しました。", "success"); }
 }
 
 function scrUpdateTopButtons() {
@@ -354,10 +354,10 @@ function scrRefreshUi() {
     if (p) { p.disabled = !open; p.textContent = scrPaused ? "▶️ 映すのを、再開する" : "映すのを一時止める"; }
     if (t) t.value = scrTheme();
     if (st) {
-        if (!open) st.textContent = "今は映していません";
+        if (!open) st.textContent = "今は映していません。";
         else if (scrHeld) st.textContent = "席替えの結果を確認しています。画面の上の「結果を映す」を押すと拡張画面に映ります。";
         else if (scrPaused) st.textContent = "一時止めています。拡張画面には止めた時の座席表が出たままです。";
-        else if (scrFoundExtended === false) st.textContent = "別ウィンドウに映しています（拡張画面は見つかりませんでした）";
+        else if (scrFoundExtended === false) st.textContent = "別ウィンドウに映しています（拡張画面は見つかりませんでした）。";
         else st.textContent = "拡張画面に映しています。席替えや指名はこのまま、操作できます。";
     }
 }

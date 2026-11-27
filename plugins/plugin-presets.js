@@ -54,7 +54,7 @@ function presetApply(id) {
     if (!p) return;
     const off = presetOffListOf(p);
     const before = presetCurrentOff();
-    if (presetSameSet(off, before)) { showToast("今の構成と同じです", "info"); return; }
+    if (presetSameSet(off, before)) { showToast("今の構成と同じです。", "info"); return; }
     presetTargets().forEach(pl => SekigaeApp.setEnabled(pl.id, !off.includes(pl.id)));
     // 「かんたん」は、案内ツアーとセットです。次に読み込んだ時に、案内をはじめるか、たずねます
     if (p.id === "easy") { lsSet("tour_force_v1", "1"); try { localStorage.removeItem("tour_done_v1"); } catch (e) { /* 何もしない */ } }
@@ -71,7 +71,7 @@ function presetSaveCurrent() {
     const name = (prompt("今の構成に名前を付けます。\n例：5年1組用") || "").trim();
     if (!name) return;
     const list = presetLoadCustom();
-    if (list.length >= 8) { showToast("保存できる構成は最大8個までです", "error"); return; }
+    if (list.length >= 8) { showToast("保存できる構成は最大8個までです。", "error"); return; }
     list.push({ id: "pc_" + Date.now().toString(36), name: name.slice(0, 20), off: presetCurrentOff() });
     presetSaveCustom(list);
     renderPresetBox();
@@ -202,7 +202,7 @@ function presetReadFile(input) {
         presetImported = r;
         presetRenderImportPreview();
     };
-    fr.onerror = () => showToast("ファイルを読めませんでした", "error");
+    fr.onerror = () => showToast("ファイルを読めませんでした。", "error");
     fr.readAsText(f);
 }
 function presetRenderImportPreview() {
@@ -251,7 +251,7 @@ function presetImportApply(i) {
         if (c.off.includes(pl.id)) SekigaeApp.setEnabled(pl.id, false);
         else if (c.on.includes(pl.id)) SekigaeApp.setEnabled(pl.id, true);
     });
-    if (presetSameSet(before, presetCurrentOff())) { showToast("今の構成と同じです", "info"); return; }
+    if (presetSameSet(before, presetCurrentOff())) { showToast("今の構成と同じです。", "info"); return; }
     renderPresetBox();
     SekigaeApp.renderPluginList();
     closePresetIo();
