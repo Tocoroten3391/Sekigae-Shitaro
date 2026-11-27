@@ -100,7 +100,7 @@ function csetStatus() {
     if (csetTrial(name)) { el.textContent = "クラスを保存して選ぶと、そのクラスの設定を覚えられます。"; return; }
     const p = readPresetsSafe()[name];
     const c = p && p.csettings;
-    if (!c) { el.textContent = `クラス「${name}」：まだ覚えていません。このクラスを離れる時に、いまの設定を覚えます。`; return; }
+    if (!c) { el.textContent = `クラス「${name}」：まだ覚えていません。このクラスを離れる時に、今の設定を覚えます。`; return; }
     const d = new Date(c.t || 0);
     const names = CSET_CATS.filter(x => Array.isArray(c.cats) && c.cats.includes(x.id)).map(x => x.short).join("・");
     el.textContent = `クラス「${name}」：覚えています（${d.getMonth() + 1}月${d.getDate()}日 ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}・${names || "なし"}）`;
@@ -124,9 +124,9 @@ function csetToggle() {
     if (t.checked) {
         const name = typeof activeClassId !== "undefined" ? activeClassId : "";
         const ok = csetCaptureFor(name, true);
-        showToast(ok ? `クラスごとの設定を使います。いまの設定を、クラス「${name}」に覚えさせました。` : "クラスごとの設定を使います。クラスを保存して選ぶと、そのクラスの設定を覚えます。", "success");
+        showToast(ok ? `クラスごとの設定を使います。今の設定を、クラス「${name}」に覚えさせました。` : "クラスごとの設定を使います。クラスを保存して選ぶと、そのクラスの設定を覚えます。", "success");
     } else {
-        showToast("クラスごとの設定をやめました。いまの設定は、どのクラスでも、そのまま使います。", "success");
+        showToast("クラスごとの設定をやめました。今の設定は、どのクラスでも、そのまま使います。", "success");
     }
     csetRenderPanel();
 }
@@ -145,7 +145,7 @@ function csetRemember() {
     if (csetTrial(name)) { showToast("クラスを保存して、選んでから使ってください。", "error"); return; }
     csetCaptureFor(name, true);
     csetStatus();
-    showToast(`いまの設定を、クラス「${name}」に覚えさせました。`, "success");
+    showToast(`今の設定を、クラス「${name}」に覚えさせました。`, "success");
 }
 
 function csetClear() {
@@ -156,7 +156,7 @@ function csetClear() {
     delete presets[name].csettings;
     savePresetsObject(presets);
     csetStatus();
-    showToast(`クラス「${name}」の設定を、忘れました。いまの設定は、そのまま使います。`, "success");
+    showToast(`クラス「${name}」の設定を、忘れました。今の設定は、そのまま使います。`, "success");
 }
 
 const CSET_CSS = `
@@ -174,14 +174,14 @@ const CSET_HTML = `
         <span class="switch-label" style="color: var(--lbl-purple); font-weight: bold;">設定を、クラスごとに持つ</span>
     </div>
     <div id="csetPanel" class="nominate-exclude-panel" hidden>
-        <div class="nominate-exclude-help">クラスを切り替えるたびに、いまの設定をそのクラスに覚えさせて、切り替え先のクラスの設定を使います。まだ設定を覚えていないクラスは、いまの設定のまま使います。</div>
+        <div class="nominate-exclude-help">クラスを切り替えるたびに、今の設定をそのクラスに覚えさせて、切り替え先のクラスの設定を使います。まだ設定を覚えていないクラスは、今の設定のまま使います。</div>
         <div id="csetStatus" class="cset-status"></div>
         <div class="nominate-exclude-help">クラスごとに持つ設定</div>
         <div class="cset-cats">
             ${CSET_CATS.map(c => `<label><input type="checkbox" id="csetCat_${c.id}" onchange="csetCatChange()"><span>${c.label}</span></label>`).join("\n            ")}
         </div>
         <div class="cset-tools">
-            <button type="button" id="csetRememberBtn" onclick="csetRemember()" class="btn-secondary">いまの設定を覚えさせる</button>
+            <button type="button" id="csetRememberBtn" onclick="csetRemember()" class="btn-secondary">今の設定を覚えさせる</button>
             <button type="button" id="csetClearBtn" onclick="csetClear()" class="btn-secondary">覚えた設定を消す</button>
         </div>
     </div>

@@ -7,7 +7,7 @@
 // 「画面の状態」（版・画面スタイル・ブラウザ・直前のエラーコード）は、チェックを入れたときだけ付き、送る前に、全部見られます
 // このファイルを index.html から外すと、この機能は、まとめて使えなくなります
 // ==========================================
-const FB_RELAY_URL = "https://sekigae-feedback.tocoroten3391.workers.dev";   // 中継役の URL。空のときは、送らずに、コピーとGitHubで開く方法だけを出します
+const FB_RELAY_URL = "https://sekigae-feedback.tocoroten3391.workers.dev";   // 中継役の URL。空の時は、送らずに、コピーとGitHubで開く方法だけを出します
 const FB_REPO = "Tocoroten3391/Sekigae-Shitaro_Apps";
 const FB_DRAFT_KEY = "feedback_draft_v1";
 const FB_SENT_KEY = "feedback_sent_v1";
@@ -15,17 +15,17 @@ const FB_MAX_IMAGES = 3;
 const FB_IMG_MAX_BYTES = 420000;   // 1枚の大きさの上限（中継役は500000まで受け付けます）
 const FB_KINDS = [
     { id: "bug", label: "不具合", hint: "うまく動かない・おかしい" },
-    { id: "idea", label: "要望", hint: "こんな機能がほしい・ここを直してほしい" },
+    { id: "idea", label: "要望", hint: "こんな機能が欲しい・ここを直してほしい" },
     { id: "question", label: "質問", hint: "使い方が分からない" }
 ];
 const FB_ERRORS = {
     "F-NET": "通信できませんでした。内容は下書きに残してあるので、通信できる場所でもう一度送ってください。",
-    "F-RATE": "短い時間にたくさん送られました。1時間ほどあけてから送ってください。",
-    "F-BUSY": "いま受け付けが混み合っています。明日もう一度送ってください。",
+    "F-RATE": "短い時間にたくさん送られました。1時間程空けてから送ってください。",
+    "F-BUSY": "今受け付けが混み合っています。明日もう一度送ってください。",
     "F-SHORT": "内容が短すぎます。10文字以上で書いてください。",
     "F-LONG": "内容が長すぎます。2000文字までにまとめてください。",
     "F-BIG": "送る内容が大きすぎます。画像を減らすか小さくしてください。",
-    "F-SRV": "受け付けられませんでした。時間をおいてもう一度ためしてください。続くときは下の「GitHubで開く」を使ってください。"
+    "F-SRV": "受け付けられませんでした。時間を置いてもう一度試してください。続く時は下の「GitHubで開く」を使ってください。"
 };
 
 const fbErrBuf = [];   // 直前の内部エラー（メッセージだけ。最大5件）
@@ -110,7 +110,7 @@ function fbCheckText(text) {
     const warns = [];
     try {
         const cls = Object.keys(JSON.parse(localStorage.getItem("seat_shuffler_presets") || "{}")).filter(n => n && n.length >= 3 && flat.includes(n.replace(/\s+/g, "")));
-        if (cls.length) warns.push("クラス名の「" + cls.slice(0, 2).join("」「") + "」が入っています。学校が分かる場合は消すことをおすすめします。");
+        if (cls.length) warns.push("クラス名の「" + cls.slice(0, 2).join("」「") + "」が入っています。学校が分かる場合は消すことをお勧めします。");
     } catch (e) { /* 何もしない */ }
     return { problems, warns };
 }
@@ -132,7 +132,7 @@ async function fbSend() {
     if (chk.problems.length) { fbShowMsg(chk.problems.join("\n"), true); return; }
     const url = fbRelayUrl();
     if (!url) { fbShowMsg("送り先を準備中です。「内容をコピー」か「GitHubで開く」を使ってください。", true); return; }
-    if (fbImages.length && !fbImgOkOn) { fbShowMsg("画像に生徒の名前などが写っていないか確かめて、「確認しました」にチェックを入れてください。写っているときは「隠す」で黒く塗れます。", true); return; }
+    if (fbImages.length && !fbImgOkOn) { fbShowMsg("画像に生徒の名前などが写っていないか確かめて、「確認しました」にチェックを入れてください。写っている時は「隠す」で黒く塗れます。", true); return; }
     const withEnv = $id("fbWithEnv") && $id("fbWithEnv").checked;
     fbSending = true;
     fbSetBusy(true);
@@ -244,12 +244,12 @@ async function fbShotNow() {
     if (btn) { btn.disabled = true; btn.textContent = "撮影しています"; }
     try {
         const c = await window.SekigaeShot.capture({ skip: ["fbOverlay", "fbMaskOverlay"] });
-        if (fbAttachImage(c)) fbShowMsg("画面を撮りました。名簿の名前は✕にしました。ほかにも写っていないか見てください。", false);
+        if (fbAttachImage(c)) fbShowMsg("画面を撮りました。名簿の名前は✕にしました。他にも写っていないか見てください。", false);
     } catch (e) {
         fbShowMsg("撮影できませんでした。F-SHOT", true);
     } finally {
         const b2 = $id("fbShotBtn");
-        if (b2) { b2.disabled = false; b2.textContent = "いまの画面を撮る"; }
+        if (b2) { b2.disabled = false; b2.textContent = "今の画面を撮る"; }
     }
 }
 function fbRenderThumbs() {
@@ -368,9 +368,9 @@ function fbMaskModalHtml() {
     return `<div id="fbMaskOverlay" class="modal-overlay" style="display: none;">
   <div class="modal-content">
     <h4>名前などを隠す</h4>
-    <p class="fb-mask-hint">隠したいところを指かマウスでなぞって四角く囲むと黒く塗れます。「完了」を押すと画像に反映され、そのあとは元に戻せません。</p>
+    <p class="fb-mask-hint">隠したいところを指かマウスでなぞって四角く囲むと黒く塗れます。「完了」を押すと画像に反映され、その後は元に戻せません。</p>
     <div class="fb-mask-wrap"><canvas id="fbMaskCanvas" width="10" height="10"></canvas></div>
-    <div class="modal-btn-row"><button type="button" class="btn-secondary" data-fb="maskundo">ひとつ戻す</button><button type="button" id="fbMaskDoneBtn" data-fb="maskdone">完了</button><button type="button" data-fb="maskclose">閉じる</button></div>
+    <div class="modal-btn-row"><button type="button" class="btn-secondary" data-fb="maskundo">一つ戻す</button><button type="button" id="fbMaskDoneBtn" data-fb="maskdone">完了</button><button type="button" data-fb="maskclose">閉じる</button></div>
   </div>
 </div>`;
 }
@@ -389,11 +389,11 @@ function fbRender(prefill) {
         '<div class="fb-notice"><b>この内容はGitHubで公開されます。</b>児童生徒の名前・名簿・メールアドレス・電話番号は書かないでください。送る前に名前などが入っていないかアプリが確認します。' + (hasRelay ? '画像も公開され、180日で消えます。' : '') + '</div>' +
         '<div class="fb-kinds">' + FB_KINDS.map(x => '<button type="button" class="fb-kind' + (x.id === fbKind ? " on" : "") + '" data-fb-kind="' + x.id + '">' + x.label + '</button>').join("") + '</div>' +
         '<p class="fb-kind-hint" id="fbKindHint">' + fbEsc(k.hint) + '</p>' +
-        '<textarea id="fbText" maxlength="2000" placeholder="' + (fbKind === "bug" ? "どの画面で何をしたらどうなりましたか？ 例：席替えスタートを押すと画面が止まる" : fbKind === "idea" ? "どんなときにどんな機能があると助かりますか？" : "知りたいことを書いてください。") + '">' + fbEsc(text) + '</textarea>' +
+        '<textarea id="fbText" maxlength="2000" placeholder="' + (fbKind === "bug" ? "どの画面で何をしたらどうなりましたか？ 例：席替えスタートを押すと画面が止まる" : fbKind === "idea" ? "どんな時にどんな機能があると助かりますか？" : "知りたいことを書いてください。") + '">' + fbEsc(text) + '</textarea>' +
         '<div class="fb-count"><span id="fbCount">0</span> / 2000</div>' +
-        (hasRelay ? '<div class="fb-row"><button type="button" class="btn-secondary" id="fbPickBtn" data-fb="pick">画像をつける</button>' + (fbShotAvailable() ? '<button type="button" class="btn-secondary" id="fbShotBtn" data-fb="shot">いまの画面を撮る</button>' : '') + '<span class="fb-hint">スクリーンショットなどを最大' + FB_MAX_IMAGES + '枚まで付けられます。Ctrl+V で貼り付けたり、ドラッグしたりもできます</span><input type="file" id="fbFile" accept="image/*" multiple style="display:none;"></div><div id="fbThumbs"></div>' : '') +
+        (hasRelay ? '<div class="fb-row"><button type="button" class="btn-secondary" id="fbPickBtn" data-fb="pick">画像を付ける</button>' + (fbShotAvailable() ? '<button type="button" class="btn-secondary" id="fbShotBtn" data-fb="shot">今の画面を撮る</button>' : '') + '<span class="fb-hint">スクリーンショットなどを最大' + FB_MAX_IMAGES + '枚まで付けられます。Ctrl+V で貼り付けたり、ドラッグしたりもできます</span><input type="file" id="fbFile" accept="image/*" multiple style="display:none;"></div><div id="fbThumbs"></div>' : '') +
         '<input type="text" id="fbHp" class="fb-hp" tabindex="-1" autocomplete="off" aria-hidden="true">' +
-        '<div class="fb-row"><label><input type="checkbox" id="fbWithEnv" checked> 画面の状態もつける（版・ブラウザ・直前のエラーなど）</label></div>' +
+        '<div class="fb-row"><label><input type="checkbox" id="fbWithEnv" checked> 画面の状態も付ける（版・ブラウザ・直前のエラーなど）</label></div>' +
         '<details><summary style="cursor:pointer;font-size:13px;">付ける内容を見る</summary><pre class="fb-env" id="fbEnvPre"></pre></details>' +
         '<div id="fbWarn"></div>' +
         '<div class="fb-msg" id="fbMsg" style="display:none;"></div>' +
@@ -454,7 +454,7 @@ SekigaeApp.registerPlugin({
         document.head.appendChild(st);
         document.body.insertAdjacentHTML("beforeend", fbModalHtml() + fbMaskModalHtml());
         app.insertInto("settings-system", '<button type="button" id="fbOpenBtn" class="btn-secondary" style="margin-top: 10px;">不具合・要望を送る</button>');
-        app.insertInto("guide-faq", "<li><strong>不具合を見つけた・こんな機能がほしい</strong>：設定の「機能・プラグイン」にある「不具合・要望を送る」から送れます。同期のエラーが出たときは、エラーの欄の「このエラーを報告」からも送れます。内容は公開されるので生徒の名前は書かないでください。</li>");
+        app.insertInto("guide-faq", "<li><strong>不具合を見つけた・こんな機能が欲しい</strong>：設定の「機能・プラグイン」にある「不具合・要望を送る」から送れます。同期のエラーが出た時は、エラーの欄の「このエラーを報告」からも送れます。内容は公開されるので生徒の名前は書かないでください。</li>");
         document.addEventListener("click", ev => {
             const t = ev.target.closest ? ev.target.closest("#fbOpenBtn, [data-fb], [data-fb-kind]") : null;
             if (!t) return;

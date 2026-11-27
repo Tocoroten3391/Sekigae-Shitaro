@@ -6,23 +6,23 @@ const CALC_PLUGIN_HTML = {
     "button": "<button type=\"button\" onclick=\"toggleCalculator()\" class=\"btn-config-toggle btn-calc-toggle\" id=\"calcOpenBtn\" aria-haspopup=\"dialog\" aria-expanded=\"false\">🧮 電卓</button>",
     "setting": "<div class=\"switch-container\" style=\"margin-top: 8px;\"><label class=\"switch\"><input type=\"checkbox\" id=\"calcBtnToggle\" onchange=\"onCalcBtnToggle()\"><span class=\"slider\"></span></label><span class=\"switch-label\">画面の左に、電卓のボタンを出す</span></div>",
     "guide": [
-        "<li>電卓の分数、文字式、メモリのボタンは、上の段の「🧰 メニュー」にまとまっています。押すとメニューが開き、ボタンを押すか、ほかの場所を押すと、閉じます。「分数 ⁄」「帯分数」「📦 入れ子」「➡️ 出る」「🔁 表示」、関数電卓の「🧩 展開」から「🔗 連立方程式」まで、「MC」から「📞 鳴らす」まで、関数電卓の「x」「y」「a」「b」のキーと、その値を入れる欄が、ここにあります。以下の説明の中のボタンは、すべて、このメニューを開いて押します。</li>",
+        "<li>電卓の分数、文字式、メモリのボタンは、上の段の「🧰 メニュー」にまとまっています。押すとメニューが開き、ボタンを押すか、他の場所を押すと、閉じます。「分数 ⁄」「帯分数」「📦 入れ子」「➡️ 出る」「🔁 表示」、関数電卓の「🧩 展開」から「🔗 連立方程式」まで、「MC」から「📞 鳴らす」まで、関数電卓の「x」「y」「a」「b」のキーと、その値を入れる欄が、ここにあります。以下の説明の中のボタンは、全て、このメニューを開いて押します。</li>",
         "<li>画面の左上にある「🧮 電卓」を押すと、電卓の窓が開きます。窓の上の部分をつかむと、好きな場所へ動かせます。位置は覚えています。</li>",
         "<li>「🔬 関数電卓」に切り替えると、sin、cos、tan、log、ln、√、べき乗、階乗、π、e なども使えます。角度は、「度」のキーでラジアンに切り替えられます。</li>",
         "<li>分数は、「分数 ⁄」のキーで入れます。押すと、分子と分母の四角い枠が上下に並んで出ます。分子を入れて、もう一度「分数 ⁄」を押すと、分母に移ります。「1」「分数 ⁄」「2」の順に押しても、1/2 になります。</li>",
         "<li>分子や分母の枠の中にも、sin、cos、√ などの関数や、かっこ、π、演算を入れられます。たとえば「分数 ⁄」「√」「2」「分数 ⁄」「2」の順に押すと、√2/2 になります。分母の中で「＋」「−」「×」「÷」を押すと、分母の中で計算を続けます。「1/(1+√2)」は、「分数 ⁄」「1」「分数 ⁄」「1」「＋」「√」「2」の順で入ります。</li>",
-        "<li>分母が書き終わったら、「➡️ 出る」を押すと、分数の外に出ます。右向きの矢印のキーでも出られます。分母の中で「分数 ⁄」を押すと、そこまでの数が新しい分数の分子になるので、「1」「分数 ⁄」「2」「＋」「1」「分数 ⁄」「3」のように、分数を続けて足せます。「)」、%、x² などを押したときも、分数の外に出ます。</li>",
+        "<li>分母が書き終わったら、「➡️ 出る」を押すと、分数の外に出ます。右向きの矢印のキーでも出られます。分母の中で「分数 ⁄」を押すと、そこまでの数が新しい分数の分子になるので、「1」「分数 ⁄」「2」「＋」「1」「分数 ⁄」「3」のように、分数を続けて足せます。「)」、%、x² などを押した時も、分数の外に出ます。</li>",
         "<li>入れる所は、枠を直接押しても選べます。パソコンでは、矢印のキーでも移れます。選んでいる枠は、青く光ります。</li>",
-        "<li>分数の中に分数を入れるには、入力中の枠で「📦 入れ子」を押します。たとえば「分数 ⁄」「📦 入れ子」「1」「分数 ⁄」「2」の順に押すと、分子が 1/2 の分数になります。分子が書き終わったら、「分数 ⁄」でひとつ外の枠に戻り、もう一度「分数 ⁄」で分母に移ります。「➡️ 出る」は、ひとつ外の枠に出ます。</li>",
-        "<li>関数電卓の「🔗 連立方程式」では、xとyの2本の式を解けます。1本目の式（例　2x＋y＝5）を入れて押し、2本目の式（例　x－y＝1）を入れてもう一度押すと、xとyの値が出ます。解が無いときや、無数にあるときも、そのとおりに出ます。aやbの入った式は、aやbを使った形で出ます。途中でやめるときは、Cを押します。</li>",
+        "<li>分数の中に分数を入れるには、入力中の枠で「📦 入れ子」を押します。たとえば「分数 ⁄」「📦 入れ子」「1」「分数 ⁄」「2」の順に押すと、分子が 1/2 の分数になります。分子が書き終わったら、「分数 ⁄」で一つ外の枠に戻り、もう一度「分数 ⁄」で分母に移ります。「➡️ 出る」は、一つ外の枠に出ます。</li>",
+        "<li>関数電卓の「🔗 連立方程式」では、xとyの2本の式を解けます。1本目の式（例　2x＋y＝5）を入れて押し、2本目の式（例　x－y＝1）を入れてもう一度押すと、xとyの値が出ます。解が無いときや、無数にある時も、そのとおりに出ます。aやbの入った式は、aやbを使った形で出ます。途中でやめる時は、Cを押します。</li>",
         "<li>電卓の「📞 鳴らす」を押すと、答えの数字を、電話のボタンの音で順に鳴らします。小数点はほし、マイナスはシャープの音になります。鳴っている間にもう一度押すと止まります。</li>",
-        "<li>帯分数は、整数のあとに「帯分数」を押すと、分数の枠が出ます。「1」「帯分数」「1」「分数 ⁄」「2」の順に入れると、1と1/2 になります。分数のまま正確に計算して、約分もします。</li>",
+        "<li>帯分数は、整数の後に「帯分数」を押すと、分数の枠が出ます。「1」「帯分数」「1」「分数 ⁄」「2」の順に入れると、1と1/2 になります。分数のまま正確に計算して、約分もします。</li>",
         "<li>答えの分数や帯分数も、分子と分母が上下に並ぶ形で出ます。√2/2 のような √ を含む分数も同じです。計算の履歴の中の分数も、同じ形で出ます。「🔁 表示」を押すたびに、分数、帯分数、小数の順に切り替わります。</li>",
-        "<li>「分数 ⁄」は、かっこや関数のあとにも使えます。「sin(30)」「分数 ⁄」「cos(60)」の順に押すと、sin(30)÷cos(60) を分数の形で計算します。</li>",
+        "<li>「分数 ⁄」は、かっこや関数の後にも使えます。「sin(30)」「分数 ⁄」「cos(60)」の順に押すと、sin(30)÷cos(60) を分数の形で計算します。</li>",
         "<li>√を含む数も、正確に計算します。√2 は「√2」、√8 は「2√2」と出て、「1+√2」や「√3/2」のような足し算、かけ算、わり算もできます。</li>",
         "<li>sin、cos、tan は、15度の倍数の角度なら、正確な値で出ます。sin(45) は「√2/2」、tan(15) は「2−√3」です。ラジアンでも、π/6 や π/4 のような角度なら同じです。sin⁻¹、cos⁻¹、tan⁻¹ も、正確な値の時は、角度がきれいに出ます。</li>",
         "<li>それ以外の角度や、log、ln、πを含む計算は、小数で答えます。「🔁 表示」で、√の形と小数を切り替えられます。</li>",
-        "<li>「↩️ 元に戻す」を押すと、ひとつ前の状態にもどります。100回前まで、さかのぼれます。「=」を押す前にもどすことも、メモリの操作をもどすこともできます。「↪️ やり直し」を押すと、もどした操作をやり直せます。パソコンでは、Ctrl キーと Z で元に戻し、Ctrl キーと Y でやり直せます。</li>",
+        "<li>「↩️ 元に戻す」を押すと、一つ前の状態にもどります。100回前まで、さかのぼれます。「=」を押す前にもどすことも、メモリの操作をもどすこともできます。「↪️ やり直し」を押すと、もどした操作をやり直せます。パソコンでは、Ctrl キーと Z で元に戻し、Ctrl キーと Y でやり直せます。</li>",
         "<li>「🔬 関数電卓」には、x、y、a、b のキーがあります。「2x+1」のように式に入れると、関数の計算ができます。キーの下の「値を入れる」を押して、値を電卓のキーで入れ、「=」を押すと、その値が入ります。分数や √ の値も入れられます。もう一度「値を入れる」を押すと、入力をやめます。値が入っている文字には、「🗑️」のボタンが出て、押すとその値を消せます。値は覚えておきます。値が入っていない文字は、文字のまま計算します。「(x+1)(x−1)」は「x²−1」、「x/2+x/3」は「5x/6」と出ます。値が入っている文字だけは、数として計算します。パソコンのキーボードでも、x、y、a、b を打てます。かけ算は、「*」のキーです。「🧩 展開」と「✂️ 因数分解」で、文字式を展開した形と因数分解した形で答えを出せます。整数は、素数のかけ算に分けます。「⚖️ 等号 ＝」で方程式を入れて「🔎 方程式を解く」を押すと、解が出ます。等号のある式は、「=」でも解けます。解く文字は、式に x があれば x、なければ y、a、b の順です。2次方程式は √ の形で、3次以上は近い値で出ます。出た解を押すと、式に入れられます。「📈 表とグラフ」は、「2x+1」のような文字が1つの式を、x を動かした値の表と、グラフにします。はじめ、おわり、きざみは、入れ替えられます。グラフの上をなぞると、その場所の値が出ます。</li>",
         "<li>MC、MR、M+、M− のメモリのキー、履歴、答えのコピーも使えます。パソコンのキーボードでも入力できます。</li>",
         "<li>電卓のボタンは、「表示モードと画面の部品」のスイッチで、出すかどうかを選べます。ロック中は使えません。</li>"
@@ -45,7 +45,7 @@ const CALC_VAR_CH = { x: "ｘ", y: "ｙ", a: "ａ", b: "ｂ" };
 const CALC_VAR_NAMES = ["x", "y", "a", "b"];
 function calcDisp(t) { return t.replace(/ｘ/g, "x").replace(/ｙ/g, "y").replace(/ａ/g, "a").replace(/ｂ/g, "b"); }
 const CALC_KEYS_MAIN = [
-    ["clear", "C", "全部消す", "ck-fn"], ["(", "(", "かっこを開く", "ck-fn"], [")", ")", "かっこを閉じる", "ck-fn"], ["bs", "⌫", "ひとつ消す", "ck-fn"],
+    ["clear", "C", "全部消す", "ck-fn"], ["(", "(", "かっこを開く", "ck-fn"], [")", ")", "かっこを閉じる", "ck-fn"], ["bs", "⌫", "一つ消す", "ck-fn"],
     ["7", "7"], ["8", "8"], ["9", "9"], ["/", "÷", "わる", "ck-op"],
     ["4", "4"], ["5", "5"], ["6", "6"], ["*", "×", "かける", "ck-op"],
     ["1", "1"], ["2", "2"], ["3", "3"], ["-", "−", "ひく", "ck-op"],
@@ -57,7 +57,7 @@ const calc = { expr: "", done: false, ans: null, ansV: null, ansFrac: false, mem
 // ---- 数の表し方：分数や√のまま持つ「正確な数」と、小数の「近い数」 ----
 // 正確な数は、分数 {r:true}、または 係数×√の和 {s:true}。小数は {r:false, x}
 const CALC_MATH = { math: true };
-const CALC_BIG = { big: true }; // 正確に持てないほど大きくなった時は、小数に切り替えます
+const CALC_BIG = { big: true }; // 正確に持てない程大きくなった時は、小数に切り替えます
 const calcAbsB = a => (a < 0n ? -a : a);
 function calcGcd(a, b) { a = calcAbsB(a); b = calcAbsB(b); while (b) { const t = a % b; a = b; b = t; } return a; }
 function calcGcdN(a, b) { while (b) { const t = a % b; a = b; b = t; } return a; }
@@ -525,7 +525,7 @@ function polySumText(P) {
     });
     return out || "0";
 }
-function polyIntForm(P) { // 係数がすべて有理数なら、分母をそろえて「(分子)/分母」にします
+function polyIntForm(P) { // 係数が全て有理数なら、分母をそろえて「(分子)/分母」にします
     if (!polyAllRat(P)) return polySumText(P);
     let L = 1n;
     P.forEach(t => { L = L / calcGcd(L, t.c.d) * t.c.d; });
@@ -545,7 +545,7 @@ function polyText(V) {
 // ---- 因数分解と方程式：係数が有理数の多項式を、整数の範囲で分けます ----
 const polyIsZeroV = v => (v.p ? false : polyZeroC(v));
 const polyFromMono = (m, c) => (polyZeroC(c) ? calcR(0n, 1n) : polyFinish(new Map([[polyKey(m), { m, c }]]), polyConstP(CALC_ONE)));
-function polyCoeffsIn(P, u) { // 文字 u の次数ごとの係数（ほかの文字を含む式もあります）
+function polyCoeffsIn(P, u) { // 文字 u の次数ごとの係数（他の文字を含む式もあります）
     const cs = [];
     P.forEach(t => {
         let e = 0;
@@ -715,7 +715,7 @@ function polyFactorP(P) {
             uniFactor(polyToIntArr(Q)).forEach(f => push(intArrToP(f.a, atoms[0]), f.mult * mult));
             return;
         }
-        if (atoms.length === 2) { // 2つの文字で、すべての項の次数が同じ：片方を1として分け、あとでもどします
+        if (atoms.length === 2) { // 2つの文字で、全ての項の次数が同じ：片方を1として分け、後でもどします
             const degs = new Set();
             Q.forEach(t => degs.add(t.m.reduce((s, x) => s + x[1], 0)));
             if (degs.size === 1) {
@@ -1307,16 +1307,16 @@ function calcRender() {
         const d = p.querySelector('[data-ck="d' + n + '"]');
         if (d) d.hidden = !t;
         c.setAttribute("aria-pressed", calc.assign === n ? "true" : "false");
-        c.setAttribute("aria-label", n + " の値。" + (calc.assign === n ? "いま入力中です。もう一度押すと、やめます" : t ? "いまは " + t + " です。押すと、新しい値を入れます" : "まだ入っていません。押すと、値を入れる入力になります"));
+        c.setAttribute("aria-label", n + " の値。" + (calc.assign === n ? "今入力中です。もう一度押すと、やめます" : t ? "今は " + t + " です。押すと、新しい値を入れます" : "まだ入っていません。押すと、値を入れる入力になります"));
     });
     p.dataset.sci = calc.sci ? "1" : "0";
     const u = p.querySelector('[data-ck="deg"]');
-    if (u) { u.textContent = calc.deg ? "度" : "ラジアン"; u.setAttribute("aria-label", "角度の単位。いまは" + (calc.deg ? "度" : "ラジアン") + "です"); }
+    if (u) { u.textContent = calc.deg ? "度" : "ラジアン"; u.setAttribute("aria-label", "角度の単位。今は" + (calc.deg ? "度" : "ラジアン") + "です"); }
     const vb = p.querySelector('[data-ck="view"]');
     if (vb) {
         const eff = cur && cur.V.p ? "sym" : cur && ((cur.V.r && cur.V.d !== 1n) || cur.V.s) ? calcEffView(cur.V, cur.hasFrac, calc.view) : (calc.view === "auto" || calc.view === "exact" ? "dec" : calc.view);
         vb.textContent = "表示 " + CALC_VIEW_NAME[eff];
-        vb.setAttribute("aria-label", "答えの表示を切り替える。いまは" + CALC_VIEW_NAME[eff] + "です");
+        vb.setAttribute("aria-label", "答えの表示を切り替える。今は" + CALC_VIEW_NAME[eff] + "です");
     }
     const ub = p.querySelector('[data-ck="undo"]');
     if (ub) ub.disabled = !calc.undo.length || !!calc.assign;
@@ -1657,7 +1657,7 @@ function calcUndo() {
     if (calc.assign) { showToast("値を入れている間は、元に戻せません。", "warn"); return; }
     const a = calc.undo.pop();
     if (!a) { showToast("もどせる操作が、ありません。", "warn"); return; }
-    calc.redo.push(calcSnap(a.key)); // やり直すときのために、いまの状態を取っておく
+    calc.redo.push(calcSnap(a.key)); // やり直す時のために、今の状態を取っておく
     calcRestore(a);
     calcRender();
 }
@@ -1736,7 +1736,7 @@ function calcSolveKey() {
         const have = CALC_VAR_NAMES.filter(n => e.includes(CALC_VAR_CH[n]) && calc.vars[n]);
         if (have.length && have.length === CALC_VAR_NAMES.filter(n => e.includes(CALC_VAR_CH[n])).length) { showToast(have.join(" と ") + " には、値が入っています。値を消すと、文字のまま解けます。", "warn"); return; }
         const z = f.r ? f.n === 0n : (f.s ? false : Math.abs(f.x) < 1e-12);
-        fin({ u: "", items: [], main: z ? "すべての値" : "解なし", sub: z ? "どんな値でも、成り立ちます" : "成り立つ値は、ありません" }, "", z ? "すべての値" : "解なし", "", null);
+        fin({ u: "", items: [], main: z ? "全ての値" : "解なし", sub: z ? "どんな値でも、成り立ちます" : "成り立つ値は、ありません" }, "", z ? "全ての値" : "解なし", "", null);
         return;
     }
     const atoms = polyAtomsOf(f.n, new Set());
@@ -1766,7 +1766,7 @@ function calcSolveKey() {
     let sub = name + " について解きました";
     if (res.excluded.length) sub += "。" + res.excluded.map(v => name + "＝" + calcShow(v, true, "auto").main).join("、") + " は、分母が 0 になるので除きます";
     else if (res.unsolved) sub += "。解けない部分が残っています";
-    else if (res.noreal && items.length) sub += "。ほかは、実数の解がありません";
+    else if (res.noreal && items.length) sub += "。他は、実数の解がありません";
     const main = items.length ? "解は " + items.length + " つ" : "解なし";
     if (!items.length) sub = res.excluded.length ? res.excluded.map(v => name + "＝" + calcShow(v, true, "auto").main).join("、") + " は、分母が 0 になるので、解はありません" : res.noreal ? "実数の解は、ありません" : "解は、ありません";
     const text = items.length ? name + "＝" + items.map(x => x.text.replace("≈ ", "≈")).join("、") : "解なし";
@@ -1846,7 +1846,7 @@ function calcSysKey() {
     calcRender();
 }
 function calcPressCore(k) {
-    if (k === "out") { const op = calcSlotPath(); if (op) { calc.slot = op.slice(0, -1).join(">") || null; calcRender(); } return; } // 分数の枠から出る。入れ子なら、ひとつ外の枠へ
+    if (k === "out") { const op = calcSlotPath(); if (op) { calc.slot = op.slice(0, -1).join(">") || null; calcRender(); } return; } // 分数の枠から出る。入れ子なら、一つ外の枠へ
     if (/^d[xyab]$/.test(k)) { // 変数の値を消す
         const n = k.charAt(1);
         if (!calc.vars[n]) return;
@@ -2080,7 +2080,7 @@ function calcRingStop() {
 function calcRing() {
     if (calcRingTimer) { calcRingStop(); return; }
     const cur = calcCurrent();
-    if (!cur || cur.V.p) { showToast("数の答えが出ているときだけ、鳴らせます。", "warn"); return; }
+    if (!cur || cur.V.p) { showToast("数の答えが出ている時だけ、鳴らせます。", "warn"); return; }
     const text = calcShow(cur.V, cur.hasFrac, "dec").main;
     const digits = Array.from(text).map(ch => ch === "−" || ch === "-" ? "#" : ch === "." ? "*" : /[0-9]/.test(ch) ? ch : "").join("").slice(0, 20);
     if (!digits) { showToast("鳴らせる数字がありません。", "warn"); return; }
@@ -2276,7 +2276,7 @@ function calcBuild() {
         `<div class="calc-head" id="calcHead"><span class="calc-grip" aria-hidden="true">⠿</span>` +
         `<div class="calc-modes" role="group" aria-label="電卓の種類"><button type="button" data-cmode="basic" data-ck="mode">電卓</button><button type="button" data-cmode="sci" data-ck="mode">関数電卓</button></div>` +
         btn("close", "✕", "電卓を閉じる", "calc-mini") + `</div>` +
-        `<div class="calc-toolrow">` + btn("undo", "元に戻す", "ひとつ前にもどす", "calc-tool") + btn("redo", "やり直し", "もどした操作を、やり直す", "calc-tool") + btn("hist", "履歴", "計算の履歴を開く", "calc-tool") + btn("menu", "メニュー", "分数、文字式、メモリの機能メニューを開く", "calc-tool calc-menubtn") + `</div>` +
+        `<div class="calc-toolrow">` + btn("undo", "元に戻す", "一つ前にもどす", "calc-tool") + btn("redo", "やり直し", "もどした操作を、やり直す", "calc-tool") + btn("hist", "履歴", "計算の履歴を開く", "calc-tool") + btn("menu", "メニュー", "分数、文字式、メモリの機能メニューを開く", "calc-tool calc-menubtn") + `</div>` +
         `<div class="calc-hist" id="calcHist" hidden></div>` +
         `<button type="button" data-ck="histclear" class="calc-hist-clear" hidden>履歴を消す</button>` +
         `<div class="calc-screen"><div class="calc-expr" id="calcExpr">　</div><div class="calc-result" id="calcResult" aria-live="polite">0</div><div class="calc-sub" id="calcSub">　</div></div>` +
@@ -2286,14 +2286,14 @@ function calcBuild() {
         `<div class="cg-msg" id="cgMsg" role="status"></div><svg class="cg-svg" id="cgSvg" role="img" aria-label="グラフ"></svg><div class="cg-read" id="cgRead" aria-live="polite">グラフの上をなぞると、値が出ます</div>` +
         `<div class="cg-table" id="cgTable"></div><button type="button" data-gk="back" class="cg-back">電卓にもどる</button></div>` +
         `<div class="calc-menu" id="calcMenu" hidden>` +
-        `<div class="calc-fracrow">` + btn("frac", "分数 ⁄", "分数の枠を出す。分子を入れたら、もう一度押すと分母に移る", "calc-frac") + btn("mixed", "帯分数", "整数のあとに、分数の枠を出す", "calc-frac") + btn("nest", "入れ子", "いま入力中の枠の中に、分数の枠を出す。分数の中の分数を作る", "calc-frac") + btn("out", "出る", "分数の枠から出る。入れ子の分数では、ひとつ外の枠に出る", "calc-frac") + btn("view", "表示 小数", "答えの表示を切り替える", "calc-frac calc-view") + `</div>` +
+        `<div class="calc-fracrow">` + btn("frac", "分数 ⁄", "分数の枠を出す。分子を入れたら、もう一度押すと分母に移る", "calc-frac") + btn("mixed", "帯分数", "整数の後に、分数の枠を出す", "calc-frac") + btn("nest", "入れ子", "今入力中の枠の中に、分数の枠を出す。分数の中の分数を作る", "calc-frac") + btn("out", "出る", "分数の枠から出る。入れ子の分数では、一つ外の枠に出る", "calc-frac") + btn("view", "表示 小数", "答えの表示を切り替える", "calc-frac calc-view") + `</div>` +
         `<div class="calc-algrow">` + btn("expand", "展開", "文字式を展開した形で、答えを出す", "calc-alg ca-2") + btn("factor", "因数分解", "因数分解した形で、答えを出す", "calc-alg ca-2") + btn("equ", "等号 ＝", "方程式の等号を入れる", "calc-alg ca-2") + btn("solve", "方程式を解く", "方程式を解く。等号がなければ、式＝0 として解く", "calc-alg ca-3") + btn("graph", "表とグラフ", "式の文字を動かして、値の表とグラフを出す", "calc-alg ca-3") + btn("sys", "連立方程式", "1本目の式を入れて押し、2本目の式を入れてもう一度押すと、xとyを解く", "calc-alg ca-6") + `</div>` +
         `<div class="calc-memrow"><span class="calc-memmark" id="calcMemMark" hidden>M</span>` +
         btn("mc", "MC", "メモリを消す", "calc-mem") + btn("mr", "MR", "メモリの数を入れる", "calc-mem") + btn("mp", "M+", "メモリに足す", "calc-mem") + btn("mm", "M−", "メモリから引く", "calc-mem") +
         btn("copy", "コピー", "答えをコピーする", "calc-mem calc-copy") + btn("ring", "鳴らす", "答えの数字を、電話のボタンの音で鳴らす。小数点はほし、マイナスはシャープの音です", "calc-mem calc-ring") + `</div>` +
         `<div class="calc-vars">` + CALC_VAR_NAMES.map(n => `<div class="cv-cell">` + btn("v" + n, n, n + " を式に入れる", "cv-key") + `<div class="cv-row">` + btn("s" + n, "値を入れる", n + " の値を入れる", "cv-val") + btn("d" + n, "🗑️", n + " の値を消す", "cv-del") + `</div></div>`).join("") + `</div>` + `</div>` +
         `<div class="calc-phone" id="calcPhone" hidden>` + CALC_PHONE_KEYS.map(a => `<button type="button" class="ph-key" data-ph="${a[0]}" aria-label="${a[0] === "*" ? "ほし" : a[0] === "#" ? "シャープ" : a[0]}"><b>${a[0]}</b><small>${a[1]}</small></button>`).join("") +
-        `<button type="button" class="ph-fn" data-phfn="bs" aria-label="ひとつ消す">⌫</button><button type="button" class="ph-fn ph-wide" data-phfn="play" aria-label="押した順に鳴らす">順に鳴らす</button><button type="button" class="ph-fn" data-phfn="clear" aria-label="全部消す">C</button>` +
+        `<button type="button" class="ph-fn" data-phfn="bs" aria-label="一つ消す">⌫</button><button type="button" class="ph-fn ph-wide" data-phfn="play" aria-label="押した順に鳴らす">順に鳴らす</button><button type="button" class="ph-fn" data-phfn="clear" aria-label="全部消す">C</button>` +
         `<button type="button" class="ph-fn ph-back" data-phfn="exit">電卓にもどる</button></div>` +
         `<div class="calc-sci">` + CALC_KEYS_SCI.map(a => btn(a[0], a[1], a[2], "ck-sci " + (a[3] || ""))).join("") + `</div>` +
         `<div class="calc-main">` + CALC_KEYS_MAIN.map(a => btn(a[0], a[1], a[2], a[3] || "ck-num")).join("") + `</div>`;

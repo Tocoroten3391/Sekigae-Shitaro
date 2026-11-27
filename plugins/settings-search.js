@@ -73,7 +73,7 @@ const SS_ALIAS_RAW = `音|おと おんりょう さいせい べる みゅー�
 バックアップ|ばっくあっぷ ほぞん ふくげん 保存 復元
 スプレッドシート|すぷれっどしーと ぐーぐる google gas クラウド 同期
 クラウド|くらうど どらいぶ 同期 ねっと
-タイマー|たいまー 時計 とけい すとっぷうぉっち かうんとだうん
+タイマー|た今ー 時計 とけい すとっぷうぉっち かうんとだうん
 時間|じかん 時刻 じこく
 チャイム|ちゃいむ かね 鐘 予鈴 よれい
 アラーム|あらーむ おと 音 ベル
@@ -394,7 +394,7 @@ function ssRender() {
             (snip ? '<span class="ss-snip">' + snip + "</span>" : "") + "</span></li>";
     }).join("");
     panel.innerHTML = head + '<ul class="ss-list" id="cfgSearchList" role="listbox" aria-label="検索の結果">' + rows + "</ul>" +
-        (ssResults.length > shown.length ? '<p class="ss-hint">ほかに ' + (ssResults.length - shown.length) + " 件あります。言葉をふやして、しぼってください。</p>" : "");
+        (ssResults.length > shown.length ? '<p class="ss-hint">他に ' + (ssResults.length - shown.length) + " 件あります。言葉をふやして、しぼってください。</p>" : "");
     if (input && ssActive >= 0) input.setAttribute("aria-activedescendant", "ssOpt" + ssActive);
 }
 function ssSetActive(i, scroll) {

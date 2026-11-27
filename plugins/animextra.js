@@ -68,7 +68,7 @@ function toggleFavAnim() {
 function clearFavAnims() {
     saveFavAnims([]);
     refreshFavAnimUI();
-    showToast("お気に入りをすべて外しました。", "success");
+    showToast("お気に入りを全て外しました。", "success");
 }
 
 // ---- マイ演出（演出・速さ・効果音のセットに名前を付けて保存）
@@ -162,7 +162,7 @@ function renderAnimGallery() {
     if (!dock || !sel || galleryKind !== "anim") return;
     const keep = dock.scrollTop;
     const cur = sel.value, favs = getFavAnims();
-    let html = galleryHead("演出を一覧で試す", "名前を押すと、いまの席で試せます。✔ で、その演出にします。★ で、お気に入りに入れます。");
+    let html = galleryHead("演出を一覧で試す", "名前を押すと、今の席で試せます。✔ で、その演出にします。★ で、お気に入りに入れます。");
     html += '<div class="gal-body">';
     Array.from(sel.children).forEach(g => {
         if (g.tagName !== "OPTGROUP") return;

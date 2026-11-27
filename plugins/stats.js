@@ -209,7 +209,7 @@ function renderStatsTrend(data, rows) {
     summary.innerHTML =
         `<div class="stats-trend-card"><strong>${total}</strong><span>総指名回数</span></div>` +
         `<div class="stats-trend-card"><strong>${never}</strong><span>まだ当たっていない人</span></div>` +
-        `<div class="stats-trend-card"><strong>${avg.toFixed(1)}</strong><span>1人あたりの平均回数</span></div>`;
+        `<div class="stats-trend-card"><strong>${avg.toFixed(1)}</strong><span>1人当たりの平均回数</span></div>`;
     const now = Date.now();
     listBox.innerHTML = order.map((r, i) => {
         let badge, meta;

@@ -144,7 +144,7 @@ function envReveal(p) {
     const d = envDraw;
     if (!d) return;
     const last = d.idx >= d.order.length - 1;
-    const rowText = p.row === 1 ? "いちばん前の列です" : "前から" + p.row + "列目です";
+    const rowText = p.row === 1 ? "一番前の列です" : "前から" + p.row + "列目です";
     $id("envReveal").innerHTML = '<div class="env-paper"><div class="env-who">' + envEsc(envWho(p)) + ' さんの席は</div>' +
         '<div class="env-seat">' + envEsc(p.label) + '</div><div class="env-row">' + rowText + '</div>' + envMapHtml(p) +
         '<button type="button" class="env-next" id="envNextBtn">' + (last ? "おわり 🎉" : "次の人へ ▶") + '</button></div>';
@@ -196,7 +196,7 @@ SekigaeApp.registerPlugin({
         document.body.insertAdjacentHTML("beforeend", ENV_HTML);
         const more = $id("moreMenu");
         if (more) more.insertAdjacentHTML("beforeend", '<button type="button" onclick="openEnvDraw()" class="pop-item pop-item-gray" id="btnEnvDraw">封筒くじ</button>');
-        app.insertInto("guide-faq", "<li><strong>席替えの結果を、盛り上げて発表したい</strong>：席替えをしたあとに、「ほかの操作」の「封筒くじ」を押します。呼ばれた人が封筒を1つ選ぶと、その人の席が出ます。席は、席替えで先に決まっているので、どの封筒を選んでも同じです。</li>");
+        app.insertInto("guide-faq", "<li><strong>席替えの結果を、盛り上げて発表したい</strong>：席替えをした後に、「他の操作」の「封筒くじ」を押します。呼ばれた人が封筒を1つ選ぶと、その人の席が出ます。席は、席替えで先に決まっているので、どの封筒を選んでも同じです。</li>");
     }
 });
 document.addEventListener("keydown", e => {

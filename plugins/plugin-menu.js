@@ -110,7 +110,7 @@ function pmWeightOf(p) {
     const ms = (p._t_mount || 0) + (p._t_ready || 0);     // 起動の時に、何もしないプラグインは、0 ミリ秒（軽い）
     return { ms: ms, load: p._load || 0, level: ms >= PM_WEIGHT_HEAVY ? "heavy" : (ms >= PM_WEIGHT_MID ? "mid" : "light") };
 }
-const PM_WEIGHT_LABEL = { light: "軽い", mid: "ふつう", heavy: "重い" };
+const PM_WEIGHT_LABEL = { light: "軽い", mid: "普通", heavy: "重い" };
 
 // ---- 設定のどこにあるか ----
 function pmTargets(id) {
@@ -400,7 +400,7 @@ function pmRenderUnused() {
     if (!list.length || box.dataset.dismissed === "1") { box.hidden = true; box.innerHTML = ""; return; }
     box.hidden = false;
     box.innerHTML = '<span class="pm-unused-text">' + PM_UNUSED_DAYS + '日以上、使っていない機能が ' + list.length + ' 個あります：' + list.map(p => (p.name || p.id).replace(/[&<>]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[ch]))).join("、") +
-        '。オフにすると、少し軽くなります。</span><span class="pm-unused-btns"><button type="button" class="btn-compact" data-pm="unused-off">まとめてオフにする</button><button type="button" class="btn-compact" data-pm="unused-later">あとで</button></span>';
+        '。オフにすると、少し軽くなります。</span><span class="pm-unused-btns"><button type="button" class="btn-compact" data-pm="unused-off">まとめてオフにする</button><button type="button" class="btn-compact" data-pm="unused-later">後で</button></span>';
 }
 function pmUnusedOff() {
     if (typeof isAppLocked === "function" && isAppLocked()) { if (typeof showLockedToast === "function") showLockedToast(); return; }
@@ -409,7 +409,7 @@ function pmUnusedOff() {
     if (!confirm(PM_UNUSED_DAYS + "日以上、使っていない機能を、オフにします。\n" + list.map(p => "・" + (p.name || p.id)).join("\n") + "\n\n反映するには、再読み込みが必要です。オフにしますか？")) return;
     list.forEach(p => SekigaeApp.setEnabled(p.id, false));
     SekigaeApp.renderPluginList();
-    showToast(list.length + "個を、オフにしました。再読み込みのあとに、反映されます。", "success");
+    showToast(list.length + "個を、オフにしました。再読み込みの後に、反映されます。", "success");
 }
 
 // ---- 画面の部品と、CSS ----
@@ -485,7 +485,7 @@ function pmBuild() {
     const tools = '<div id="pmTools" class="pm-tools">' +
         '<div class="pm-search-row"><input type="search" id="pluginSearchInput" placeholder="プラグインをさがす　例：音、印刷、名簿" aria-label="プラグインをさがす" autocomplete="off"><span id="pluginSearchCount" aria-live="polite"></span></div>' +
         '<p id="pluginSearchEmpty" class="config-note" data-keep="1" hidden>見つかりませんでした。別の言葉で試してください。</p>' +
-        '<div class="pm-toolbtns"><button type="button" class="btn-compact" data-pm="open">すべて開く</button><button type="button" class="btn-compact" data-pm="close">すべて閉じる</button>' +
+        '<div class="pm-toolbtns"><button type="button" class="btn-compact" data-pm="open">全て開く</button><button type="button" class="btn-compact" data-pm="close">全て閉じる</button>' +
         '<button type="button" class="btn-compact" data-pm="heavy" aria-pressed="false">重い機能だけ見る</button></div>' +
         '<p class="pm-summary" id="pmSummaryText"></p>' +
         '<div id="pmUnusedBox" class="pm-unused-box" hidden></div></div>';
@@ -560,7 +560,7 @@ SekigaeApp.registerPlugin({
     id: "plugin-menu",
     name: "プラグインメニュー強化",
     version: "1.1",
-    description: "「プラグインの設定」の画面を、使いやすくします。名前や説明でさがせて、一致した文字に色が付きます。グループごとに折りたためます。切りかえた件数と「今すぐ再読み込み」を、画面の下に固定します。機能ごとに、軽い・ふつう・重いの目安を出します。広い画面では、左に目次、右に2列で並びます。名前を押すと、設定の中のボタンの場所へ移ります。60日使っていない機能には印が付きます。使った回数は、この端末の中だけで数えます。",
+    description: "「プラグインの設定」の画面を、使いやすくします。名前や説明でさがせて、一致した文字に色が付きます。グループごとに折りたためます。切りかえた件数と「今すぐ再読み込み」を、画面の下に固定します。機能ごとに、軽い・普通・重いの目安を出します。広い画面では、左に目次、右に2列で並びます。名前を押すと、設定の中のボタンの場所へ移ります。60日使っていない機能には印が付きます。使った回数は、この端末の中だけで数えます。",
     searchWords: "プラグイン メニュー 検索 折りたたみ 再読み込み 重さ 軽い 重い 目次 2列 ジャンプ 使っていない 未使用 整理 軽量",
     mount(app) {
         const st = document.createElement("style");
@@ -587,7 +587,7 @@ SekigaeApp.registerPlugin({
             };
         }
         window.pmRevealRow = pmRevealRow;
-        app.insertInto("guide-tools", '<li><strong>プラグインメニュー強化</strong>：設定の「機能・プラグイン」の「プラグインの設定」で、上の検索ボックスから、名前や説明で絞れます。グループは折りたためます。切りかえた件数は、画面の下に固定して出ます。機能の名前を押すと、設定の中のその場所へ移ります。「軽い・ふつう・重い」は、起動の準備にかかった時間の目安です。60日使っていない機能には印が付きます（使った回数は、この端末の中だけで数えます）。</li>');
+        app.insertInto("guide-tools", '<li><strong>プラグインメニュー強化</strong>：設定の「機能・プラグイン」の「プラグインの設定」で、上の検索ボックスから、名前や説明で絞れます。グループは折りたためます。切りかえた件数は、画面の下に固定して出ます。機能の名前を押すと、設定の中のその場所へ移ります。「軽い・普通・重い」は、起動の準備にかかった時間の目安です。60日使っていない機能には印が付きます（使った回数は、この端末の中だけで数えます）。</li>');
     },
     ready() {
         pmTrackInit();

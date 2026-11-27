@@ -477,5 +477,5 @@ SekigaeApp.registerPlugin({
     name: "席の設定画面",
     version: "1.0",
     required: true,
-    description: "席をタップしたときの設定画面と、優先エリアの選択です。"
+    description: "席をタップした時の設定画面と、優先エリアの選択です。"
 });

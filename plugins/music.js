@@ -18,10 +18,10 @@ const MUSIC_EXTS = /\.(mp3|m4a|aac|wav|ogg|oga|opus|flac|weba|webm|mp4)$/i;
 const MUSIC_FADE_MS = 260;
 const MUSIC_TAG_MAX = 12 * 1024 * 1024;          // 曲の情報として読む大きさの上限
 const MUSIC_COVER_MAX = 6 * 1024 * 1024;         // 表紙の画像の大きさの上限
-const MUSIC_LOOKUP_GAP_MS = 3200;                // まとめて調べる時の、1曲ごとの間隔（iTunes は 1分に20回くらいまで）
+const MUSIC_LOOKUP_GAP_MS = 3200;                // まとめて調べる時の、1曲ごとの間隔（iTunes は 1分に20回くら今で）
 
 let musicTracks = [];            // { id, name, size, blob, url, meta }  meta は曲の情報。まだ読んでいない時は null
-let musicIndex = -1;             // いま流れている（または選ばれている）曲
+let musicIndex = -1;             // 今流れている（または選ばれている）曲
 let musicAudio = null;
 let musicDbPromise = null;
 let musicHistory = [];           // 「前へ」で戻るための、聞いた順
@@ -499,7 +499,7 @@ function musicRemove(i) {
 }
 function musicClearAll() {
     if (!musicTracks.length) return;
-    if (!confirm("追加した曲を、すべて消します。よろしいですか？")) return;
+    if (!confirm("追加した曲を、全て消します。よろしいですか？")) return;
     musicStopNow();
     musicTracks.forEach(t => { if (t.url) { try { URL.revokeObjectURL(t.url); } catch (e) { /* 何もしない */ } } });
     musicTracks = [];
@@ -508,7 +508,7 @@ function musicClearAll() {
     musicPlSave(musicPlLoad().map(p => Object.assign({}, p, { ids: [] })));
     musicRenderList();
     musicRenderNow();
-    showToast("曲を、すべて消しました。", "success");
+    showToast("曲を、全て消しました。", "success");
 }
 
 // ---- 再生
@@ -935,7 +935,7 @@ async function musicAlbPick(k) {
     let songs;
     try { songs = await musicItunesAlbumSongs(c.id); } catch (e) { msg.textContent = "ネットにつながりませんでした。もう一度やってください。"; return; }
     if (musicAlb !== a) return;
-    if (!songs.length) { msg.textContent = "このアルバムの曲が、取れませんでした。ほかのアルバムを選んでください。"; return; }
+    if (!songs.length) { msg.textContent = "このアルバムの曲が、取れませんでした。他のアルバムを選んでください。"; return; }
     a.album = c; a.songs = songs; a.cover = null;
     const first = a.initial.map(id => musicTracks.find(t => t.id === id)).filter(Boolean);
     const rest = musicTracks.filter(t => !a.initial.includes(t.id));
@@ -1095,7 +1095,7 @@ let musicXfading = null;         // 重ねている最中の状態
 let musicLoop = { a: null, b: null, on: false, timer: null };
 let musicSpinTimer = null;
 let musicSpecRaf = 0;
-let musicSpeed = 1;              // 再生の速さ（1＝ふつう）
+let musicSpeed = 1;              // 再生の速さ（1＝普通）
 let musicKeepPitch = true;       // 速さを変えても、音の高さを変えない
 let musicEchoOn = false;
 let musicDuckTimer = null;
@@ -1867,7 +1867,7 @@ body.config-wide:has(#configContainer.open) #musicPlayerBtn, body.config-wide:ha
 // 音を鳴らす入れ物の、イベントの取り付け。いま鳴らしている方のイベントだけを、使います。
 // ---- 場面ボタンと、プレイリスト
 const MUSIC_PL_KEY = "music_playlists";          // [{ id, name, ids:[曲の番号札], shuffle }] の JSON
-const MUSIC_PL_ACTIVE_KEY = "music_pl_active";   // いま選んでいる場面の id（空＝すべての曲）
+const MUSIC_PL_ACTIVE_KEY = "music_pl_active";   // 今選んでいる場面の id（空＝全ての曲）
 let musicPlEditing = null;
 function musicPlLoad() {
     try {
@@ -1892,7 +1892,7 @@ function musicRenderScenes() {
     if (!box) return;
     const list = musicPlLoad(), act = musicActivePl(), playing = musicIsPlaying();
     const count = p => { const s = new Set(p.ids); return musicTracks.filter(t => s.has(t.id)).length; };
-    box.innerHTML = `<button type="button" class="music-chip${act ? "" : " is-sel"}" data-pl="">すべて</button>`
+    box.innerHTML = `<button type="button" class="music-chip${act ? "" : " is-sel"}" data-pl="">全て</button>`
         + list.map(p => `<button type="button" class="music-chip${act && act.id === p.id ? " is-sel" : ""}" data-pl="${musicEsc(p.id)}" title="${musicEsc(p.name)}">${act && act.id === p.id && playing ? "♪ " : ""}${musicEsc(p.name)}<small>${count(p)}</small></button>`).join("")
         + `<button type="button" class="music-chip music-chip-add" data-pl-new>＋ 場面を作る</button>`
         + (act ? `<button type="button" class="music-chip music-chip-add" data-pl-edit>✎ この場面を直す</button>` : "");
@@ -2341,7 +2341,7 @@ function musicLinkRefreshOptions() {
         const sel = $id(id);
         if (!sel) return;
         const cur = sel.value;
-        const opts = [`<option value="keep">いまの曲のまま</option>`]
+        const opts = [`<option value="keep">今の曲のまま</option>`]
             .concat(musicPlLoad().map(p => `<option value="pl:${musicEsc(p.id)}">場面：${musicEsc(p.name)}</option>`))
             .concat(musicTracks.map(t => `<option value="track:${musicEsc(t.id)}">曲：${musicEsc(musicTitle(t))}</option>`));
         sel.innerHTML = opts.join("");
@@ -2576,13 +2576,13 @@ async function musicPadAdd(fileList) {
 }
 function musicPadClearAll() {
     if (!musicPads.length) return;
-    if (!confirm("取り込んだ効果音を、すべて消します。よろしいですか？")) return;
+    if (!confirm("取り込んだ効果音を、全て消します。よろしいですか？")) return;
     musicPadStopAll();
     musicPads = [];
     musicPadDbRun("readwrite", st => st.clear());
     musicPadRender();
     musicLinkRefreshOptions();
-    showToast("効果音を、すべて消しました。", "success");
+    showToast("効果音を、全て消しました。", "success");
 }
 // ---- 効果音を直す
 function musicPadEditFill() {
@@ -2701,7 +2701,7 @@ function musicWireDeck(el) {
     el.addEventListener("error", only(() => {
         if (!musicAudio.getAttribute("src")) return;
         const t = musicTracks[musicIndex];
-        showToast(`「${t ? t.name : "この曲"}」を再生できませんでした。ほかの曲へ進みます。`, "error");
+        showToast(`「${t ? t.name : "この曲"}」を再生できませんでした。他の曲へ進みます。`, "error");
         if (musicTracks.length > 1) musicNext(true); else musicStopNow();
     }));
 }
@@ -2764,7 +2764,7 @@ function musicBuild() {
         </div>
         <div id="musicEqView" hidden>
             <canvas class="music-spec" width="600" height="72" aria-hidden="true"></canvas>
-            <div class="music-eq-top"><label class="music-eq-on"><input type="checkbox" id="musicEqOn"><span>イコライザーを使う</span></label><select id="musicEqPreset" aria-label="音の作り方">${MUSIC_EQ_PRESETS.map(p => `<option value="${p[0]}">${p[1]}</option>`).join("")}<option value="custom">じぶんで調整</option></select></div>
+            <div class="music-eq-top"><label class="music-eq-on"><input type="checkbox" id="musicEqOn"><span>イコライザーを使う</span></label><select id="musicEqPreset" aria-label="音の作り方">${MUSIC_EQ_PRESETS.map(p => `<option value="${p[0]}">${p[1]}</option>`).join("")}<option value="custom">自分で調整</option></select></div>
             <div class="music-eq-bands">${MUSIC_EQ_FREQS.map((f, i) => `<div class="music-eq-band"><span class="music-eq-db" id="musicEqDb${i}">0</span><div class="music-eq-wrap"><input type="range" class="music-eq-slider" data-band="${i}" min="-12" max="12" step="1" value="0" aria-label="${MUSIC_EQ_LABELS[i]}ヘルツの音の大きさ"></div><span class="music-eq-hz">${MUSIC_EQ_LABELS[i]}</span></div>`).join("")}</div>
             <div class="music-eq-scale"><span>低い音</span><span>高い音</span></div>
             <div class="music-eq-pre"><span>全体の音量</span><input type="range" id="musicEqPre" min="-12" max="12" step="1" value="0" aria-label="全体の音量の調整"><span id="musicEqPreVal">0 dB</span></div>
@@ -2787,7 +2787,7 @@ function musicBuild() {
                 <p class="music-status" id="musicLoopInfo">ループは、していません。</p></section>
             <section class="music-dj-sec"><h4>キュー</h4>
                 <div class="music-dj-row"><button type="button" class="music-btn" id="musicToStart">頭</button>${[0, 1, 2, 3].map(n => `<button type="button" class="music-btn music-cue" data-cue="${n}">${n + 1}：－</button>`).join("")}</div>
-                <p class="music-status">空のキューを押すと、いまの場所を覚えます。覚えたキューを押すと、そこへ飛びます。消すには、Shift を押しながら押します。</p></section>
+                <p class="music-status">空のキューを押すと、今の場所を覚えます。覚えたキューを押すと、そこへ飛びます。消すには、Shift を押しながら押します。</p></section>
             <section class="music-dj-sec"><h4>曲のつなぎ目を重ねる</h4>
                 <div class="music-dj-row"><input type="range" id="musicXfade" min="0" max="12" step="1" value="0" aria-label="曲のつなぎ目を重ねる秒数"><span class="music-dj-val" id="musicXfadeVal">なし</span></div></section>
             <section class="music-dj-sec"><h4>効果音パッド</h4>
@@ -2809,10 +2809,10 @@ function musicBuild() {
                 <div class="music-form">
                     <label for="musicSeatStart">席替えを始めた時に流す曲</label><select id="musicSeatStart"></select>
                     <label for="musicSeatResult">結果が出た時の効果音</label><select id="musicSeatResult"><option value="fanfare">ファンファーレ</option><option value="clap">拍手</option><option value="horn">ホーン</option><option value="drumroll">ドラムロール</option><option value="none">なし</option></select>
-                    <label for="musicSeatAfter">そのあとの曲</label><select id="musicSeatAfter"><option value="keep">そのまま流す</option><option value="quiet">小さくして流す</option><option value="stop">ゆっくり止める</option></select>
+                    <label for="musicSeatAfter">その後の曲</label><select id="musicSeatAfter"><option value="keep">そのまま流す</option><option value="quiet">小さくして流す</option><option value="stop">ゆっくり止める</option></select>
                     <label for="musicSeatDelay">スロットなど以外の演出は、何秒後に「終わった」とみなす</label><input type="number" id="musicSeatDelay" min="1" max="30" step="1" value="4">
                 </div>
-                <div class="music-dj-row" style="margin-top:8px"><button type="button" class="music-btn" id="musicSeatTest">ためしてみる</button></div>
+                <div class="music-dj-row" style="margin-top:8px"><button type="button" class="music-btn" id="musicSeatTest">試してみる</button></div>
 </section>
             <section class="music-dj-sec"><h4 id="musicStopHead">🎯 ストップ指名</h4>
                 <div class="music-form"><label for="musicStopStart">始める時に流す曲</label><select id="musicStopStart"></select></div>
@@ -2833,7 +2833,7 @@ function musicBuild() {
             <div class="music-form"><label for="musicPadVolEach">この効果音の音量</label></div>
             <div class="music-dj-row"><input type="range" id="musicPadVolEach" min="0" max="200" step="5" value="100" aria-label="この効果音の音量"><span class="music-dj-val" id="musicPadVolEachVal">100%</span></div>
             <div class="music-form"><label for="musicPadMode">鳴らし方</label><select id="musicPadMode"><option value="once">1回だけ。もう一度押すと、最初から</option><option value="overlap">押すたびに、重ねて鳴らす</option><option value="loop">くり返す。もう一度押すと、止まる</option></select></div>
-            <div class="music-edit-actions" style="margin-top:8px"><button type="button" class="music-btn" id="musicPadTest">ためしに鳴らす</button><button type="button" class="music-btn" id="musicPadPrev">前へ</button><button type="button" class="music-btn" id="musicPadNext">後ろへ ▶</button></div>
+            <div class="music-edit-actions" style="margin-top:8px"><button type="button" class="music-btn" id="musicPadTest">試しに鳴らす</button><button type="button" class="music-btn" id="musicPadPrev">前へ</button><button type="button" class="music-btn" id="musicPadNext">後ろへ ▶</button></div>
             <div class="music-edit-actions" style="margin-top:8px"><button type="button" class="music-btn primary" id="musicPadSaveBtn">保存</button><button type="button" class="music-btn" id="musicPadCancel">キャンセル</button><button type="button" class="music-btn" id="musicPadDelete">この効果音を消す</button></div>
         </div>
         <div id="musicPlEdit" hidden>
@@ -2873,12 +2873,12 @@ function musicBuild() {
         </div>`;
     if (anchor) btn.insertAdjacentElement("afterend", panel); else document.body.appendChild(panel);
     if (typeof makeInfoTip === "function") {
-        $id("musicNote").appendChild(makeInfoTip("追加した曲は、このパソコンのブラウザの中に残ります。別のパソコンや、ブラウザの履歴を消したあとは、もう一度追加してください。曲のファイルは、どこにも送られません。曲名・歌手・アルバムなどは、曲のファイルに入っている情報を読み取って表示します。ネットで調べる時だけ、曲名と歌手名を、Appleの検索（iTunes）に送ります。オフラインモードの間は、調べません。"));
+        $id("musicNote").appendChild(makeInfoTip("追加した曲は、このパソコンのブラウザの中に残ります。別のパソコンや、ブラウザの履歴を消した後は、もう一度追加してください。曲のファイルは、どこにも送られません。曲名・歌手・アルバムなどは、曲のファイルに入っている情報を読み取って表示します。ネットで調べる時だけ、曲名と歌手名を、Appleの検索（iTunes）に送ります。オフラインモードの間は、調べません。"));
         $id("musicAutoLabel").appendChild(makeInfoTip("オンにすると、曲を追加した時に、曲名や歌手名で、曲の情報と表紙を探して、足りない所を埋めます。曲のファイルは送りません。最初はオフです。"));
     }
 
     if (typeof makeInfoTip === "function") {
-        $id("musicSeatHead").appendChild(makeInfoTip("スロット、ストップボタン式スロット、ドラムロールは、演出が終わった時に効果音が鳴ります。ほかの演出は、下の秒数のあとに鳴ります。演出なしの時は、すぐに鳴ります。"));
+        $id("musicSeatHead").appendChild(makeInfoTip("スロット、ストップボタン式スロット、ドラムロールは、演出が終わった時に効果音が鳴ります。他の演出は、下の秒数の後に鳴ります。演出なしの時は、すぐに鳴ります。"));
         $id("musicStopHead").appendChild(makeInfoTip("曲が流れている間、画面で名前が高速に入れ替わります。「STOP！」を押すか、Spaceキーを押した時に出ていた人が、指名されます。休みの人は出ません。この指名は、指名機能の履歴には残りません。"));
         $id("musicPadDuckLabel").appendChild(makeInfoTip("効果音を鳴らしている間だけ、音楽を小さくします。くり返す効果音は、小さくしません。"));
         $id("musicPadKeysLabel").appendChild(makeInfoTip("オンの間は、画面の入力欄の外で、数字キーの 1 から 0 を押すと、左から10個までの効果音が鳴ります。"));
@@ -3027,7 +3027,7 @@ SekigaeApp.registerPlugin({
     searchWords: "音楽 BGM 曲 プレーヤー 再生 音量 シャッフル 曲名 歌手 アーティスト 作曲 作曲者 アルバム 表紙 ジャケット 検索 タグ 並べ方 グループ 分ける イコライザー イコライザ 音質 低音 高音 DJ ディージェー クロスフェード エコー ループ キュー 効果音 ファンファーレ ドラムロール 速さ テンポ 効果音 パッド サウンドボード 取り込み ぽちぽち SE 鳴らす 席替え 連動 ストップ 指名 名前 止める 場面 プレイリスト 朝の会 帰りの会 音量 そろえる ノーマライズ バックアップ 書き出し 読み込み 引っ越し 移行 保存",
     mount(app) {
         musicBuild();
-        app.insertInto("guide-faq", "<li><strong>授業中に音楽を流したい</strong>：画面の左にある「音楽」を押して、「曲を追加」から、音楽のファイルを入れます。再生・一時停止・前へ・次へ・シャッフル・くり返し・音量が使えます。曲は、このパソコンのブラウザに残るので、次に開いた時も、そのまま使えます。</li><li><strong>曲名や作曲者を出したい</strong>：曲を追加すると、ファイルに入っている曲名・歌手・アルバム・作曲者・表紙を、自動で読み取って表示します。足りない時は、曲の横の「✎」で直せます。「まとめて調べる」を押すと、ネットで探して、空いている所を埋めます（曲名と歌手名だけを、Appleの検索に送ります）。作曲者は、検索では出ないことが多いので、直接入れてください。</li><li><strong>アルバムや歌手ごとに分けたい</strong>：「音楽」の「並べ方」を、「アルバムごと」か「歌手ごと」にすると、見出しを付けて分けます。再生の順番も、その並びになります。アルバムごとの見出しの「💿」を押すと、そのアルバムの曲を、まとめて調べて、曲名・歌手・年・表紙・曲の順番を入れられます。</li><li><strong>音の聞こえ方を変えたい</strong>：「音楽」の「🎚 イコライザー」で、低い音・高い音の大きさを、10本のつまみで変えられます。「教室向け」「声をはっきり」などの、できあいの設定もあります。</li><li><strong>DJのように音楽を流したい</strong>：「音楽」の「DJ」で、速さ・フィルター・エコー・レコードストップ・ループ・キュー・曲のつなぎ目を重ねる機能・効果音パッド（ファンファーレ、ドラムロールなど）が使えます。</li><li><strong>席替えの演出に合わせて曲を流したい</strong>：「音楽」の「連動」で「席替えに合わせて、曲を流す」をオンにします。席替えを始めると曲が流れ、結果が出た時に効果音（ファンファーレなど）が鳴ります。スロットなどは演出が終わった時に、ほかの演出は決めた秒数のあとに鳴ります。</li><li><strong>曲を流しながら、くじのように人を指名したい</strong>：「連動」の「ストップ指名をはじめる」を押すと、曲が流れて、名前が高速で入れ替わります。「STOP！」か、Spaceキーを押した時に出ていた人が指名されます。休みの人は出ません。</li><li><strong>場面ごとに曲を分けたい（朝の会・そうじ・帰りの会など）</strong>：「音楽」の「曲」の画面の上にある「＋ 場面を作る」で、場面の名前をつけて、曲を選びます。場面のボタンを押すと、その場面の曲だけが流れます。「すべて」で、もとにもどります。</li><li><strong>曲によって音の大きさがバラバラ</strong>：「曲ごとの音量を、そろえる」をオンにすると、大きすぎる曲だけを小さくします。小さい曲を大きくはしません。最初に調べる時間が、少しかかります。</li><li><strong>効果音を取り込んで、ぽちぽち押して鳴らしたい</strong>：「音楽」の「効果音」で、「効果音を追加」から、音のファイルを入れます。四角いボタンを押すと、すぐに鳴ります。ボタンの「✎」で、名前・絵文字・色・音量・鳴らし方を変えられます。鳴らし方は、1回だけ、重ねて鳴らす、くり返す、から選べます。席替えの結果の効果音にも使えます。</li><li><strong>曲ごと、別のパソコンに移したい</strong>：「バックアップを書き出す」で、曲・効果音・曲の情報・場面・設定を、ひとつのZIPファイルにします。別のパソコンの「バックアップを読み込む」で、そのファイルを選ぶと、同じ状態にもどります。</li>");
+        app.insertInto("guide-faq", "<li><strong>授業中に音楽を流したい</strong>：画面の左にある「音楽」を押して、「曲を追加」から、音楽のファイルを入れます。再生・一時停止・前へ・次へ・シャッフル・くり返し・音量が使えます。曲は、このパソコンのブラウザに残るので、次に開いた時も、そのまま使えます。</li><li><strong>曲名や作曲者を出したい</strong>：曲を追加すると、ファイルに入っている曲名・歌手・アルバム・作曲者・表紙を、自動で読み取って表示します。足りない時は、曲の横の「✎」で直せます。「まとめて調べる」を押すと、ネットで探して、空いている所を埋めます（曲名と歌手名だけを、Appleの検索に送ります）。作曲者は、検索では出ないことが多いので、直接入れてください。</li><li><strong>アルバムや歌手ごとに分けたい</strong>：「音楽」の「並べ方」を、「アルバムごと」か「歌手ごと」にすると、見出しを付けて分けます。再生の順番も、その並びになります。アルバムごとの見出しの「💿」を押すと、そのアルバムの曲を、まとめて調べて、曲名・歌手・年・表紙・曲の順番を入れられます。</li><li><strong>音の聞こえ方を変えたい</strong>：「音楽」の「🎚 イコライザー」で、低い音・高い音の大きさを、10本のつまみで変えられます。「教室向け」「声をはっきり」などの、できあいの設定もあります。</li><li><strong>DJのように音楽を流したい</strong>：「音楽」の「DJ」で、速さ・フィルター・エコー・レコードストップ・ループ・キュー・曲のつなぎ目を重ねる機能・効果音パッド（ファンファーレ、ドラムロールなど）が使えます。</li><li><strong>席替えの演出に合わせて曲を流したい</strong>：「音楽」の「連動」で「席替えに合わせて、曲を流す」をオンにします。席替えを始めると曲が流れ、結果が出た時に効果音（ファンファーレなど）が鳴ります。スロットなどは演出が終わった時に、他の演出は決めた秒数の後に鳴ります。</li><li><strong>曲を流しながら、くじのように人を指名したい</strong>：「連動」の「ストップ指名をはじめる」を押すと、曲が流れて、名前が高速で入れ替わります。「STOP！」か、Spaceキーを押した時に出ていた人が指名されます。休みの人は出ません。</li><li><strong>場面ごとに曲を分けたい（朝の会・そうじ・帰りの会など）</strong>：「音楽」の「曲」の画面の上にある「＋ 場面を作る」で、場面の名前を付けて、曲を選びます。場面のボタンを押すと、その場面の曲だけが流れます。「全て」で、もとにもどります。</li><li><strong>曲によって音の大きさがバラバラ</strong>：「曲ごとの音量を、そろえる」をオンにすると、大きすぎる曲だけを小さくします。小さい曲を大きくはしません。最初に調べる時間が、少しかかります。</li><li><strong>効果音を取り込んで、ぽちぽち押して鳴らしたい</strong>：「音楽」の「効果音」で、「効果音を追加」から、音のファイルを入れます。四角いボタンを押すと、すぐに鳴ります。ボタンの「✎」で、名前・絵文字・色・音量・鳴らし方を変えられます。鳴らし方は、1回だけ、重ねて鳴らす、くり返す、から選べます。席替えの結果の効果音にも使えます。</li><li><strong>曲ごと、別のパソコンに移したい</strong>：「バックアップを書き出す」で、曲・効果音・曲の情報・場面・設定を、一つのZIPファイルにします。別のパソコンの「バックアップを読み込む」で、そのファイルを選ぶと、同じ状態にもどります。</li>");
     },
     ready() {
         musicLoadSaved();

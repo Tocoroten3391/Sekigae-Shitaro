@@ -263,7 +263,7 @@ const MAX_SHUFFLE_ANIM_SEC = 5;
 
 function capSeatAnimationTime(seatNodes) {
     const items = [];
-    const speed = getAnimSpeed(); // 演出の速さ（ゆっくり 1.3／ふつう 1／はやい 0.7）。長さと待ち時間に掛ける
+    const speed = getAnimSpeed(); // 演出の速さ（ゆっくり 1.3／普通 1／はやい 0.7）。長さと待ち時間に掛ける
     let maxDur = 0, maxDelay = 0;
     seatNodes.forEach(el => {
         if (el.classList.contains("anim-none")) return;

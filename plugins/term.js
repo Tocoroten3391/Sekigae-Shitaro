@@ -43,7 +43,7 @@ function renderStatsSummary(data) {
     const terms = new Map();
     seatTimeline.forEach(e => { const t = getTermInfoFor(e.at); terms.set(t.key, { name: t.name, n: (terms.get(t.key) || { n: 0 }).n + 1 }); });
     if (sel) {
-        sel.innerHTML = `<option value="all">すべて　${seatTimeline.length}回</option>` + Array.from(terms.entries()).map(([k, v]) => `<option value="t:${k}">${esc(v.name)}　${v.n}回</option>`).join("");
+        sel.innerHTML = `<option value="all">全て　${seatTimeline.length}回</option>` + Array.from(terms.entries()).map(([k, v]) => `<option value="t:${k}">${esc(v.name)}　${v.n}回</option>`).join("");
         if (!Array.from(sel.options).some(o => o.value === statsSummaryPeriod)) statsSummaryPeriod = "all";
         sel.value = statsSummaryPeriod;
         sel.parentElement.style.display = data.isArchive ? "none" : "";
@@ -61,7 +61,7 @@ function renderStatsSummary(data) {
         const total = order.reduce((a, r) => a + r.count, 0);
         const never = order.filter(r => r.count === 0);
         const max = Math.max.apply(null, order.map(r => r.count)), min = Math.min.apply(null, order.map(r => r.count));
-        html += '<div class="stats-trend-summary">' + card(total, "総指名回数") + card(max + "回", "いちばん多い人") + card(min + "回", "いちばん少ない人") + "</div>";
+        html += '<div class="stats-trend-summary">' + card(total, "総指名回数") + card(max + "回", "一番多い人") + card(min + "回", "一番少ない人") + "</div>";
         let verdict;
         if (total === 0) verdict = "まだ指名の記録がありません。";
         else if (never.length > 0) verdict = `まだ一度も当たっていない人が、${never.length}人います。`;
@@ -91,11 +91,11 @@ function renderStatsSummary(data) {
                 : (pairs.length ? '<div class="stats-trend-list stats-list-short">' + topList(pairs, "回") + "</div>" : '<p class="stats-note">2回以上、同じ隣になった組は、ありません。</p>');
             const frontTop = Object.keys(sm.front).sort((a, b) => sm.front[b] - sm.front[a]).slice(0, 5).map(k => [k, sm.front[k]]);
             const backTop = Object.keys(sm.back).sort((a, b) => sm.back[b] - sm.back[a]).slice(0, 5).map(k => [k, sm.back[k]]);
-            html += '<div class="stats-sub">いちばん前の列になった回数が多い人</div>' + (frontTop.length ? '<div class="stats-trend-list stats-list-short">' + topList(frontTop, "回") + "</div>" : '<p class="stats-note">記録がありません。</p>');
-            html += '<div class="stats-sub">いちばん後ろの列になった回数が多い人</div>' + (backTop.length ? '<div class="stats-trend-list stats-list-short">' + topList(backTop, "回") + "</div>" : '<p class="stats-note">記録がありません。</p>');
+            html += '<div class="stats-sub">一番前の列になった回数が多い人</div>' + (frontTop.length ? '<div class="stats-trend-list stats-list-short">' + topList(frontTop, "回") + "</div>" : '<p class="stats-note">記録がありません。</p>');
+            html += '<div class="stats-sub">一番後ろの列になった回数が多い人</div>' + (backTop.length ? '<div class="stats-trend-list stats-list-short">' + topList(backTop, "回") + "</div>" : '<p class="stats-note">記録がありません。</p>');
             if (entries.length >= 3) {
                 const noFront = sm.seen.filter(k => !sm.front[k]);
-                html += '<div class="stats-sub">一度もいちばん前の列になっていない人</div><p class="stats-note">' + (noFront.length ? esc(noFront.slice(0, 20).join("、")) + (noFront.length > 20 ? `　ほか${noFront.length - 20}人` : "") : "全員が、一度は前の列になっています。") + "</p>";
+                html += '<div class="stats-sub">一度も一番前の列になっていない人</div><p class="stats-note">' + (noFront.length ? esc(noFront.slice(0, 20).join("、")) + (noFront.length > 20 ? `　ほか${noFront.length - 20}人` : "") : "全員が、一度は前の列になっています。") + "</p>";
             }
         }
     }
@@ -118,6 +118,6 @@ SekigaeApp.registerPlugin({
         render: data => renderStatsSummary(data)
     }],
     mount(app) {
-        app.insertInto("guide-stats", "<li><strong>まとめ</strong>：学期の終わりに、指名の偏りと、席の偏りを確かめます。まだ当たっていない人、何度も同じ隣になった組、いちばん前や後ろの列になった回数が分かります。</li>", "beforebegin");
+        app.insertInto("guide-stats", "<li><strong>まとめ</strong>：学期の終わりに、指名の偏りと、席の偏りを確かめます。まだ当たっていない人、何度も同じ隣になった組、一番前や後ろの列になった回数が分かります。</li>", "beforebegin");
     }
 });

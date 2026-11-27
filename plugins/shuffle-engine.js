@@ -68,7 +68,7 @@ function addNearPair() {
     if (!selA || !selB) return;
     const a = selA.value, b = selB.value;
     if (!a || !b) { showToast("2人とも選んでください。", "error"); return; }
-    if (a === b) { showToast("同じ人どうしは指定できません。", "error"); return; }
+    if (a === b) { showToast("同じ人同士は指定できません。", "error"); return; }
     const same = p => (p.a === a && p.b === b) || (p.a === b && p.b === a);
     if (nearPairs.some(same)) { showToast("その組み合わせはすでに登録されています。", "error"); return; }
     if (separationPairs.some(same)) { showToast("その2人は「離す設定」に入っています。先に解除してください。", "error"); return; }
@@ -318,7 +318,7 @@ function applyConditionPriorityUi() {
     if (sel) sel.value = getConditionPriority();
 }
 
-const LUCK_SCORE_WEIGHT = 0.5; // 運の貯金の点数の重み（ほかの条件より、必ず軽くします）
+const LUCK_SCORE_WEIGHT = 0.5; // 運の貯金の点数の重み（他の条件より、必ず軽くします）
 const FAIR_SCORE_WEIGHT = 0.25; // 席の公平性（プラグイン）の点数の重み。運の貯金より、さらに軽くします
 const WISH_ENGINE_WEIGHT = 30; // 座席の希望（プラグイン）の点数の重み。離す・近くに置く設定よりは弱く、運の貯金や公平性よりは強くします
 function wishIsOn() { return typeof wishActive === "function" && wishActive(); } // 座席の希望のプラグインが無くても、動きます
@@ -416,7 +416,7 @@ function addSeparationPair() {
     if (!selA || !selB) return;
     const a = selA.value, b = selB.value;
     if (!a || !b) { showToast("2人とも選んでください。", "error"); return; }
-    if (a === b) { showToast("同じ人どうしは指定できません。", "error"); return; }
+    if (a === b) { showToast("同じ人同士は指定できません。", "error"); return; }
     if (separationPairs.some(p => (p.a === a && p.b === b) || (p.a === b && p.b === a))) {
         showToast("その組み合わせはすでに登録されています。", "error"); return;
     }

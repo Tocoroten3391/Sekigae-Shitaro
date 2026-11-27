@@ -101,7 +101,7 @@ function examArrange(mode) {
     renderClassroom("none");
     const gap = examMinNeighborGap();
     const label = mode === "stagger" ? "千鳥配置" : mode === "col" ? "番号順（縦）" : "番号順（横）";
-    showToast(label + "に並べました。" + (gap !== null ? "隣どうしの番号は最も近くて " + gap + " 離れています。" : ""), "success");
+    showToast(label + "に並べました。" + (gap !== null ? "隣同士の番号は最も近くて " + gap + " 離れています。" : ""), "success");
     examRender();
 }
 // 縦・横に隣り合う席の番号の差のうち、いちばん小さいもの
@@ -217,13 +217,13 @@ function examRender() {
     const gap = examMinNeighborGap();
     const opt = (v, cur, t) => '<option value="' + v + '"' + (String(v) === String(cur) ? " selected" : "") + '>' + t + '</option>';
     body.innerHTML =
-        '<h5>① 席を並べる（いま座席表にいる ' + n + ' 人）</h5>' +
+        '<h5>① 席を並べる（今座席表にいる ' + n + ' 人）</h5>' +
         '<p class="config-note" style="margin:0 0 6px;">出席番号の順に並べます。固定した席・空席・お休みの席は動かしません。「1つ前に戻す」で戻せます。</p>' +
         '<div class="exam-row">' +
         '<button type="button" class="btn-secondary" data-exam="stagger">千鳥配置にする</button>' +
         '<button type="button" class="btn-secondary" data-exam="row">番号順（横）</button>' +
         '<button type="button" class="btn-secondary" data-exam="col">番号順（縦）</button></div>' +
-        '<p class="config-note" style="margin:0;">千鳥配置：市松模様の片方の席に前半の番号、もう片方の席に後半の番号を入れます。縦横に隣り合う席の番号が大きく離れます。' + (gap !== null ? 'いま隣どうしの番号は最も近くて ' + gap + ' 離れています。' : '') + '</p>' +
+        '<p class="config-note" style="margin:0;">千鳥配置：市松模様の片方の席に前半の番号、もう片方の席に後半の番号を入れます。縦横に隣り合う席の番号が大きく離れます。' + (gap !== null ? '今隣同士の番号は最も近くて ' + gap + ' 離れています。' : '') + '</p>' +
         '<h5>② A・B問題の割り当て</h5>' +
         '<div class="exam-row"><label>版の数 <select data-exam-cfg="n">' + opt(2, cfg.n, "2（A・B）") + opt(3, cfg.n, "3（A・B・C）") + opt(4, cfg.n, "4（A〜D）") + '</select></label>' +
         '<label>配り方 <select data-exam-cfg="pat">' + opt("check", cfg.pat, "市松（縦横どちらの隣も違う版）") + opt("col", cfg.pat, "列ごと（左右の隣が違う版）") + opt("row", cfg.pat, "行ごと（前後が違う版）") + '</select></label></div>' +
@@ -234,7 +234,7 @@ function examRender() {
         '<div class="exam-row"><label>A4 1枚の札の数 <select data-exam-cfg="per">' + opt(1, cfg.per, "1枚（特大）") + opt(2, cfg.per, "2枚") + opt(4, cfg.per, "4枚") + opt(8, cfg.per, "8枚") + '</select></label></div>' +
         '<div class="exam-row"><label><input type="checkbox" data-exam-cfg="name"' + (cfg.name ? " checked" : "") + '> 名前を入れる</label>' +
         '<label><input type="checkbox" data-exam-cfg="seat"' + (cfg.seat ? " checked" : "") + '> 席（B3など）を入れる</label>' +
-        '<label><input type="checkbox" data-exam-cfg="ver"' + (cfg.ver ? " checked" : "") + '> 版を入れる（②で版を出しているとき）</label></div>' +
+        '<label><input type="checkbox" data-exam-cfg="ver"' + (cfg.ver ? " checked" : "") + '> 版を入れる（②で版を出している時）</label></div>' +
         '<div class="exam-preview">' + (n ? examCardsHtml(cfg) : '<p class="config-note">座席表に生徒がいません。</p>') + '</div>' +
         '<div class="exam-row"><button type="button" data-exam="print">印刷する</button></div>' +
         '<p class="config-note" style="margin:0;">点線の枠が切り取り線です。番号の順に並んで出ます。</p>';
@@ -251,7 +251,7 @@ SekigaeApp.registerPlugin({
     id: "exam-seats",
     name: "テスト用の座席",
     version: "1.0",
-    description: "テストや検定のための座席づくりです。番号が近い人どうしが隣にならない千鳥配置と、A・B問題を交互に配る版の割り当てと、机に置く受験番号札の印刷ができます。",
+    description: "テストや検定のための座席づくりです。番号が近い人同士が隣にならない千鳥配置と、A・B問題を交互に配る版の割り当てと、机に置く受験番号札の印刷ができます。",
     backupKeys: [EXAM_KEY],
     searchWords: "テスト用座席 テスト 試験 千鳥 A問題 B問題 受験番号 番号札 検定 カンニング",
     stubs: [],

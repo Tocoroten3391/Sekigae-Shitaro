@@ -38,15 +38,15 @@ function buildSeatCheckReport() {
     const avoidHint = (avoidSt.sameSeat || avoidSt.neighbor)
         ? "避ける設定を入れていても、条件が多いと、避けきれないことがあります。もう一度席替えするか、優先順位を変えてください。"
         : "設定の「前回までと同じ席や隣を避ける」を入れて席替えすると、減らせます。";
-    const sepNearHint = "もう一度席替えすると、守れることがあります。守りたい条件を先にするには、優先順位を変えてください。席の数に対して条件が多いと、すべては守れません。";
+    const sepNearHint = "もう一度席替えすると、守れることがあります。守りたい条件を先にするには、優先順位を変えてください。席の数に対して条件が多いと、全ては守れません。";
 
     // 0. この席替えの決め方
     if (lastShuffleInfo) {
         if (lastShuffleInfo.sig === seatSignatureOf(currentStudents)) {
             const li = lastShuffleInfo, how = [];
             if (!li.needSearch) how.push("条件の指定がなかったので、ランダムに決めました。");
-            else if (li.perfect) how.push(`${li.tried}通り目で、すべての条件を守れる席ができたので、それに決めました。`);
-            else how.push(`${li.tried}通りの席を作り、条件をいちばん守れたものを選びました。`);
+            else if (li.perfect) how.push(`${li.tried}通り目で、全ての条件を守れる席ができたので、それに決めました。`);
+            else how.push(`${li.tried}通りの席を作り、条件を一番守れたものを選びました。`);
             const used = [];
             if (li.sep > 0) used.push(`離す設定${li.sep}組`);
             if (li.near > 0) used.push(`近くに置く設定${li.near}組`);
@@ -57,11 +57,11 @@ function buildSeatCheckReport() {
             if (used.length >= 2) {
                 const sel = $id("conditionPrioritySelect");
                 const opt = sel ? Array.from(sel.options).find(o => o.value === li.priority) : null;
-                if (opt) how.push(`条件がぶつかったときの優先順位：${opt.textContent.trim()}`);
+                if (opt) how.push(`条件がぶつかった時の優先順位：${opt.textContent.trim()}`);
             }
             add("info", "この席替えの決め方", how);
         } else {
-            add("info", "この座席表は、席替えのあとで変わっています", ["席替えの決め方は、変わる前の席についてのものなので、表示しません。"]);
+            add("info", "この座席表は、席替えの後で変わっています", ["席替えの決め方は、変わる前の席についてのものなので、表示しません。"]);
         }
     }
 
@@ -128,8 +128,8 @@ function buildSeatCheckReport() {
                 if (ga > 0 && ga === getGroupNumberForIndex(ib, cols)) bad.push(`${p.a}・${p.b}　同じ班です`);
             }
         });
-        if (bad.length > 0) add("warn", "離す設定を守れていない組があります", bad, sepNearHint + (useGroups ? "班の色を使っているときは、同じ班も避けるため、守りにくくなります。" : ""));
-        else add("ok", "離す設定は、すべて守れています", []);
+        if (bad.length > 0) add("warn", "離す設定を守れていない組があります", bad, sepNearHint + (useGroups ? "班の色を使っている時は、同じ班も避けるため、守りにくくなります。" : ""));
+        else add("ok", "離す設定は、全て守れています", []);
     }
 
     // 5. 近くに置く設定
@@ -143,7 +143,7 @@ function buildSeatCheckReport() {
             if (!areSeatsAdjacent(ia, ib, cols)) far.push(`${p.a}・${p.b}　離れています`);
         });
         if (far.length > 0) add("warn", "近くに置けていない組があります", far, sepNearHint);
-        else add("ok", "近くに置く設定は、すべて守れています", []);
+        else add("ok", "近くに置く設定は、全て守れています", []);
     }
 
     // 6. わがまま指定
@@ -166,8 +166,8 @@ function buildSeatCheckReport() {
             else if (p.type === "custom") { ok = isSeatInCustom(seat, p.areaVal, rows); text = getCustomRuleText(p.areaVal).replace(/^\S+ /, ""); }
             if (!ok) ng.push(`${k}　${text}`);
         });
-        if (ng.length > 0) add("warn", "わがまま指定を守れていない人がいます", ng, "指定した席や範囲を、ほかの人と取り合っていないか、名簿を確認してください。");
-        else add("ok", `わがまま指定は、${counted}人すべて守れています`, []);
+        if (ng.length > 0) add("warn", "わがまま指定を守れていない人がいます", ng, "指定した席や範囲を、他の人と取り合っていないか、名簿を確認してください。");
+        else add("ok", `わがまま指定は、${counted}人全て守れています`, []);
     }
 
     // 7・8. 2回続けて、いちばん前やいちばん後ろの列になった人
@@ -180,10 +180,10 @@ function buildSeatCheckReport() {
         const lastPrev = Math.max.apply(null, Object.keys(prevPos).map(n => rowOf(prevPos[n])));
         const front = names.filter(n => !isFixedKey(n) && rowOf(posOf[n]) === 0 && prevPos[n] !== undefined && rowOf(prevPos[n]) === 0);
         const back = lastNow === 0 ? [] : names.filter(n => !isFixedKey(n) && rowOf(posOf[n]) === lastNow && prevPos[n] !== undefined && rowOf(prevPos[n]) === lastPrev && lastPrev > 0);
-        if (front.length > 0) add("warn", "2回続けて、いちばん前の列の人がいます", [front.join("、")], "もう一度席替えすると、変わることがあります。");
-        else add("ok", "2回続けて、いちばん前の列の人はいません", []);
-        if (back.length > 0) add("warn", "2回続けて、いちばん後ろの列の人がいます", [back.join("、")], "もう一度席替えすると、変わることがあります。");
-        else add("ok", "2回続けて、いちばん後ろの列の人はいません", []);
+        if (front.length > 0) add("warn", "2回続けて、一番前の列の人がいます", [front.join("、")], "もう一度席替えすると、変わることがあります。");
+        else add("ok", "2回続けて、一番前の列の人はいません", []);
+        if (back.length > 0) add("warn", "2回続けて、一番後ろの列の人がいます", [back.join("、")], "もう一度席替えすると、変わることがあります。");
+        else add("ok", "2回続けて、一番後ろの列の人はいません", []);
     }
 
     // 9. 座席の希望・配慮メモ（プラグインがあるとき）

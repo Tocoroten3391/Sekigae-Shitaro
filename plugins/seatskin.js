@@ -5,7 +5,7 @@
 // ==========================================
 const SKIN_KEY = "seat_skin";
 const SKINS = [
-    { id: "none", icon: "▢", name: "ふつう", desc: "いつもの席です" },
+    { id: "none", icon: "▢", name: "普通", desc: "いつもの席です" },
     { id: "cinema", icon: "🎬", name: "映画館", desc: "赤いビロードの席です" },
     { id: "train", icon: "🚃", name: "電車", desc: "青い座席シートです" },
     { id: "sushi", icon: "🍣", name: "回転寿司", desc: "お皿がならびます" },
@@ -108,7 +108,7 @@ const SKIN_HTML = `
     <div class="skin-box">
         <div class="skin-head"><h3>🚃 座席表の着せ替え</h3><button type="button" class="skin-x" onclick="closeSeatSkin()">とじる</button></div>
         <div class="skin-list" id="skinList"></div>
-        <p style="font-size:12px; color:#64748b; margin:10px 0 0;">班の色を付けた席や、黒板モードは、そのままの見た目です。印刷と、共有の画像は、ふつうの見た目になります。</p>
+        <p style="font-size:12px; color:#64748b; margin:10px 0 0;">班の色を付けた席や、黒板モードは、そのままの見た目です。印刷と、共有の画像は、普通の見た目になります。</p>
     </div>
 </div>`;
 
@@ -124,7 +124,7 @@ SekigaeApp.registerPlugin({
         skinAddStyle();
         document.body.insertAdjacentHTML("beforeend", SKIN_HTML);
         app.insertInto("settings-seatview", '<button type="button" onclick="openSeatSkin()" class="btn-secondary" id="btnSeatSkin" style="margin-top: 10px;">座席表の着せ替え</button>');
-        app.insertInto("guide-faq", "<li><strong>座席表の見た目を変えたい</strong>：設定の「座席の見え方」の「座席表の着せ替え」を押して、映画館・電車・回転寿司・地図から選びます。画面だけが変わり、印刷と共有の画像は、ふつうの見た目です。</li>");
+        app.insertInto("guide-faq", "<li><strong>座席表の見た目を変えたい</strong>：設定の「座席の見え方」の「座席表の着せ替え」を押して、映画館・電車・回転寿司・地図から選びます。画面だけが変わり、印刷と共有の画像は、普通の見た目です。</li>");
         skinApply(skinCurrent());
     }
 });

@@ -568,7 +568,7 @@ function wagamamaDrawCustomFrames() {
     svg.setAttribute("class", "wagamama-custom-svg");
     svg.style.cssText = "grid-column: 1 / -1; grid-row: 1 / -1; width: 100%; height: 100%; position: relative; z-index: 5; overflow: visible; pointer-events: none; margin: 0;";
     classroom.appendChild(svg);
-    const ox = seats[0].offsetLeft, oy = seats[0].offsetTop;   // 線を描く場所の左上は、いちばん左上の席と同じ
+    const ox = seats[0].offsetLeft, oy = seats[0].offsetTop;   // 線を描く場所の左上は、一番左上の席と同じ
     const rect = (r, c) => {
         const el = seats[(r - 1) * d.cols + (c - 1)];
         const L = el.offsetLeft - ox, T = el.offsetTop - oy;

@@ -46,7 +46,7 @@ function nbPick(seats) {
         const pool = info.filter(i => i.n === min);
         return pool[Math.floor(Math.random() * pool.length)].seat;
     }
-    const weights = info.map(i => 1 / Math.pow(1 + i.n, 1.6));   // 回数が多いほど、当たりにくくします
+    const weights = info.map(i => 1 / Math.pow(1 + i.n, 1.6));   // 回数が多い程、当たりにくくします
     let r = Math.random() * weights.reduce((a, b) => a + b, 0);
     for (let i = 0; i < info.length; i++) { r -= weights[i]; if (r <= 0) return info[i].seat; }
     return info[info.length - 1].seat;
@@ -171,7 +171,7 @@ function nbRows() {
     rows.forEach(r => { r.total = nbTotal(r.st.key, map); });
     if (nbSort === "few") rows.sort((a, b) => a.total - b.total || (parseInt(a.st.no, 10) || 999) - (parseInt(b.st.no, 10) || 999));
     else if (nbSort === "many") rows.sort((a, b) => b.total - a.total);
-    return rows;   // 「seat」のときは、座席表の順のままです
+    return rows;   // 「seat」の時は、座席表の順のままです
 }
 function nbRenderModal() {
     const body = $id("nbList");
@@ -194,7 +194,7 @@ function nbRenderModal() {
     $id("nbResetSpeech").style.display = Object.keys(nbSpeechMap()).length ? "" : "none";
 }
 function nbResetSpeech() {
-    if (!confirm("このクラスの、発言の回数を、すべて0に戻します。指名の回数は、変わりません。よろしいですか？")) return;
+    if (!confirm("このクラスの、発言の回数を、全て0に戻します。指名の回数は、変わりません。よろしいですか？")) return;
     nbSpeechSet({});
     nbUndo = [];
     nbDecorate();
@@ -226,10 +226,10 @@ body.nb-speech-mode #classroom .seat { cursor: pointer; outline: 2px dashed rgba
 const NB_HTML = `
 <div id="nbModalOverlay" class="modal-overlay" style="display: none;">
     <div class="modal-content" style="max-width: 640px; width: 95%; max-height: 92vh; overflow-y: auto;">
-        <h4 style="color: #0369a1;">🗣️ 発言・指名のバランス <span data-nbtip="指名された回数と、発言した回数を、生徒ごとに数えます。「回数が少ない人を優先」にすると、指名で、まだ当たっていない人が、当たりやすくなります。「回数がいちばん少ない人から」にすると、いちばん少ない人だけから選びます。発言は、「発言モード」で、座席を押すと数えられます。このクラスの記録として残ります。"></span></h4>
+        <h4 style="color: #0369a1;">🗣️ 発言・指名のバランス <span data-nbtip="指名された回数と、発言した回数を、生徒ごとに数えます。「回数が少ない人を優先」にすると、指名で、まだ当たっていない人が、当たりやすくなります。「回数が一番少ない人から」にすると、一番少ない人だけから選びます。発言は、「発言モード」で、座席を押すと数えられます。このクラスの記録として残ります。"></span></h4>
         <div class="layout-grid-fields" style="margin: 6px 0 10px;">
             <div><label for="nbModeSelect">指名で選ぶ人</label>
-                <select id="nbModeSelect" onchange="nbSettingChanged()"><option value="off">ふだんどおり</option><option value="fair">回数が少ない人を優先</option><option value="strict">回数がいちばん少ない人から</option></select></div>
+                <select id="nbModeSelect" onchange="nbSettingChanged()"><option value="off">ふだんどおり</option><option value="fair">回数が少ない人を優先</option><option value="strict">回数が一番少ない人から</option></select></div>
             <div><label for="nbSortSelect">並べ方</label>
                 <select id="nbSortSelect" onchange="nbSetSort(this.value)"><option value="few">回数が少ない順</option><option value="many">回数が多い順</option><option value="seat">座席表の順</option></select></div>
         </div>
@@ -269,7 +269,7 @@ function nbRenderStatsTab(data) {
     const zero = rows.filter(r => r.total === 0);
     const avg = rows.reduce((a, r) => a + r.total, 0) / rows.length;
     let html = '<div class="stats-trend-grid"><div class="stats-trend-card"><strong>' + zero.length + '人</strong><span>まだ0回</span></div>' +
-        '<div class="stats-trend-card"><strong>' + avg.toFixed(1) + '回</strong><span>1人あたり</span></div>' +
+        '<div class="stats-trend-card"><strong>' + avg.toFixed(1) + '回</strong><span>1人当たり</span></div>' +
         '<div class="stats-trend-card"><strong>' + (rows[rows.length - 1].total - rows[0].total) + '回</strong><span>多い人と少ない人の差</span></div></div>';
     html += rows.map(r => '<div class="stats-trend-row"><span class="stats-trend-name">' + esc(r.name) + '</span><span class="nb-bar-track" style="margin: 0 8px;"><span class="nb-bar-fill" style="width:' + Math.round(r.total / max * 100) + '%"></span></span><span class="stats-trend-meta">指名 ' + r.nom + (data.isArchive ? "" : "・発言 " + r.sp) + '</span></div>').join("");
     body.innerHTML = html;

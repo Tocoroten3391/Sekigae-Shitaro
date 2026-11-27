@@ -643,7 +643,7 @@ const UIS_BTN_ICO = [
     { sel: "#uisNomExit", map: [[/./, "close"]] },
     { sel: "button.calc-tool", map: [[/元に戻す/, "undo"], [/やり直し/, "redo"], [/履歴/, "clock"], [/メニュー/, "menu"]] },
     { sel: "#stickyModeBar button", map: [[/^やめる$/, "close"]] },
-    { sel: ".modal-content button, #skinOverlay .skin-x", map: [[/^すべて開く$/, "arrowdown"], [/^すべて閉じる$/, "arrowup"], [/^重い機能だけ見る$/, "bolt"], [/^(閉じる|キャンセル|とじる)$/, "close"], [/^保存する$/, "save"], [/^すべて消す$/, "trash"], [/^元に戻す$/, "undo"], [/^やり直す$/, "redo"], [/予鈴を聞く|始まりを聞く|終わりを聞く/, "speaker"], [/この場所を空席にする/, "chair"], [/^名簿を書き出す/, "export"]] },
+    { sel: ".modal-content button, #skinOverlay .skin-x", map: [[/^全て開く$/, "arrowdown"], [/^全て閉じる$/, "arrowup"], [/^重い機能だけ見る$/, "bolt"], [/^(閉じる|キャンセル|とじる)$/, "close"], [/^保存する$/, "save"], [/^全て消す$/, "trash"], [/^元に戻す$/, "undo"], [/^やり直す$/, "redo"], [/予鈴を聞く|始まりを聞く|終わりを聞く/, "speaker"], [/この場所を空席にする/, "chair"], [/^名簿を書き出す/, "export"]] },
     { sel: "#btnEnvDraw", map: [[/./, "gift"]] },
     { sel: "#btnSeatJourney", map: [[/./, "train"]] },
     { sel: "#btnFortune", map: [[/./, "star"]] },
@@ -687,7 +687,7 @@ const UIS_BTN_ICO = [
     { sel: "#configContainer button[onclick*=\"openAbsentModal\"]", map: [[/./, "hand"]] },
     { sel: "#configContainer #connectGasBtn", map: [[/./, "cloud"]] },
     { sel: "#configContainer #connectOnlyGasBtn", map: [[/./, "link"]] },
-    { sel: "#backupReminderBar button", map: [[/バックアップ/, "save"], [/あとで/, "clock"], [/しない/, "bellOff"]] },
+    { sel: "#backupReminderBar button", map: [[/バックアップ/, "save"], [/後で/, "clock"], [/しない/, "bellOff"]] },
     { sel: "#musicPrevBtn", map: [[/./, "skipback"]] },
     { sel: "#musicPlayBtn", map: [[/⏸/, "pause"], [/./, "play"]] },
     { sel: "#musicNextBtn", map: [[/./, "skipfwd"]] },
@@ -1627,7 +1627,7 @@ function uisAccent() {
         st.setProperty("--uis-on-accent", uisHex(on));
         st.setProperty("--uis-ink", uisHex(ink));
         st.setProperty("--uis-accent-d", uisHex(d));
-    } catch (e) { /* 色が読めないときは、そのまま（A標準の色） */ }
+    } catch (e) { /* 色が読めない時は、そのまま（A標準の色） */ }
 }
 
 function uisTick() {
@@ -2263,7 +2263,7 @@ SekigaeApp.registerPlugin({
         if (da && !$id("uisNomCard")) {
             const cd = document.createElement("div");
             cd.id = "uisNomCard"; cd.setAttribute("data-plugin", "ui-styles");
-            cd.innerHTML = '<div class="uis-nc-cap-a">いま指名されたのは</div><div class="uis-nc-cap-b">つぎは</div><div class="uis-nc-row"><div class="uis-nc-no"></div><div class="uis-nc-nm"><b></b><i>さん</i></div></div><div class="uis-nc-meta"><span class="uis-nc-chip"></span><span></span></div>';
+            cd.innerHTML = '<div class="uis-nc-cap-a">今指名されたのは</div><div class="uis-nc-cap-b">つぎは</div><div class="uis-nc-row"><div class="uis-nc-no"></div><div class="uis-nc-nm"><b></b><i>さん</i></div></div><div class="uis-nc-meta"><span class="uis-nc-chip"></span><span></span></div>';
             da.insertBefore(cd, da.firstChild);
             const row = da.querySelector(".nom-main-row");
             if (row) { const h = document.createElement("div"); h.id = "uisNomHist"; h.setAttribute("data-plugin", "ui-styles"); row.appendChild(h); }

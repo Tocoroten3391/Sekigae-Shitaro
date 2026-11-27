@@ -41,11 +41,11 @@ SekigaeApp.registerPlugin({
     id: "menu-groups",
     name: "演出まとめ",
     version: "1.1",
-    description: "「ほかの操作」の中の、封筒くじ・座席の旅・席替え占いを、「演出」の枠にまとめます。",
+    description: "「他の操作」の中の、封筒くじ・座席の旅・席替え占いを、「演出」の枠にまとめます。",
     searchWords: "演出 まとめ ほかの操作 メニュー 封筒 旅 占い 整理",
     suggests: ["envelope", "seatjourney", "fortune"],
     mount(app) {
-        app.insertInto("guide-faq", "<li data-plugin=\"menu-groups\"><strong>封筒くじや席替え占いが見つからない</strong>：「ほかの操作」の中の「演出」を押すと、封筒くじ、座席の旅、席替え占いが出ます。</li>");
+        app.insertInto("guide-faq", "<li data-plugin=\"menu-groups\"><strong>封筒くじや席替え占いが見つからない</strong>：「他の操作」の中の「演出」を押すと、封筒くじ、座席の旅、席替え占いが出ます。</li>");
         if ($id("menuGroupsStyle")) return;
         const st = document.createElement("style");
         st.id = "menuGroupsStyle";

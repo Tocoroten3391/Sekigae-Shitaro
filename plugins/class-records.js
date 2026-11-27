@@ -37,9 +37,9 @@ function flushActiveClassRecords() {
 }
 
 function describeActiveClassRecords() {
-    if (activeClassId === TRIAL_CLASS_ID) return "いま見ているのは、サンプルのクラスの記録です。サンプルを終わると、消えます。";
-    if (activeClassId) return `いま見ているのは、クラス「${activeClassId}」の記録です。クラスを切り替えると、記録も切り替わります。`;
-    return "いま見ているのは、クラスを選んでいない時の記録です。クラスを選ぶと、そのクラスの記録に切り替わります。";
+    if (activeClassId === TRIAL_CLASS_ID) return "今見ているのは、サンプルのクラスの記録です。サンプルを終わると、消えます。";
+    if (activeClassId) return `今見ているのは、クラス「${activeClassId}」の記録です。クラスを切り替えると、記録も切り替わります。`;
+    return "今見ているのは、クラスを選んでいない時の記録です。クラスを選ぶと、そのクラスの記録に切り替わります。";
 }
 
 function updateStatsClassNote() { const n = $id("statsClassNote"); if (n) n.textContent = describeActiveClassRecords(); }
@@ -54,8 +54,8 @@ function updateClassStatusBar() {
         bar.classList.add("is-trial");
         bar.hidden = false;
     } else if (activeClassId) {
-        txt.textContent = `いまのクラス：${activeClassId}`;
-        bar.title = `いまのクラス：${activeClassId}`;
+        txt.textContent = `今のクラス：${activeClassId}`;
+        bar.title = `今のクラス：${activeClassId}`;
         if (btn) btn.hidden = true;
         bar.classList.remove("is-trial");
         bar.hidden = false;
@@ -173,11 +173,11 @@ function readPresetsSafe() {
 function openPromoteModal() {
     if (isAppLocked()) { showLockedToast(); return; }
     if (!activeClassId || activeClassId === TRIAL_CLASS_ID) {
-        showToast("進級させるクラスを、先に選んでください。クラスは、名前をつけて「保存」すると選べます。", "error");
+        showToast("進級させるクラスを、先に選んでください。クラスは、名前を付けて「保存」すると選べます。", "error");
         return;
     }
     const from = $id("promoteFromText");
-    if (from) from.textContent = `いまのクラス「${activeClassId}」から、新しい学年のクラスを作ります。`;
+    if (from) from.textContent = `今のクラス「${activeClassId}」から、新しい学年のクラスを作ります。`;
     const inp = $id("promoteNewName");
     if (inp) inp.value = suggestNextGradeName(activeClassId);
     const ra = document.querySelector('input[name="promoteRoster"][value="reset"]');
@@ -285,7 +285,7 @@ function adoptRecordsForSavedClass(name) {
     const own = hasMeaningfulRecords(store[name]);
     const fromUnsaved = activeClassId === "" || activeClassId === TRIAL_CLASS_ID;
     if (fromUnsaved && !own && hasMeaningfulRecords(snapshotMainRecords())) {
-        if (confirm(`いまの記録を、クラス「${name}」の記録として引き継ぎますか？\n「キャンセル」を選ぶと、クラス「${name}」は、新しい記録から始まります。`)) {
+        if (confirm(`今の記録を、クラス「${name}」の記録として引き継ぎますか？\n「キャンセル」を選ぶと、クラス「${name}」は、新しい記録から始まります。`)) {
             if (activeClassId === "") store[""] = {};
             delete store[TRIAL_CLASS_ID];
             writeClassRecordStore(store);
@@ -294,7 +294,7 @@ function adoptRecordsForSavedClass(name) {
             lsSet("legacy_records_pending", "0");
             try { localStorage.removeItem("trial_return_class"); } catch (error) { /* そのまま続ける */ }
             reloadRecordsIntoMemory();
-            showToast(`いまの記録を、クラス「${name}」の記録にしました。`, "success");
+            showToast(`今の記録を、クラス「${name}」の記録にしました。`, "success");
             return;
         }
         lsSet("legacy_records_pending", "0");

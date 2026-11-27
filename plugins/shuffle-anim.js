@@ -396,7 +396,7 @@ function runSlotStopAnimation(onDone, finalOverride) {
     const btnWrap = bar.querySelector(".slot-stop-btns");
     const fill = bar.querySelector(".slot-stop-timer-fill");
     const msg = bar.querySelector(".slot-stop-msg");
-    const letterOf = c => String.fromCharCode(65 + (cols - 1 - c)); // 席の列名：Aがいちばん右
+    const letterOf = c => String.fromCharCode(65 + (cols - 1 - c)); // 席の列名：Aが一番右
     const btns = [];
     for (let c = 0; c < cols; c++) {
         const b = document.createElement("button");

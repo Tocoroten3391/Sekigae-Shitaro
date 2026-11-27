@@ -167,7 +167,7 @@ function renderLuckModal() {
     } else {
         body.innerHTML = keys.map(k => {
             const o = bal[k];
-            const tag = o.bal >= th ? `<span class="luck-tag luck-save">🍀 貯金 ${o.bal}</span>` : (o.bal <= -(th + 1) ? `<span class="luck-tag luck-used">使い切り</span>` : `<span class="luck-tag">ふつう</span>`);
+            const tag = o.bal >= th ? `<span class="luck-tag luck-save">🍀 貯金 ${o.bal}</span>` : (o.bal <= -(th + 1) ? `<span class="luck-tag luck-used">使い切り</span>` : `<span class="luck-tag">普通</span>`);
             const bar = "🟦".repeat(Math.min(o.f, 10)) + "🟥".repeat(Math.min(o.b, 10));
             return `<div class="luck-row"><span class="luck-name">${luckEsc(luckNameOf(k))}</span><span class="luck-count">前 ${o.f}・中 ${o.m}・後ろ ${o.b}</span><span class="luck-bar">${bar}</span>${tag}</div>`;
         }).join("");
@@ -184,24 +184,24 @@ function luckUndoLast() {
     showToast("最後の記録を、取り消しました。", "success");
 }
 function luckClearAll() {
-    if (!confirm("このクラスの、運の貯金の記録を、すべて消します。よろしいですか？")) return;
+    if (!confirm("このクラスの、運の貯金の記録を、全て消します。よろしいですか？")) return;
     luckSaveEntries([]);
     renderLuckModal();
-    showToast("運の貯金の記録を、すべて消しました。", "success");
+    showToast("運の貯金の記録を、全て消しました。", "success");
 }
 
 const LUCK_HTML = `
 <div id="luckModalOverlay" class="modal-overlay" style="display: none;">
     <div class="modal-content" style="max-width: 560px; width: 95%;">
         <h4 style="color: #16a34a;">🍀 運の貯金</h4>
-        <p class="config-note" data-keep="1" style="margin: -6px 0 10px;">後ろの席が続いた生徒には、運が貯まっていきます。席替えで、その生徒を後ろの席にしにくくします。<span data-lbtip="座席表を、前（黒板側）・中・後ろの3つに分けて、席替えのたびに、誰がどこに座ったかを覚えます。貯金は、後ろに座った回数から、前に座った回数を引いた数です。貯金がしきい値以上の生徒は、後ろの席を避け、さらに2回分多い生徒は、前の席を優先します。前が続いた生徒は、前の席を避けます。名簿で席を決めている生徒は、動かしません。ほかの条件（離す・近くに置く・前と同じ席を避ける）が、いつも先です。"></span></p>
+        <p class="config-note" data-keep="1" style="margin: -6px 0 10px;">後ろの席が続いた生徒には、運が貯まっていきます。席替えで、その生徒を後ろの席にしにくくします。<span data-lbtip="座席表を、前（黒板側）・中・後ろの3つに分けて、席替えのたびに、誰がどこに座ったかを覚えます。貯金は、後ろに座った回数から、前に座った回数を引いた数です。貯金がしきい値以上の生徒は、後ろの席を避け、さらに2回分多い生徒は、前の席を優先します。前が続いた生徒は、前の席を避けます。名簿で席を決めている生徒は、動かしません。他の条件（離す・近くに置く・前と同じ席を避ける）が、いつも先です。"></span></p>
         <div class="switch-container">
             <label class="switch"><input type="checkbox" id="luckUseToggle" onchange="luckSaveSettings()"><span class="slider"></span></label>
             <span class="switch-label">席替えで、運の貯金を使う</span>
         </div>
         <div class="layout-grid-fields" style="margin: 10px 0;">
             <div><label for="luckWindowSelect">数える回数</label>
-                <select id="luckWindowSelect" onchange="luckSaveSettings()"><option value="5">直近5回</option><option value="10">直近10回</option><option value="20">直近20回</option><option value="40">覚えている分すべて</option></select></div>
+                <select id="luckWindowSelect" onchange="luckSaveSettings()"><option value="5">直近5回</option><option value="10">直近10回</option><option value="20">直近20回</option><option value="40">覚えている分全て</option></select></div>
             <div><label for="luckThresholdSelect">使い始める貯金</label>
                 <select id="luckThresholdSelect" onchange="luckSaveSettings()"><option value="1">1回分から</option><option value="2">2回分から</option><option value="3">3回分から</option></select></div>
         </div>
@@ -209,7 +209,7 @@ const LUCK_HTML = `
         <div id="luckList" class="luck-list"></div>
         <div class="modal-btn-row">
             <button id="luckUndoBtn" onclick="luckUndoLast()" class="btn-secondary">↩️ 最後の記録を取り消す</button>
-            <button id="luckClearBtn" onclick="luckClearAll()" class="btn-delete">🗑️ すべて消す</button>
+            <button id="luckClearBtn" onclick="luckClearAll()" class="btn-delete">🗑️ 全て消す</button>
             <button onclick="closeLuckModal()" class="btn-secondary">閉じる</button>
         </div>
     </div>

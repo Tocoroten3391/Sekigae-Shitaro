@@ -58,7 +58,7 @@ function fitClassroomToScreen() {
     }
 }
 
-const SEAT_AUTO_WIDE_MAX = 2.4;   // 名前が長い時に、座席の横幅を広げる上限（「ふつう」の何倍か）
+const SEAT_AUTO_WIDE_MAX = 2.4;   // 名前が長い時に、座席の横幅を広げる上限（「普通」の何倍か）
 
 let seatNameMeasureCtx = null;
 

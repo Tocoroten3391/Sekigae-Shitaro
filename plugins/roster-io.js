@@ -136,7 +136,7 @@ function buildWelcomeCardHtml() {
             <li><strong>「席替えスタート！」を押します。</strong>席が決まります。</li>
             <li><strong>「指名する」を押します。</strong>授業で、ランダムに指名できます。</li>
         </ol>
-        <p class="welcome-note">サンプルで試した記録は、本物のクラスには入りません。試したあとは、設定の「名簿」で、本物の名簿に入れ替えられます。</p>
+        <p class="welcome-note">サンプルで試した記録は、本物のクラスには入りません。試した後は、設定の「名簿」で、本物の名簿に入れ替えられます。</p>
     </div>`;
 }
 

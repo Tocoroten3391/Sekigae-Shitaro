@@ -118,7 +118,7 @@ function fairPenalty(seats, cols) {
         if (d === undefined) return;
         const zs = fairZonesOf(idx, cols, rows, s.win);
         const inFav = zs.some(z => s.fav.includes(z)), inBad = zs.some(z => s.bad.includes(z));
-        const mag = Math.min(3, Math.floor(Math.abs(d)));   // 偏りが大きい人ほど、強く調整します（1〜3）
+        const mag = Math.min(3, Math.floor(Math.abs(d)));   // 偏りが大きい人程、強く調整します（1〜3）
         if (mag < 1) return;
         if (d > 0 && inFav) pen += 2 * mag;
         if (d < 0 && inBad) pen += 2 * mag;
@@ -156,7 +156,7 @@ function fairTag(d) {
     if (d === undefined) return { t: "記録なし", c: "none" };
     if (d >= 1) return { t: "好まれやすい席が多め", c: "high" };
     if (d <= -1) return { t: "いやがられやすい席が多め", c: "low" };
-    return { t: "ふつう", c: "mid" };
+    return { t: "普通", c: "mid" };
 }
 function fairModalOpen() { const o = $id("fairModalOverlay"); return !!o && o.style.display !== "none"; }
 function openFairness() {
@@ -271,12 +271,12 @@ const FAIR_CSS = `
 const FAIR_HTML = `
 <div id="fairModalOverlay" class="modal-overlay" style="display: none;">
     <div class="modal-content" style="max-width: 760px; width: 96%; max-height: 92vh; overflow-y: auto;">
-        <h4 style="color: #b45309;">📊 席の公平性レポート <span data-fairtip="席替えの記録から、前列・後列・窓側・廊下側・角・教卓の前に、何回座ったかを、生徒ごとに数えます。窓の位置は、座席表で、窓がある側の端の列を選びます。「好まれやすい席」が続いた人は、次の席替えで、その席を避けます。「いやがられやすい席」が続いた人は、その席を避けて、好まれやすい席になりやすくなります。名簿で席を決めている生徒は、動かしません。ほかの条件（離す・近くに置く・前と同じ席を避ける・運の貯金）が、いつも先です。"></span></h4>
+        <h4 style="color: #b45309;">📊 席の公平性レポート <span data-fairtip="席替えの記録から、前列・後列・窓側・廊下側・角・教卓の前に、何回座ったかを、生徒ごとに数えます。窓の位置は、座席表で、窓がある側の端の列を選びます。「好まれやすい席」が続いた人は、次の席替えで、その席を避けます。「いやがられやすい席」が続いた人は、その席を避けて、好まれやすい席になりやすくなります。名簿で席を決めている生徒は、動かしません。他の条件（離す・近くに置く・前と同じ席を避ける・運の貯金）が、いつも先です。"></span></h4>
         <div class="layout-grid-fields" style="margin: 6px 0 10px;">
             <div><label for="fairWinSelect">窓の位置</label>
                 <select id="fairWinSelect" onchange="fairSettingChanged()"><option value="none">指定しない</option><option value="left">座席表の左端の列</option><option value="right">座席表の右端の列</option></select></div>
             <div><label for="fairPeriodSelect">数える期間</label>
-                <select id="fairPeriodSelect" onchange="fairSettingChanged()"><option value="all">記録のすべて</option><option value="10">直近10回</option><option value="5">直近5回</option></select></div>
+                <select id="fairPeriodSelect" onchange="fairSettingChanged()"><option value="all">記録の全て</option><option value="10">直近10回</option><option value="5">直近5回</option></select></div>
         </div>
         <p id="fairWinNote" class="config-note" style="margin: -4px 0 8px;">窓の位置を選ぶと、窓側と廊下側も数えます。</p>
         <label class="input-label">好まれやすい席</label>

@@ -36,7 +36,7 @@ function cbExportAll() {
     if (!names.length) { showToast("書き出せるクラスがありません。先に、クラスを保存してください。", "error"); return; }
     presetDialog({
         title: "全クラスを書き出す",
-        message: `保存してある ${names.length} クラスの、名簿と設定を、1つのファイルにまとめます。生徒の名前が入るので、ファイルの取りあつかいに気をつけてください。`,
+        message: `保存してある ${names.length} クラスの、名簿と設定を、1つのファイルにまとめます。生徒の名前が入るので、ファイルの取りあつかいに気を付けてください。`,
         check: { label: "これまでの記録（指名・席の履歴）も、入れる", checked: true },
         buttons: [
             { label: "キャンセル", value: "cancel", cls: "btn-secondary" },
@@ -155,8 +155,8 @@ function cbImportDialog(classes) {
     body.appendChild(cbList(rows));
     const pol = document.createElement("div");
     pol.className = "cb-policy";
-    pol.innerHTML = '<div class="cb-policy-title">同じ名前のクラスが、すでにあるとき</div>'
-        + '<label><input type="radio" name="cbPolicy" value="rename" checked> 別の名前で追加する（おすすめ）</label>'
+    pol.innerHTML = '<div class="cb-policy-title">同じ名前のクラスが、すでにある時</div>'
+        + '<label><input type="radio" name="cbPolicy" value="rename" checked> 別の名前で追加する（お勧め）</label>'
         + '<label><input type="radio" name="cbPolicy" value="overwrite"> ファイルの内容で、上書きする</label>'
         + '<label><input type="radio" name="cbPolicy" value="skip"> 読み込まない</label>';
     body.appendChild(pol);
@@ -188,7 +188,7 @@ function cbApplyImport(picked, policy) {
         if (exists) {
             if (policy === "skip") { skipped++; return; }
             if (policy === "overwrite") {
-                if (name === activeClassId) { busy++; return; }   // いま開いているクラスは、上書きしません
+                if (name === activeClassId) { busy++; return; }   // 今開いているクラスは、上書きしません
                 over++;
             } else { name = cbUniqueName(name, presets); renamed++; }
         } else added++;
@@ -207,7 +207,7 @@ function cbApplyImport(picked, policy) {
     if (renamed) parts.push(renamed + " 件は、同じ名前があったので、別の名前で追加");
     if (over) parts.push(over + " 件は上書き");
     if (skipped) parts.push(skipped + " 件は読み込まず");
-    if (busy) parts.push(busy + " 件は、いま開いているクラスなので、上書きせず");
+    if (busy) parts.push(busy + " 件は、今開いているクラスなので、上書きせず");
     showToast(parts.join("。") + "。", total ? "success" : "error");
 }
 

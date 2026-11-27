@@ -83,7 +83,7 @@ function harvestFuriganaFromRoster(list, notify) {
     });
     if (found === 0) return 0;
     let turnedOn = false;
-    if (lsGet("furigana_show", null) === null) { furiganaShow = true; turnedOn = true; } // はじめて取り込めたときは、表示もONにする
+    if (lsGet("furigana_show", null) === null) { furiganaShow = true; turnedOn = true; } // はじめて取り込めた時は、表示もONにする
     saveFurigana();
     if (notify) {
         showToast(`名簿のフリガナ${found}人分を、ふりがなとして取り込みました。` + (turnedOn ? "座席表にも表示します。" : ""), "success");
@@ -191,6 +191,6 @@ SekigaeApp.registerPlugin({
     id: "furigana",
     name: "ふりがな",
     version: "1.1",
-    description: "名前の上に、読みがなを小さく出します。大きさを選べて、「ほかの操作」から表示を切り替えられます。",
+    description: "名前の上に、読みがなを小さく出します。大きさを選べて、「他の操作」から表示を切り替えられます。",
     stubs: ["extractFuriganaFromRosterText", "getFuriganaFor", "harvestFuriganaFromRoster", "loadFurigana", "saveFurigana"]
 });

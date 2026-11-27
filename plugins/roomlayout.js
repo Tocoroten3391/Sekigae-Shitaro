@@ -176,7 +176,7 @@ function roomRenameSelected(v) {
 }
 function roomClearAll() {
     if (!roomObjs().length) return;
-    if (!confirm("このクラスの、教室の物を、すべて消します。よろしいですか？")) return;
+    if (!confirm("このクラスの、教室の物を、全て消します。よろしいですか？")) return;
     roomSave([]);
     roomSelId = null;
     roomRender();
@@ -325,7 +325,7 @@ const ROOM_HTML = `
             <button type="button" class="room-del" onclick="roomDeleteSelected()">🗑️ 消す</button>
         </div>
     </div>
-    <div class="room-foot"><span id="roomCount"></span><button type="button" class="room-del" onclick="roomClearAll()">すべて消す</button></div>
+    <div class="room-foot"><span id="roomCount"></span><button type="button" class="room-del" onclick="roomClearAll()">全て消す</button></div>
 </div>`;
 
 // ---- 本体への登録 ----
@@ -343,7 +343,7 @@ SekigaeApp.registerPlugin({
         app.insertInto("settings-seat",
             '<button type="button" onclick="if (!roomEditing) closeConfigMenuIfOpen(); toggleRoomEdit()" class="btn-secondary" id="btnRoomSettings" style="margin-top: 10px;">教室の配置を直す</button>' +
             '<button type="button" onclick="toggleRoomShow()" class="btn-secondary" id="btnRoomShow" style="margin-top: 10px;">教室の物を隠す</button>');
-        app.insertInto("guide-faq", "<li><strong>本物の教室のように見せたい</strong>：設定の「座席のレイアウト」の「教室の配置を直す」を押すと、黒板、電子黒板、教卓、ドア、窓、通り道などを、座席表のまわりに置けます。ひな形から始めると、かんたんです。座席を空席にすると、通り道を作れます。</li>");
+        app.insertInto("guide-faq", "<li><strong>本物の教室のように見せたい</strong>：設定の「座席のレイアウト」の「教室の配置を直す」を押すと、黒板、電子黒板、教卓、ドア、窓、通り道などを、座席表のまわりに置けます。ひな形から始めると、簡単です。座席を空席にすると、通り道を作れます。</li>");
     },
     ready() {
         document.addEventListener("pointerdown", roomPointerDown, true);

@@ -2,7 +2,7 @@
 // 座席の旅プラグイン：ひとりの生徒が、これまでどの席を旅してきたかを、座席表の上に線でつないで見せます。席替え履歴プラグインの記録を使います
 // このファイルを index.html から外すと、この機能は、まとめて使えなくなります
 // ==========================================
-const SJ_WINDOW_KEY = "sj_window";   // "10"（直近10回）／ "all"（すべて）
+const SJ_WINDOW_KEY = "sj_window";   // "10"（直近10回）／ "all"（全て）
 let sjTimer = null;
 let sjSteps = [];
 
@@ -152,8 +152,8 @@ function renderSeatJourney() {
     const repSeat = steps.find(s => s.x + "," + s.y === repKey);
     stats.innerHTML = sjEsc(sjPrettyName(key)) + ' さんは、' + steps.length + '回の席替えで、' + distinct + 'か所の席に座りました。<br>' +
         '前の列は' + front + '回、後ろの列は' + back + '回です。' +
-        (maxRep >= 2 ? '<br>いちばん多かった席は、' + sjEsc(repSeat.label) + 'の' + maxRep + '回です。' : '<br>同じ席に座ったことは、ありません。') +
-        '<br>いまの席は、' + sjEsc(last.label) + 'です。';
+        (maxRep >= 2 ? '<br>一番多かった席は、' + sjEsc(repSeat.label) + 'の' + maxRep + '回です。' : '<br>同じ席に座ったことは、ありません。') +
+        '<br>今の席は、' + sjEsc(last.label) + 'です。';
 }
 
 function playSeatJourney() {
@@ -179,7 +179,7 @@ const SJ_HTML = `
         <div class="sj-head"><h3>🗺️ 座席の旅</h3><button type="button" class="sj-x" onclick="closeSeatJourney()">とじる</button></div>
         <div class="sj-row">
             <select id="sjStudent" onchange="renderSeatJourney()"></select>
-            <select id="sjWindow" onchange="renderSeatJourney()"><option value="10">直近10回</option><option value="all">すべて</option></select>
+            <select id="sjWindow" onchange="renderSeatJourney()"><option value="10">直近10回</option><option value="all">全て</option></select>
             <button type="button" class="sj-play" id="sjPlay" onclick="playSeatJourney()">▶ 旅をたどる</button>
         </div>
         <div id="sjBody"></div>
@@ -192,7 +192,7 @@ SekigaeApp.registerPlugin({
     requires: ["history"],   // 前提のプラグイン（無いと使えません）
     name: "座席の旅",
     version: "1.3",
-    description: "ひとりの生徒が、これまでどの席に座ってきたかを、座席表の上に線でつないで見せます。席替え履歴プラグインの記録を使います。",
+    description: "一人の生徒が、これまでどの席に座ってきたかを、座席表の上に線でつないで見せます。席替え履歴プラグインの記録を使います。",
     backupKeys: [SJ_WINDOW_KEY],
     searchWords: "座席の旅 履歴 軌跡 たどる 過去の席 ルート 地図",
     stubs: [],
@@ -201,7 +201,7 @@ SekigaeApp.registerPlugin({
         document.body.insertAdjacentHTML("beforeend", SJ_HTML);
         const more = $id("moreMenu");
         if (more) more.insertAdjacentHTML("beforeend", '<button type="button" onclick="openSeatJourney()" class="pop-item pop-item-gray" id="btnSeatJourney">座席の旅</button>');
-        app.insertInto("guide-faq", "<li><strong>ひとりの生徒が、どの席に座ってきたかを見たい</strong>：「ほかの操作」の「座席の旅」を押します。生徒を選ぶと、これまでの席が、番号つきの線でつながります。「旅をたどる」を押すと、古い順に動きます。席替え履歴プラグインの記録を使うので、履歴プラグインがオフだと、使えません。</li>");
+        app.insertInto("guide-faq", "<li><strong>一人の生徒が、どの席に座ってきたかを見たい</strong>：「他の操作」の「座席の旅」を押します。生徒を選ぶと、これまでの席が、番号つきの線でつながります。「旅をたどる」を押すと、古い順に動きます。席替え履歴プラグインの記録を使うので、履歴プラグインがオフだと、使えません。</li>");
     }
 });
 document.addEventListener("keydown", e => {

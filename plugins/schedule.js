@@ -131,7 +131,7 @@ function schedShowBanner(text, due) {
     }
     const later = document.createElement("button");
     later.type = "button"; later.className = "sched-later";
-    later.textContent = due ? "あとで" : "とじる";
+    later.textContent = due ? "後で" : "とじる";
     later.onclick = schedHideBanner;
     row.appendChild(later);
     b.appendChild(row);
@@ -227,7 +227,7 @@ SekigaeApp.registerPlugin({
             '<button type="button" class="btn-secondary" id="btnSchedClear" onclick="schedClear()" style="margin-top: 8px;">予約を消す</button>' +
             '</div>');
         const slot = $id("schedInfoSlot");
-        if (slot && typeof makeInfoTip === "function") slot.appendChild(makeInfoTip("次の席替えの日を決めておくと、その日か、すぎたあとに、このアプリを開いた時に、画面の上で知らせます。開いたままの時も、日付が変わった時や、画面に戻ってきた時に知らせます。あしたの分も、前の日に知らせます。知らせは、1日に1回だけです。席替えをすると、くりかえしの設定に合わせて、次の日付に進みます。"));
+        if (slot && typeof makeInfoTip === "function") slot.appendChild(makeInfoTip("次の席替えの日を決めておくと、その日か、すぎた後に、このアプリを開いた時に、画面の上で知らせます。開いたままの時も、日付が変わった時や、画面に戻ってきた時に知らせます。あしたの分も、前の日に知らせます。知らせは、1日に1回だけです。席替えをすると、くりかえしの設定に合わせて、次の日付に進みます。"));
         schedRefreshUi();
         document.addEventListener("sekigae:shuffle-done", schedOnShuffleDone);
     },

@@ -4,7 +4,7 @@
 // このファイルを index.html から外すと、この機能は、まとめて使えなくなります
 // ==========================================
 const TOUR_DONE_KEY = "tour_done_v1";
-const TOUR_FORCE_KEY = "tour_force_v1";   // 「かんたん」に切りかえた時に、立てる目印
+const TOUR_FORCE_KEY = "tour_force_v1";   // 「簡単」に切りかえた時に、立てる目印
 
 let tourSteps = [];
 let tourIndex = -1;
@@ -43,13 +43,13 @@ function tourBuildSteps() {
         steps.push({
             sel: "#btnMoreMenu",
             title: "結果を確認する",
-            text: "席替えのあとは、「ほかの操作」の「結果のチェック」で、前回と同じ席になっていないか、設定を守れているかを確かめられます。"
+            text: "席替えの後は、「他の操作」の「結果のチェック」で、前回と同じ席になっていないか、設定を守れているかを確かめられます。"
         });
     }
     steps.push({
         sel: "#configMenuBtn",
         title: "保存する",
-        text: ($id("btnSavePng") ? "座席表は、「ほかの操作」の「画像で保存」「PDFで保存」で、ワンタッチで保存できます。" : "") +
+        text: ($id("btnSavePng") ? "座席表は、「他の操作」の「画像で保存」「PDFで保存」で、ワンタッチで保存できます。" : "") +
             "名簿や設定は、「設定」の「保存・書き出し」で、バックアップできます。ときどき、保存しておくと安心です。"
     });
     steps.push({
@@ -177,10 +177,10 @@ function startTour() {
 function tourAskStart() {
     if (tourIndex >= 0 || $id("tourOverlay")) return;
     tourLayer();
-    tourSteps = [{ sel: null, ask: true, title: "はじめての方へ", text: "「席替え → 結果の確認 → 保存」まで、画面の上で、順に案内します。1分ほどで、終わります。" }];
+    tourSteps = [{ sel: null, ask: true, title: "はじめての方へ", text: "「席替え → 結果の確認 → 保存」まで、画面の上で、順に案内します。1分程で、終わります。" }];
     tourIndex = 0;
     const card = $id("tourCard");
-    card.innerHTML = '<div class="tour-title"></div><div class="tour-text"></div><div class="tour-btns"><button type="button" class="tour-skip" id="tourLater">あとで</button><button type="button" class="tour-next" id="tourBegin">案内をはじめる</button></div>';
+    card.innerHTML = '<div class="tour-title"></div><div class="tour-text"></div><div class="tour-btns"><button type="button" class="tour-skip" id="tourLater">後で</button><button type="button" class="tour-next" id="tourBegin">案内をはじめる</button></div>';
     card.querySelector(".tour-title").textContent = tourSteps[0].title;
     card.querySelector(".tour-text").textContent = tourSteps[0].text;
     $id("tourLater").onclick = () => { tourFinish(true); showToast("案内は、「設定」の「しくみ」から、いつでも見られます。", "info"); };
@@ -223,7 +223,7 @@ SekigaeApp.registerPlugin({
     id: "tour",
     name: "案内ツアー",
     version: "1.1",
-    description: "はじめて使う人に、席替えから、結果の確認、保存まで、画面の上で順に案内します。「かんたん」の構成とセットで使います。",
+    description: "はじめて使う人に、席替えから、結果の確認、保存まで、画面の上で順に案内します。「簡単」の構成とセットで使います。",
     searchWords: "案内 ツアー 使い方 はじめて 初心者 ガイド チュートリアル 説明 かんたん",
     mount(app) {
         app.insertInto("guide-faq", "<li data-plugin=\"tour\"><strong>使い方の案内を、もう一度見たい</strong>：設定の「しくみ」の「案内ツアーをもう一度見る」を押してください。席替えから、結果の確認、保存まで、順に案内します。</li>");

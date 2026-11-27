@@ -78,7 +78,7 @@ function sxBuildResetRows() {
         btn.textContent = "この区分を初期値に戻す";
         btn.onclick = () => sxResetSection(secId);
         row.appendChild(btn);
-        if (typeof makeInfoTip === "function") row.appendChild(makeInfoTip("この区分の設定だけを、はじめの状態に戻します。名簿や座席表、ほかの区分の設定は、そのままです。"));
+        if (typeof makeInfoTip === "function") row.appendChild(makeInfoTip("この区分の設定だけを、はじめの状態に戻します。名簿や座席表、他の区分の設定は、そのままです。"));
         sec.appendChild(row);
     });
 }
@@ -104,7 +104,7 @@ SekigaeApp.registerPlugin({
     id: "settings-extras",
     name: "設定の仕上げ",
     version: "1.0",
-    description: "設定を開いたとき、前回の位置に戻ります。区分ごとに「初期値に戻す」ボタンが付きます。",
+    description: "設定を開いた時、前回の位置に戻ります。区分ごとに「初期値に戻す」ボタンが付きます。",
     searchWords: "設定 位置 前回 初期値 リセット 戻す 初期化",
     mount(app) {
         app.insertInto("guide-faq", "<li data-plugin=\"settings-extras\"><strong>設定を、もとの状態に戻したい</strong>：設定の、各区分の一番下にある「この区分を初期値に戻す」を押します。名簿や座席表は、そのままです。</li>");

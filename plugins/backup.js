@@ -362,8 +362,8 @@ async function checkAutoBackupFolder() {
             const data = JSON.parse(await files[0].file.text());
             if (data && data.app === "seat-shuffler-backup" && data.items && typeof data.items === "object") items = Object.keys(data.items).length;
         } catch (error) { items = -1; }
-        if (items < 0) { show("bad", `いちばん新しいファイルが、読めませんでした。「今すぐ自動保存する」で、保存し直してください。`); return; }
-        show("ok", `確認しました。自動バックアップのファイルが${files.length}個あります。いちばん新しいのは${stamp}のもので、中身も正しく読めました。設定・記録${items}件が入っています。`);
+        if (items < 0) { show("bad", `一番新しいファイルが、読めませんでした。「今すぐ自動保存する」で、保存し直してください。`); return; }
+        show("ok", `確認しました。自動バックアップのファイルが${files.length}個あります。一番新しいのは${stamp}のもので、中身も正しく読めました。設定・記録${items}件が入っています。`);
     } catch (error) {
         show("bad", "保存先のフォルダを読めませんでした。保存先を選び直してください。");
     }
@@ -468,7 +468,7 @@ const RESTORE_PREVIEW_ROWS = [
     ["離す設定", "separation_pairs", "組"],
     ["近くに置く設定", "near_pairs", "組"],
     ["ふりがな", "furigana_map", "人分"],
-    ["ほかのクラスの記録", "class_records_v1", "クラス分"]
+    ["他のクラスの記録", "class_records_v1", "クラス分"]
 ];
 
 // ---- 復元する内容を選ぶ（クラスと記録／席替えの条件／見た目・演出などの設定）----
@@ -495,7 +495,7 @@ function buildRestoreGroupsHtml(items) {
 }
 function selectedRestoreGroups() {
     const boxes = document.querySelectorAll(".rp-group-cb");
-    if (!boxes.length) return null;   // 選ぶ欄が無い時は、すべて
+    if (!boxes.length) return null;   // 選ぶ欄が無い時は、全て
     const set = new Set();
     boxes.forEach(b => { if (b.checked) set.add(b.dataset.group); });
     return set;
@@ -532,19 +532,19 @@ function buildRestorePreviewHtml(items, data, when, n) {
         const cNames = getObjectKeysFromJsonText(cur.seat_shuffler_presets || "{}");
         const lost = cNames.filter(x => !bNames.includes(x));
         const added = bNames.filter(x => !cNames.includes(x));
-        if (lost.length) { loss.push({ g: "classes", t: `いまの端末にだけあるクラス「${lost.join("」「")}」が消えます。` }); notes.push(`<li class="rp-warn">いまの端末にだけあるクラスが、消えます：${escapeStatsHtml(lost.join("、"))}</li>`); }
+        if (lost.length) { loss.push({ g: "classes", t: `今の端末にだけあるクラス「${lost.join("」「")}」が消えます。` }); notes.push(`<li class="rp-warn">今の端末にだけあるクラスが、消えます：${escapeStatsHtml(lost.join("、"))}</li>`); }
         if (added.length) notes.push(`<li>バックアップにだけあるクラスが、増えます：${escapeStatsHtml(added.join("、"))}</li>`);
     }
     let days = 0;
     try { const d = new Date(data.createdAt); if (!isNaN(d)) days = Math.floor((Date.now() - d.getTime()) / DAY_MS); } catch (error) { /* 日数は出さない */ }
-    if (days >= 30) notes.push(`<li class="rp-warn">このバックアップは、保存してから${days}日たっています。いまの端末のほうが新しいことはありませんか。</li>`);
-    if (loss.length && !notes.some(x => x.includes("rp-warn"))) notes.push(`<li class="rp-warn">減る項目があります。復元の前に、いまの内容を書き出しておくと安心です。</li>`);
+    if (days >= 30) notes.push(`<li class="rp-warn">このバックアップは、保存してから${days}日たっています。今の端末のほうが新しいことはありませんか。</li>`);
+    if (loss.length && !notes.some(x => x.includes("rp-warn"))) notes.push(`<li class="rp-warn">減る項目があります。復元の前に、今の内容を書き出しておくと安心です。</li>`);
     pendingRestoreLoss = loss;
     const ver = data.appVersion ? `　バージョン ${escapeStatsHtml(String(data.appVersion))}` : "";
     return `<strong>${when ? escapeStatsHtml(when) + " のバックアップ" : "バックアップ"}　${n}件${ver}</strong>`
-        + (rows.length ? `<table class="rp-table"><thead><tr><th></th><th>バックアップ</th><th>いまの端末</th></tr></thead><tbody>${rows.join("")}</tbody></table>` : "")
+        + (rows.length ? `<table class="rp-table"><thead><tr><th></th><th>バックアップ</th><th>今の端末</th></tr></thead><tbody>${rows.join("")}</tbody></table>` : "")
         + (notes.length ? `<ul class="rp-notes">${notes.join("")}</ul>` : "")
-        + `<button type="button" class="btn-secondary btn-compact" onclick="exportBackup()" style="width: auto; margin-top: 6px; padding: 6px 12px; font-size: 12px;">📤 復元の前に、いまの内容を書き出す</button>`
+        + `<button type="button" class="btn-secondary btn-compact" onclick="exportBackup()" style="width: auto; margin-top: 6px; padding: 6px 12px; font-size: 12px;">📤 復元の前に、今の内容を書き出す</button>`
         + buildRestoreGroupsHtml(items)
         + `<br><span style="color:#dc2626;">復元すると、選んだ内容は、このバックアップの内容で上書きされます。</span>`;
 }
@@ -586,7 +586,7 @@ function onBackupFileChosen(input) {
 function applyBackupImport() {
     if (isAppLocked()) { showLockedToast(); return; }
     if (!pendingBackup) return;
-    const sel = selectedRestoreGroups();   // null なら、すべて
+    const sel = selectedRestoreGroups();   // null なら、全て
     if (sel && sel.size === 0) { showToast("復元する内容を、1つ以上、選んでください。", "error"); return; }
     const items = {};
     Object.keys(pendingBackup).forEach(k => { if (!sel || sel.has(restoreGroupOf(k))) items[k] = pendingBackup[k]; });

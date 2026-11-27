@@ -53,7 +53,7 @@ function renderTimeline() {
         months.set(mk, { name: `${d.getFullYear()}年${d.getMonth() + 1}月`, n: (months.get(mk) || { n: 0 }).n + 1 });
     });
     const opt = (v, label) => `<option value="${v}">${label}</option>`;
-    sel.innerHTML = opt("all", `すべて　${seatTimeline.length}回`)
+    sel.innerHTML = opt("all", `全て　${seatTimeline.length}回`)
         + '<optgroup label="学期ごと">' + Array.from(terms.entries()).map(([k, v]) => opt("t:" + k, `${v.name}　${v.n}回`)).join("") + "</optgroup>"
         + '<optgroup label="月ごと">' + Array.from(months.entries()).map(([k, v]) => opt("m:" + k, `${v.name}　${v.n}回`)).join("") + "</optgroup>";
     if (!Array.from(sel.options).some(o => o.value === timelineFilter)) timelineFilter = "all";
@@ -94,7 +94,7 @@ function restoreTimelineLayout(id) {
     if (isAppLocked()) { showLockedToast(); return; }
     const e = seatTimeline.find(x => x.id === id);
     if (!e) return;
-    if (!confirm("今の座席表を、この日の座席表に置き換えます。置き換えたあとも、「戻す」で今の座席表に戻れます。よろしいですか？")) return;
+    if (!confirm("今の座席表を、この日の座席表に置き換えます。置き換えた後も、「戻す」で今の座席表に戻れます。よろしいですか？")) return;
     saveSeatHistory();
     const colSel = $id("columnSelect"), rowSel = $id("rowSelect");
     const rows = Math.ceil(e.n.length / e.cols);
@@ -117,7 +117,7 @@ function deleteTimelineEntry(id) {
     renderTimeline();
 }
 function clearSeatTimeline() {
-    if (!confirm("席替えの履歴を、すべて消します。元に戻せません。よろしいですか？")) return;
+    if (!confirm("席替えの履歴を、全て消します。元に戻せません。よろしいですか？")) return;
     seatTimeline = [];
     saveSeatTimeline();
     renderTimeline();

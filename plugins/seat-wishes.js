@@ -127,15 +127,15 @@ function wishAddToReport(add, posOf, cols, rows) {
         const zs = wishZonesOf(idx, cols, rows, win);
         if (e.w || e.a || e.n) {
             counted++;
-            if (e.n && posOf[e.n] !== undefined && !wishAdjacent(idx, posOf[e.n], cols)) ng.push(k + "　" + e.n + "さんの近くを希望　いまは " + label + " と " + getSeatLabel(posOf[e.n], cols));
-            if (e.w && !zs.includes(e.w)) ng.push(k + "　" + wishZoneLabel(e.w) + "を希望　いまは " + label);
-            if (e.a && zs.includes(e.a)) ng.push(k + "　" + wishZoneLabel(e.a) + "は避けたい　いまは " + label);
+            if (e.n && posOf[e.n] !== undefined && !wishAdjacent(idx, posOf[e.n], cols)) ng.push(k + "　" + e.n + "さんの近くを希望　今は " + label + " と " + getSeatLabel(posOf[e.n], cols));
+            if (e.w && !zs.includes(e.w)) ng.push(k + "　" + wishZoneLabel(e.w) + "を希望　今は " + label);
+            if (e.a && zs.includes(e.a)) ng.push(k + "　" + wishZoneLabel(e.a) + "は避けたい　今は " + label);
         }
         if (e.t) notes.push(k + "　" + label + "　" + e.t);
     });
     if (counted > 0) {
-        if (ng.length > 0) add("warn", "座席の希望を守れていない人がいます", ng, "もう一度席替えすると、守れることがあります。席を指定している人や、ほかの条件を優先した場合は、守れないことがあります。");
-        else add("ok", "座席の希望は、" + counted + "人すべて守れています", []);
+        if (ng.length > 0) add("warn", "座席の希望を守れていない人がいます", ng, "もう一度席替えすると、守れることがあります。席を指定している人や、他の条件を優先した場合は、守れないことがあります。");
+        else add("ok", "座席の希望は、" + counted + "人全て守れています", []);
     }
     if (notes.length > 0) add("info", "配慮メモのある人（" + notes.length + "人）", notes);
 }
@@ -274,12 +274,12 @@ function saveWishModal() {
 }
 
 function clearWishAll() {
-    if (!confirm("このクラスの、座席の希望と配慮メモを、すべて消します。よろしいですか？")) return;
+    if (!confirm("このクラスの、座席の希望と配慮メモを、全て消します。よろしいですか？")) return;
     wishSaveClass({});
     wishRenderRows();
     wishDecorate();
     if (typeof updateSeatCheckButton === "function") updateSeatCheckButton();
-    showToast("希望と配慮メモを、すべて消しました。", "success");
+    showToast("希望と配慮メモを、全て消しました。", "success");
 }
 
 const WISH_CSS = `
@@ -308,7 +308,7 @@ const WISH_HTML = `
 <div data-plugin="seat-wishes" id="wishModalOverlay" class="modal-overlay" style="display: none;">
     <div class="modal-content" style="max-width: 640px; width: 95%;">
         <h4 style="color: var(--lbl-green);">座席の希望・配慮メモ</h4>
-        <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 12px; line-height: 1.6;">「前の席がいい」「窓側は避けたい」などを選ぶと、席替えのときに、できるだけ守ります。条件が多いと、守れないこともあります。守れているかは、「ほかの操作」の「結果のチェック」で確かめられます。</p>
+        <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 12px; line-height: 1.6;">「前の席がいい」「窓側は避けたい」などを選ぶと、席替えの時に、できるだけ守ります。条件が多いと、守れないこともあります。守れているかは、「他の操作」の「結果のチェック」で確かめられます。</p>
         <div class="wish-top">
             <label for="wishWindowSide" class="wish-top-label">窓は、座席表の</label>
             <select id="wishWindowSide"><option value="left">左側</option><option value="right">右側</option></select>
@@ -318,7 +318,7 @@ const WISH_HTML = `
         <div id="wishRows"></div>
         <div id="wishStale" class="wish-stale" hidden></div>
         <div class="modal-btn-row">
-            <button type="button" class="btn-secondary" onclick="clearWishAll()">すべて消す</button>
+            <button type="button" class="btn-secondary" onclick="clearWishAll()">全て消す</button>
             <button type="button" class="btn-secondary" onclick="closeWishModal()">キャンセル</button>
             <button type="button" class="btn-save" onclick="saveWishModal()">✅ 保存</button>
         </div>
@@ -335,7 +335,7 @@ SekigaeApp.registerPlugin({
     searchWords: "希望 配慮 前の席 後ろの席 窓側 廊下側 避けたい 視力 メモ 座席 お願い 事情",
     afterRender() { wishDecorate(); },
     mount(app) {
-        app.insertInto("guide-faq", "<li data-plugin=\"seat-wishes\"><strong>「前の席がいい」など、希望を守りたい</strong>：設定の「席替えのルール」の「座席の希望・配慮メモ」に書くと、席替えで、できるだけ守ります。守れているかは、「ほかの操作」の「結果のチェック」で確かめられます。</li>");
+        app.insertInto("guide-faq", "<li data-plugin=\"seat-wishes\"><strong>「前の席がいい」など、希望を守りたい</strong>：設定の「席替えのルール」の「座席の希望・配慮メモ」に書くと、席替えで、できるだけ守ります。守れているかは、「他の操作」の「結果のチェック」で確かめられます。</li>");
         const st = document.createElement("style");
         st.id = "seatWishesStyle";
         st.textContent = WISH_CSS;

@@ -598,7 +598,7 @@ function giantFocusPeek() {
         if (!o || o.style.display === "none") return;
         if (e.key === "Escape") {
             const m = document.getElementById("pluginModalOverlay");
-            if (m && m.style.display !== "none") return;      // ほかの窓が開いている時は、その窓を先に閉じる
+            if (m && m.style.display !== "none") return;      // 他の窓が開いている時は、その窓を先に閉じる
             closeGiantTimeMode();
             return;
         }
@@ -608,7 +608,7 @@ function giantFocusPeek() {
 function addTimerTime(secondsToAdd) {
     if (isStopwatchMode) return; 
     initAudio();
-    if (timerAlarmAt) timerAlarmAt += secondsToAdd * 1000;     // 目覚まし式のときは、鳴らす時刻が、ずれる
+    if (timerAlarmAt) timerAlarmAt += secondsToAdd * 1000;     // 目覚まし式の時は、鳴らす時刻が、ずれる
     timerMilliseconds += secondsToAdd * 1000;
     if (timerMilliseconds > initialTimerMilliseconds) {
         initialTimerMilliseconds = timerMilliseconds;
@@ -760,7 +760,7 @@ function toggleTimer() {
                 }
 
                 if (previousMs >= 0 && timerMilliseconds < 0) {
-                    timerAlarmAt = 0;      // 鳴らしたので、ここからは、ふつうのタイマー（超過時間を数える）
+                    timerAlarmAt = 0;      // 鳴らしたので、ここからは、普通のタイマー（超過時間を数える）
                     tickRenderAt = 0;
                     playAlarmSound();
                     
@@ -904,7 +904,7 @@ function tdPut(key, value, apply) {
     apply(value);
 }
 function updateTimerDisplay(fromTick) {
-    if (!fromTick) { for (const k in tdCache) delete tdCache[k]; }     // ほかの場所から呼ばれた時は、控えを捨てて全部書きなおす
+    if (!fromTick) { for (const k in tdCache) delete tdCache[k]; }     // 他の場所から呼ばれた時は、控えを捨てて全部書きなおす
     renderStepProgress();
     let isNegative = (!isStopwatchMode && timerMilliseconds < 0);
     let absMs = Math.abs(timerMilliseconds);

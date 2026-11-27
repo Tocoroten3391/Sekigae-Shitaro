@@ -181,7 +181,7 @@ function pickSeatWeightedByHistory(seats) {
         return m;
     };
     const byTime = rank("lastAt", true);   // 古い（または未指名）ほど 0 に近い
-    const byCount = rank("count", true);   // 回数が少ないほど 0 に近い
+    const byCount = rank("count", true);   // 回数が少ない程 0 に近い
     const n = info.length;
     const weights = info.map(it => {
         const score = 1 - ((byTime.get(it) + byCount.get(it)) / 2) / (n - 1); // 1（当たりやすい）〜0
@@ -238,7 +238,7 @@ function nominationWinSound() {
 }
 
 // ---- 早押しボタン風の指名：少し間をおいて、「ピンポーン！」と鳴り、画面が光って、指名された人が大きく出ます ----
-const NOM_BUZZER_KEY = "nominate_buzzer";   // "1"（早押しボタン風）／ "0"（ふつうの演出）
+const NOM_BUZZER_KEY = "nominate_buzzer";   // "1"（早押しボタン風）／ "0"（普通の演出）
 function nominationBuzzerOn() { return lsGet(NOM_BUZZER_KEY, "0") === "1"; }
 function toggleNominationBuzzer() {
   const t = $id("nominateBuzzerToggle");
@@ -298,7 +298,7 @@ function nominationBuzzerShow(text) {
 
 function pickRandomStudent() {
   if (isNominating) return; 
-  if (!currentStudents || currentStudents.length === 0) { showToast("座席表が空っぽのときは指名できません。", "error"); return; }
+  if (!currentStudents || currentStudents.length === 0) { showToast("座席表が空っぽの時は指名できません。", "error"); return; }
   
   const isNominationMode = document.body.classList.contains("nomination-active");
   const excludeToggle = $id("nominateExcludeToggle");
@@ -498,7 +498,7 @@ function pickRandomStudent() {
 }
 
 function enterNominationMode() {
-  if (currentStudents.length === 0) { showToast("座席表が空っぽのときは指名モードに入れません。", "error"); return; }
+  if (currentStudents.length === 0) { showToast("座席表が空っぽの時は指名モードに入れません。", "error"); return; }
   const configContainer = $id("configContainer");
   if (configContainer) configContainer.classList.remove("open");
   const configMenuBtn = $id("configMenuBtn");
@@ -530,7 +530,7 @@ function exitNominationMode() {
 
 const RANDOM_SCOPE_KEY = "random_anim_scope";
 
-const RANDOM_SCOPE_LABELS = { all: "すべての演出", basic: "基本・定番", intense: "激しい・ダイナミック", unique: "個性的・特殊" };
+const RANDOM_SCOPE_LABELS = { all: "全ての演出", basic: "基本・定番", intense: "激しい・ダイナミック", unique: "個性的・特殊" };
 
 function getRandomScope() {
     const v = lsGet(RANDOM_SCOPE_KEY, "all");
@@ -548,7 +548,7 @@ function onRandomScopeChange() {
     if (!sel) return;
     lsSet(RANDOM_SCOPE_KEY, sel.value);
     refreshFavAnimUI();
-    showToast(sel.value === "all" ? "毎回ランダムは、すべての演出から選びます。" : `毎回ランダムは、「${RANDOM_SCOPE_LABELS[sel.value]}」から選びます。`, "success");
+    showToast(sel.value === "all" ? "毎回ランダムは、全ての演出から選びます。" : `毎回ランダムは、「${RANDOM_SCOPE_LABELS[sel.value]}」から選びます。`, "success");
 }
 
 // ---- 本体への登録（必須：オン・オフの切り替えはできません） ----
@@ -567,8 +567,8 @@ SekigaeApp.registerPlugin({
             row.insertAdjacentHTML("afterend", '<div class="switch-container" style="margin-top: 8px;"><label class="switch"><input type="checkbox" id="nominateBuzzerToggle" onchange="toggleNominationBuzzer()"><span class="slider slider-purple"></span></label><span class="switch-label" id="nominateBuzzerLabel" style="color: var(--lbl-purple); font-weight: bold;">早押しボタン風にする</span></div>');
             const t = $id("nominateBuzzerToggle");
             t.checked = nominationBuzzerOn();
-            if (typeof makeInfoTip === "function") $id("nominateBuzzerLabel").appendChild(makeInfoTip("ルーレット演出の代わりに、少し間をおいて「ピンポーン！」と鳴り、画面が光って、指名された人が大きく出ます。焦らし演出がONの時は、間が長くなります。ルーレット演出を飛ばす設定がONの時は、間なしで、すぐ鳴ります。"));
+            if (typeof makeInfoTip === "function") $id("nominateBuzzerLabel").appendChild(makeInfoTip("ルーレット演出の代わりに、少し間を置いて「ピンポーン！」と鳴り、画面が光って、指名された人が大きく出ます。焦らし演出がONの時は、間が長くなります。ルーレット演出を飛ばす設定がONの時は、間なしで、すぐ鳴ります。"));
         }
-        app.insertInto("guide-faq", "<li><strong>指名を、クイズ番組の早押しのようにしたい</strong>：設定の「指名」の「くわしい設定」で、「早押しボタン風にする」をONにします。少し間をおいて「ピンポーン！」と鳴り、画面が光って、指名された人が大きく出ます。大きく出た画面は、押すと閉じます。</li>");
+        app.insertInto("guide-faq", "<li><strong>指名を、クイズ番組の早押しのようにしたい</strong>：設定の「指名」の「詳しい設定」で、「早押しボタン風にする」をONにします。少し間を置いて「ピンポーン！」と鳴り、画面が光って、指名された人が大きく出ます。大きく出た画面は、押すと閉じます。</li>");
     }
 });

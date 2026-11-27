@@ -99,7 +99,7 @@ function renderSeatChartCanvas(opts) {
     const rows = Math.max(1, Math.ceil(seats.length / cols));
     const ns = opts.nameScale || 1;
     const cellW = Math.round(150 * Math.max(1, ns)), cellH = Math.round(92 * Math.max(1, ns)), gap = 10, margin = 36, scale = 2;
-    const dy = (cellH - 92) / 2; // 席が大きいとき、文字を中央に寄せる分
+    const dy = (cellH - 92) / 2; // 席が大きい時、文字を中央に寄せる分
     const date = new Date();
     const dateStr = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
     const headerH = (opts.title || opts.showDate) ? (opts.title ? 54 : 0) + (opts.showDate ? 28 : 0) + 10 : 0;

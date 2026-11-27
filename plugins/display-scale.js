@@ -5,7 +5,7 @@
 // ==========================================
 const DS_KEY = "ui_scale";
 const DS_CHOICES = [
-    { v: "1", label: "ふつう 100%" },
+    { v: "1", label: "普通 100%" },
     { v: "1.15", label: "少し大きい 115%" },
     { v: "1.3", label: "大きい 130%" },
     { v: "1.5", label: "とても大きい 150%" },
@@ -47,7 +47,7 @@ function dsApply(refit) {
     const note = $id("uiScaleNote");
     if (note) {
         const parts = [];
-        if (cur.mode === "auto") parts.push("いまは " + Math.round(cur.z * 100) + "% です。");
+        if (cur.mode === "auto") parts.push("今は " + Math.round(cur.z * 100) + "% です。");
         if (cur.z > 1 && window.innerWidth / cur.z < 1000) parts.push("この画面では、大きすぎて、ボタンがせまくなることがあります。");
         note.textContent = parts.join("");
     }

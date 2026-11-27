@@ -47,7 +47,7 @@ function onSoftKeypadShuffleChange() {
     lsSet("softkeypad_shuffle", s.value);
     const d = skpPad();
     if (d && skpInput) skpArrangeDigits(skpInput);
-    showToast(s.value === "off" ? "テンキーの数字は、ふだんの並びにしました。" : (s.value === "pin" ? "暗証番号のときだけ、数字をバラバラにします。" : "テンキーの数字を、いつもバラバラにします。"), "success");
+    showToast(s.value === "off" ? "テンキーの数字は、ふだんの並びにしました。" : (s.value === "pin" ? "暗証番号の時だけ、数字をバラバラにします。" : "テンキーの数字を、いつもバラバラにします。"), "success");
 }
 function skpBuild() {
     let d = skpPad();
@@ -61,7 +61,7 @@ function skpBuild() {
     const key = (k, label, cls, aria) => `<button type="button" data-skp-key="${k}"${/^\d$/.test(k) ? ` data-skp-slot="${k}"` : ""} class="${cls || ""}"${aria ? ` aria-label="${aria}"` : ""}>${label}</button>`;
     d.innerHTML = `<div class="skp-head"><span class="skp-title" id="skpTitle"></span><span class="skp-value" id="skpValue" aria-live="polite"></span>` +
         key("shuf", "🔀", "skp-side skp-shuf", "数字の並びを入れ替える") + key("side", "⇄", "skp-side", "左右に動かす") + `</div><div class="skp-grid">` +
-        ["7", "8", "9"].map(n => key(n, n)).join("") + key("bs", "⌫", "skp-fn", "ひとつ消す") +
+        ["7", "8", "9"].map(n => key(n, n)).join("") + key("bs", "⌫", "skp-fn", "一つ消す") +
         ["4", "5", "6"].map(n => key(n, n)).join("") + key("clear", "クリア", "skp-fn", "全部消す") +
         ["1", "2", "3"].map(n => key(n, n)).join("") + key("ok", "決定", "skp-ok", "決定") +
         key("0", "0", "skp-zero") + key("close", "✕ 閉じる", "skp-fn", "閉じる") + `</div>`;
@@ -145,7 +145,7 @@ function skpPress(k) {
     if (k === "bs") { skpFresh = false; skpSet(inp, (inp.value || "").slice(0, -1)); return; }
     if (!/^\d$/.test(k)) return;
     let v = inp.value || "";
-    if (skpFresh) { v = ""; skpFresh = false; } // 開いてすぐの1回目は、いまの数字を置き換える
+    if (skpFresh) { v = ""; skpFresh = false; } // 開いてすぐの1回目は、今の数字を置き換える
     const maxLen = parseInt(inp.getAttribute("maxlength") || "0", 10) || 6;
     if (v.length >= maxLen) { skpRefresh(); return; }
     const next = v + k;

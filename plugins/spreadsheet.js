@@ -12,16 +12,16 @@ const GAS_TIMEOUT_MS = 15000;
 const GAS_ERRORS = {
     "E-URL-01": { kind: "URL", title: "GASのURLの形が正しくありません", cause: "URLが空か途中で切れています。", fix: "GASの「デプロイ」→「ウェブアプリ」にある https://script.google.com/…/exec のURLを全部コピーして貼り付けてください。" },
     "E-URL-02": { kind: "URL", title: "テスト用の /dev のURLが入っています", cause: "「テストデプロイ」のURLは自分以外の端末では使えません。", fix: "「新しいデプロイ」で作った末尾が /exec のURLを使ってください。" },
-    "E-NET-01": { kind: "通信", title: "GASに通信できませんでした", cause: "インターネットにつながっていないか、学校のネットワークが script.google.com を止めているか、URLが違うかのどれかです。", fix: "ほかのWebページが開けるか確認してください。開けるならURLを見直して、学校のネットワークの担当の先生に「script.google.com を許可できるか」を聞いてください。" },
-    "E-NET-02": { kind: "通信", title: "この端末はいまオフラインです", cause: "端末がインターネットにつながっていません。", fix: "Wi-Fiを確認してください。オフラインでも座席表と前回の名簿のキャッシュは使えます。" },
-    "E-NET-03": { kind: "通信", title: "GASから時間内に返事がありませんでした", cause: "通信が遅いかGASの処理に時間がかかっています。", fix: "少し待ってもう一度ためしてください。続くときはスプレッドシートの行数が多すぎないか確認してください。" },
-    "E-AUTH-01": { kind: "権限", title: "GASがデータではなく別のページを返しました", cause: "GASのサーバーには届きましたが、データではなくWebページが返りました。多くはウェブアプリの公開範囲が合っていないためで、ログイン画面や権限の確認画面が返っています。URLの間違いやGAS側の実行エラーでも起きます。", fix: "まずURLがいまのデプロイのものか確認してください。次にGASの「デプロイを管理」で「実行するユーザー：自分」「アクセスできるユーザー：全員」になっているか確認してください。学校のアカウントだけで使う場合は、その組織を選びます。変えたら「新しいバージョン」でデプロイし直します。このブラウザでGoogleにログインしているかも確認してください。" },
-    "E-AUTH-02": { kind: "権限", title: "GASが権限が足りないと返しました", cause: "GASがスプレッドシートを開く許可をまだ承認していません。", fix: "GASのエディタで一度「実行」して権限を承認し、そのあとデプロイし直してください。" },
+    "E-NET-01": { kind: "通信", title: "GASに通信できませんでした", cause: "インターネットにつながっていないか、学校のネットワークが script.google.com を止めているか、URLが違うかのどれかです。", fix: "他のWebページが開けるか確認してください。開けるならURLを見直して、学校のネットワークの担当の先生に「script.google.com を許可できるか」を聞いてください。" },
+    "E-NET-02": { kind: "通信", title: "この端末は今オフラインです", cause: "端末がインターネットにつながっていません。", fix: "Wi-Fiを確認してください。オフラインでも座席表と前回の名簿のキャッシュは使えます。" },
+    "E-NET-03": { kind: "通信", title: "GASから時間内に返事がありませんでした", cause: "通信が遅いかGASの処理に時間がかかっています。", fix: "少し待ってもう一度試してください。続く時はスプレッドシートの行数が多すぎないか確認してください。" },
+    "E-AUTH-01": { kind: "権限", title: "GASがデータではなく別のページを返しました", cause: "GASのサーバーには届きましたが、データではなくWebページが返りました。多くはウェブアプリの公開範囲が合っていないためで、ログイン画面や権限の確認画面が返っています。URLの間違いやGAS側の実行エラーでも起きます。", fix: "まずURLが今のデプロイのものか確認してください。次にGASの「デプロイを管理」で「実行するユーザー：自分」「アクセスできるユーザー：全員」になっているか確認してください。学校のアカウントだけで使う場合は、その組織を選びます。変えたら「新しいバージョン」でデプロイし直します。このブラウザでGoogleにログインしているかも確認してください。" },
+    "E-AUTH-02": { kind: "権限", title: "GASが権限が足りないと返しました", cause: "GASがスプレッドシートを開く許可をまだ承認していません。", fix: "GASのエディタで一度「実行」して権限を承認し、その後デプロイし直してください。" },
     "E-SHEET-01": { kind: "シート", title: "名簿をシートから取れませんでした", cause: "名簿のシートが空か、見ている列に名前がありません。", fix: "スプレッドシートの名簿のシートに、名前が入っているか確認してください。" },
     "E-SHEET-02": { kind: "シート", title: "このクラスの保存データがシートにありません", cause: "このクラス名ではまだクラウドに保存していないか、クラス名を変えました。", fix: "先に「シートに保存」を押してください。クラス名を変えた場合は、もとの名前で保存した履歴を確認してください。" },
-    "E-SHEET-03": { kind: "シート", title: "GASがシートの処理でエラーを返しました", cause: "タブ名や列がGASのプログラムの想定と違います。", fix: "下の「くわしい内容」を見て、スプレッドシートのタブ名や列がGASのプログラムと合っているか確認してください。" },
+    "E-SHEET-03": { kind: "シート", title: "GASがシートの処理でエラーを返しました", cause: "タブ名や列がGASのプログラムの想定と違います。", fix: "下の「詳しい内容」を見て、スプレッドシートのタブ名や列がGASのプログラムと合っているか確認してください。" },
     "E-SHEET-04": { kind: "シート", title: "シートに保存できませんでした", cause: "GASが保存できたと返しませんでした。シートが閲覧専用かGASの実行エラーです。", fix: "スプレッドシートが編集できる状態か確認してください。" },
-    "E-GAS-01": { kind: "GAS", title: "GASがエラーを返しました", cause: "GASのプログラムの中でエラーが起きました。", fix: "下の「くわしい内容」をGASを作った人に伝えてください。GASの「実行数」からログも見られます。" },
+    "E-GAS-01": { kind: "GAS", title: "GASがエラーを返しました", cause: "GASのプログラムの中でエラーが起きました。", fix: "下の「詳しい内容」をGASを作った人に伝えてください。GASの「実行数」からログも見られます。" },
     "E-DATA-01": { kind: "データ", title: "GASからの返事を読み取れませんでした", cause: "返ってきたデータの形がアプリの想定と違います。GASのプログラムが古い可能性があります。", fix: "GASのプログラムが、最新か確認してください。" }
 };
 const GAS_ACTION_NAMES = { save: "シートに保存", load: "前回を復元", history: "履歴の一覧", loadHistoryItem: "履歴から復元", specialSlots: "特別保存／接続の確認", saveSpecial: "特別保存", loadSpecial: "特別保存から復元", names: "名簿の読み込み" };
@@ -59,7 +59,7 @@ function gasErrText(r) {
     const info = GAS_ERRORS[r.code] || GAS_ERRORS["E-GAS-01"];
     return ["【席替えし太郎 同期エラー】", "エラーコード：" + r.code, "種類：" + info.kind, "内容：" + info.title,
         "操作：" + (GAS_ACTION_NAMES[r.action] || r.action || "-"), "日時：" + new Date(r.t).toLocaleString("ja-JP"),
-        "くわしい内容：" + (r.detail || "-"), "バージョン：" + (typeof APP_VERSION !== "undefined" ? APP_VERSION : "")].join("\n");
+        "詳しい内容：" + (r.detail || "-"), "バージョン：" + (typeof APP_VERSION !== "undefined" ? APP_VERSION : "")].join("\n");
 }
 function gasErrRender() {
     const box = $id("gasErrBox");
@@ -72,7 +72,7 @@ function gasErrRender() {
         '<div class="gas-err-head"><span class="gas-err-kind gas-err-kind-' + gasErrEsc(r.code.split("-")[1]) + '">' + gasErrEsc(info.kind) + '</span>' +
         '<span class="gas-err-title">' + gasErrEsc(info.title) + '</span><span class="gas-err-code">' + gasErrEsc(r.code) + '</span></div>' +
         '<div class="gas-err-body"><p><b>原因</b>　' + gasErrEsc(info.cause) + '</p><p><b>対処</b>　' + gasErrEsc(info.fix) + '</p>' +
-        (r.detail ? '<p><b>くわしい内容</b>　' + gasErrEsc(r.detail) + '</p>' : "") +
+        (r.detail ? '<p><b>詳しい内容</b>　' + gasErrEsc(r.detail) + '</p>' : "") +
         '<p class="gas-err-meta">' + gasErrEsc(new Date(r.t).toLocaleString("ja-JP")) + (r.action ? "　操作：" + gasErrEsc(GAS_ACTION_NAMES[r.action] || r.action) : "") + '</p></div>' +
         '<div class="gas-err-btns"><button type="button" class="btn-secondary btn-compact" data-gaserr="copy">内容をコピー</button><button type="button" class="btn-secondary btn-compact" data-gaserr="clear">消す</button>' + (typeof openFeedback === "function" ? '<button type="button" class="btn-secondary btn-compact" data-gaserr="report">このエラーを報告</button>' : "") + '</div>';
 }
@@ -82,7 +82,7 @@ document.addEventListener("click", ev => {
     if (b.dataset.gaserr === "clear") gasErrClearFor("");
     else if (b.dataset.gaserr === "report") {
         const r = gasReadLast();
-        if (r && typeof openFeedback === "function") openFeedback({ kind: "bug", text: "同期（スプレッドシート）で、エラーが出ました。\nエラーコード：" + r.code + (r.action ? "\n操作：" + (GAS_ACTION_NAMES[r.action] || r.action) : "") + "\n\n起きたときの様子：" });
+        if (r && typeof openFeedback === "function") openFeedback({ kind: "bug", text: "同期（スプレッドシート）で、エラーが出ました。\nエラーコード：" + r.code + (r.action ? "\n操作：" + (GAS_ACTION_NAMES[r.action] || r.action) : "") + "\n\n起きた時の様子：" });
     }
     else if (b.dataset.gaserr === "copy") {
         const r = gasReadLast();
@@ -297,7 +297,7 @@ function sendServerRequest(url, params, callbackName, callbackFn) {
         if (callbackName === "handleChangelogManual") {
             if (typeof showLocalChangelog === "function") { showLocalChangelog(); return; }
             const infoBody = $id("updateInfoBody");
-            if (infoBody) infoBody.innerHTML = '<p style="color: var(--text-sub); font-size: 13px;">更新情報を取得できませんでした。通信できる場所でもう一度ためしてください。</p>';
+            if (infoBody) infoBody.innerHTML = '<p style="color: var(--text-sub); font-size: 13px;">更新情報を取得できませんでした。通信できる場所でもう一度試してください。</p>';
             return;
         }
         gasLoadFailed(callbackName, script.src);

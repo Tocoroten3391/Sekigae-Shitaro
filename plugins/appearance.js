@@ -160,7 +160,7 @@ function changeTheme() {
     localStorage.setItem("app_theme", sel.value);
     const r = applyTheme();
     if (r.auto) showToast("テーマを選びました。端末がダークモードの間は、ダークモードで表示します。", "success");
-    else if (r.chosen === "theme-auto") showToast(`季節おまかせにしました。いまは「${THEME_LABELS[r.resolved] || ""}」です。`, "success");
+    else if (r.chosen === "theme-auto") showToast(`季節おまかせにしました。今は「${THEME_LABELS[r.resolved] || ""}」です。`, "success");
     else showToast("テーマを着せ替えました。", "success");
 }
 
@@ -189,7 +189,7 @@ function onSeasonDecoToggle() {
     lsSet("season_deco", t && t.checked ? "1" : "0");
     updateSeasonDeco();
     const key = seasonDeco.key;
-    if (t && t.checked && !key) showToast("いまのテーマには、飾りがありません。サクラ、新学期、サマー、オータム、ハロウィン、ウィンター、クリスマスで出ます。", "success");
+    if (t && t.checked && !key) showToast("今のテーマには、飾りがありません。サクラ、新学期、サマー、オータム、ハロウィン、ウィンター、クリスマスで出ます。", "success");
 }
 
 function stopSeasonDeco() {

@@ -273,7 +273,7 @@ function ptApplyTemplate() {
     const t = PT_TEMPLATES[sel.value];
     if (!t) return;
     ptReadEdit();
-    if (ptEdit.rows.length && !confirm("いまの時間を、「" + t.name + "」に置きかえます。よろしいですか？")) return;
+    if (ptEdit.rows.length && !confirm("今の時間を、「" + t.name + "」に置きかえます。よろしいですか？")) return;
     ptEdit.rows = t.rows.map(r => ({ s: r[0], e: r[1], n: r[2] }));
     ptRenderRows();
     sel.value = "";
@@ -292,7 +292,7 @@ function ptSaveSet() {
     ptSave();
     ptSelectSet(set.id);
     ptRenderToday();
-    showToast("「" + set.name + "」を保存しました。" + (dup.length ? "同じ曜日の時間割が、ほかにもあります。上にある方が、使われます。" : ""), dup.length ? "info" : "success");
+    showToast("「" + set.name + "」を保存しました。" + (dup.length ? "同じ曜日の時間割が、他にもあります。上にある方が、使われます。" : ""), dup.length ? "info" : "success");
 }
 function ptDeleteSet() {
     const set = ptData.sets.find(s => s.id === ptEditId);
@@ -332,7 +332,7 @@ body.nomination-active .pt-chip, body.app-locked .pt-chip { display: none; }
 const PT_HTML = `
 <div id="ptModalOverlay" class="modal-overlay" style="display: none;">
     <div class="modal-content" style="max-width: 620px; width: 95%; max-height: 92vh; overflow-y: auto;">
-        <h4 style="color: #0891b2;">🔔 プログラムタイマー <span data-pttip="曜日ごとの時間割を登録しておくと、決めた時刻に、自動でチャイムが鳴ります。始まる少し前の予鈴、始まりと終わりのチャイムが使えます。画面の隅には、いまの授業と残り時間が出ます。ブラウザの決まりで、このページを開いてから、画面を一度タップしないと、音が鳴りません。同じ曜日が複数の時間割に入っているときは、一覧で上にあるものを使います。"></span></h4>
+        <h4 style="color: #0891b2;">🔔 プログラムタイマー <span data-pttip="曜日ごとの時間割を登録しておくと、決めた時刻に、自動でチャイムが鳴ります。始まる少し前の予鈴、始まりと終わりのチャイムが使えます。画面の隅には、今の授業と残り時間が出ます。ブラウザの決まりで、このページを開いてから、画面を一度タップしないと、音が鳴りません。同じ曜日が複数の時間割に入っている時は、一覧で上にあるものを使います。"></span></h4>
         <div class="switch-container">
             <label class="switch"><input type="checkbox" id="ptOnToggle" onchange="ptSettingChanged()"><span class="slider"></span></label>
             <span class="switch-label">決めた時刻に、自動でチャイムを鳴らす</span>
@@ -353,7 +353,7 @@ const PT_HTML = `
         </div>
         <div class="switch-container">
             <label class="switch"><input type="checkbox" id="ptShowToggle" onchange="ptSettingChanged()"><span class="slider"></span></label>
-            <span class="switch-label">画面の隅に、いまの授業と残り時間を出す</span>
+            <span class="switch-label">画面の隅に、今の授業と残り時間を出す</span>
         </div>
         <div class="switch-container" id="ptAutoTimerRow" style="margin-top: 8px;">
             <label class="switch"><input type="checkbox" id="ptAutoTimerToggle" onchange="ptSettingChanged()"><span class="slider"></span></label>
@@ -386,7 +386,7 @@ SekigaeApp.registerPlugin({
     id: "program-timer",
     name: "プログラムタイマー",
     version: "1.1",
-    description: "曜日ごとの時間割を登録しておくと、決めた時刻に、自動でチャイムが鳴ります。予鈴、始まりと終わりのチャイム、いまの授業の残り時間の表示、授業の始まりでタイマーを自動で始める機能があります。",
+    description: "曜日ごとの時間割を登録しておくと、決めた時刻に、自動でチャイムが鳴ります。予鈴、始まりと終わりのチャイム、今の授業の残り時間の表示、授業の始まりでタイマーを自動で始める機能があります。",
     backupKeys: [PT_KEY],
     suggests: ["timer"],
     searchWords: "プログラムタイマー チャイム 予鈴 時間割 授業 休み時間 キンコンカンコン 鐘 ベル 自動 時刻 スケジュール",
@@ -398,7 +398,7 @@ SekigaeApp.registerPlugin({
         document.body.insertAdjacentHTML("beforeend", PT_HTML);
         document.querySelectorAll("#ptModalOverlay [data-pttip]").forEach(el => el.replaceWith(makeInfoTip(el.dataset.pttip)));
         app.insertInto("settings-timer", '<button type="button" onclick="openProgramTimer()" class="btn-secondary" id="btnProgramTimer" style="margin-top: 10px;">プログラムタイマー</button>');
-        app.insertInto("guide-tools", '<li><strong>プログラムタイマー</strong>：設定の「アラームとチャイム」の「プログラムタイマー」で、曜日ごとの時間割を登録します。決めた時刻に、予鈴と、始まりと終わりのチャイムが、自動で鳴ります。画面の隅には、いまの授業と残り時間が出ます。</li>');
+        app.insertInto("guide-tools", '<li><strong>プログラムタイマー</strong>：設定の「アラームとチャイム」の「プログラムタイマー」で、曜日ごとの時間割を登録します。決めた時刻に、予鈴と、始まりと終わりのチャイムが、自動で鳴ります。画面の隅には、今の授業と残り時間が出ます。</li>');
     },
     ready() {
         ptLoad();

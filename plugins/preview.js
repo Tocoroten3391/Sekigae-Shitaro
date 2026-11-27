@@ -74,8 +74,8 @@ function renderShufflePreview() {
     const info = $id("previewInfo");
     if (info) {
         info.textContent = `今の席から動く人：${moved}人／同じ席のまま：${stay}人` +
-            (separationPairs.length > 0 ? (cand.violations === 0 ? "　離す設定はすべて守れています" : `　離す設定のうち${cand.violations}組は離せていません`) : "") +
-            (nearPairs.length > 0 ? (cand.nearUnmet === 0 ? "　近くに置く設定はすべて守れています" : `　近くに置く設定のうち${cand.nearUnmet}組は近くにできていません`) : "") +
+            (separationPairs.length > 0 ? (cand.violations === 0 ? "　離す設定は全て守れています" : `　離す設定のうち${cand.violations}組は離せていません`) : "") +
+            (nearPairs.length > 0 ? (cand.nearUnmet === 0 ? "　近くに置く設定は全て守れています" : `　近くに置く設定のうち${cand.nearUnmet}組は近くにできていません`) : "") +
             (cand.avoiding ? `　前回までと同じ席：${cand.same}件／同じ隣：${cand.pairs}件` : "");
     }
 

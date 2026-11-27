@@ -68,8 +68,8 @@ function nqRender() {
             return '<div class="nq-item' + (st === "ok" ? "" : " is-away") + '" data-i="' + i + '">'
                 + '<span class="nq-no">' + (i + 1) + '</span><span class="nq-name">' + nqEsc(nqLabel(t)) + '</span>' + tag
                 + '<span class="nq-ops">'
-                + '<button type="button" class="nq-op" data-op="up" aria-label="' + nqEsc(nqLabel(t)) + 'を、ひとつ前にする"' + (i === 0 ? " disabled" : "") + '><span class="pico" data-pico="arrowup" aria-hidden="true">⬆</span></button>'
-                + '<button type="button" class="nq-op" data-op="down" aria-label="' + nqEsc(nqLabel(t)) + 'を、ひとつ後ろにする"' + (i === s.list.length - 1 ? " disabled" : "") + '><span class="pico" data-pico="arrowdown" aria-hidden="true">⬇</span></button>'
+                + '<button type="button" class="nq-op" data-op="up" aria-label="' + nqEsc(nqLabel(t)) + 'を、一つ前にする"' + (i === 0 ? " disabled" : "") + '><span class="pico" data-pico="arrowup" aria-hidden="true">⬆</span></button>'
+                + '<button type="button" class="nq-op" data-op="down" aria-label="' + nqEsc(nqLabel(t)) + 'を、一つ後ろにする"' + (i === s.list.length - 1 ? " disabled" : "") + '><span class="pico" data-pico="arrowdown" aria-hidden="true">⬇</span></button>'
                 + '<button type="button" class="nq-op" data-op="del" aria-label="' + nqEsc(nqLabel(t)) + 'を、順番からはずす"><span class="pico" data-pico="close" aria-hidden="true">✕</span></button>'
                 + '</span></div>';
         }).join("");

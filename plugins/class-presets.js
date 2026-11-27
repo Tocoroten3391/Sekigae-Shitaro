@@ -449,7 +449,7 @@ function requestClassSwitch(name, onDone, onCancel) {
 
 function validatePresetNewName(text, presets, self) {
     if (!text) return "名前を入れてください。";
-    if (text === self) return "いまと同じ名前です。";
+    if (text === self) return "今と同じ名前です。";
     if (text === TRIAL_CLASS_ID || text === "__proto__") return "この名前は使えません。";
     if (Object.prototype.hasOwnProperty.call(presets, text)) return `「${text}」というクラスは、もうあります。`;
     return "";
@@ -461,7 +461,7 @@ function renameSelectedClass() {
     if (!old) { showToast("名前を変えるクラスを選んでください。", "error"); return; }
     const ask = (value, err) => presetDialog({
         title: "クラスの名前を変える",
-        message: err || `クラス「${old}」の新しい名前を入れてください。記録も、いっしょに引き継がれます。`,
+        message: err || `クラス「${old}」の新しい名前を入れてください。記録も、一緒に引き継がれます。`,
         input: { value, placeholder: "例: 2年A組", label: "新しいクラス名" },
         buttons: [
             { label: "キャンセル", value: "cancel", cls: "btn-secondary" },
@@ -590,7 +590,7 @@ function deletePreset() {
         return; 
     } 
     const msg = $id("deleteModalMessage");
-    if (msg) msg.textContent = `本当にクラス「${name}」のデータを完全に消去してもよろしいですか？このクラスの記録も、いっしょに消えます。`; 
+    if (msg) msg.textContent = `本当にクラス「${name}」のデータを完全に消去してもよろしいですか？このクラスの記録も、一緒に消えます。`; 
     const overlay = $id("deleteModalOverlay");
     if (overlay) overlay.style.display = "flex"; 
 }

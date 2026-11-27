@@ -134,7 +134,7 @@ function sortEditorRowsByReading() {
     renumberEditorRows();
 }
 function clearEditorRows() {
-    if (rosterEditorRows.some(r => r.name.trim()) && !confirm("表の中身を、すべて消します。よろしいですか？")) return;
+    if (rosterEditorRows.some(r => r.name.trim()) && !confirm("表の中身を、全て消します。よろしいですか？")) return;
     rosterEditorRows = [];
     for (let i = 1; i <= 5; i++) rosterEditorRows.push(makeEditorRow(i, "", "", ""));
     renderRosterEditor();
@@ -143,7 +143,7 @@ function clearEditorRows() {
 // 表計算ソフトの列を貼り付けたとき：複数の行があれば、その行から下に、まとめて入れる
 function onRosterEditorPaste(ev, startIdx) {
     const text = (ev.clipboardData || window.clipboardData) ? (ev.clipboardData || window.clipboardData).getData("text") : "";
-    if (!/[\n\t]/.test(text.replace(/\n$/, ""))) return; // 1つだけなら、ふつうの貼り付け
+    if (!/[\n\t]/.test(text.replace(/\n$/, ""))) return; // 1つだけなら、普通の貼り付け
     ev.preventDefault();
     const lines = normalizeRosterText(text).split("\n").map(l => l.replace(/\s+$/, "")).filter(l => l.trim() !== "");
     let at = startIdx;

@@ -93,13 +93,13 @@ function seSavePdf() {
 
 SekigaeApp.registerPlugin({
     id: "seat-export",
-    name: "座席表のかんたん保存",
+    name: "座席表の簡単保存",
     version: "1.0",
     description: "座席表を、ワンタッチで、PNGの画像や、PDFにして保存します。",
     requires: ["print"],
     searchWords: "保存 画像 PDF ピーディーエフ PNG 書き出し 座席表 ワンタッチ ダウンロード",
     mount(app) {
-        app.insertInto("guide-faq", "<li data-plugin=\"seat-export\"><strong>座席表を、すぐに画像やPDFにしたい</strong>：「ほかの操作」の「画像で保存」か「PDFで保存」を押します。名前の表示や向きは、「座席表を印刷・画像保存」で前に選んだ設定を使います。</li>");
+        app.insertInto("guide-faq", "<li data-plugin=\"seat-export\"><strong>座席表を、すぐに画像やPDFにしたい</strong>：「他の操作」の「画像で保存」か「PDFで保存」を押します。名前の表示や向きは、「座席表を印刷・画像保存」で前に選んだ設定を使います。</li>");
         const more = $id("moreMenu");
         if (!more || $id("seatExportRow")) return;
         const st = document.createElement("style");

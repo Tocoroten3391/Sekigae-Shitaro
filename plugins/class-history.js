@@ -73,8 +73,8 @@ function chistSummary(p) {
 function chistDiff(p, cur) {
     const out = [];
     const a = chistCount(p), b = chistCount(cur);
-    if (((p.students || "").trim()) !== ((cur.students || "").trim())) out.push(a === b ? "名簿" : `名簿（${a}人 → いま${b}人）`);
-    if (String(p.cols || 6) !== String(cur.cols || 6) || String(p.rows || 6) !== String(cur.rows || 6)) out.push(`座席数（${p.cols || 6}×${p.rows || 6} → いま${cur.cols || 6}×${cur.rows || 6}）`);
+    if (((p.students || "").trim()) !== ((cur.students || "").trim())) out.push(a === b ? "名簿" : `名簿（${a}人 → 今${b}人）`);
+    if (String(p.cols || 6) !== String(cur.cols || 6) || String(p.rows || 6) !== String(cur.rows || 6)) out.push(`座席数（${p.cols || 6}×${p.rows || 6} → 今${cur.cols || 6}×${cur.rows || 6}）`);
     if ((p.emptySeats || "") !== (cur.emptySeats || "")) out.push("空席");
     const grp = x => JSON.stringify([x.groupType || "column", !!x.groupColorToggle, x.groupCount || 8, x.groupNames || {}, x.groupColors || {}, x.manualGroupMap || {}]);
     if (grp(p) !== grp(cur)) out.push("班の設定");
@@ -111,7 +111,7 @@ function chistOpen() {
         const d = chistDiff(e.p, cur);
         const dd = document.createElement("div");
         dd.className = "chist-diff";
-        dd.textContent = d.length ? "いまとの違い：" + d.join("、") : "いまと、同じ内容です";
+        dd.textContent = d.length ? "今との違い：" + d.join("、") : "今と、同じ内容です";
         main.appendChild(dd);
         row.appendChild(main);
         const b = document.createElement("button");
@@ -129,7 +129,7 @@ function chistOpen() {
     });
     presetDialog({
         title: `クラス「${name}」の保存履歴`,
-        message: list.length ? "戻したい状態の「戻す」を押してください。いまの状態も、履歴に残ります。" : "",
+        message: list.length ? "戻したい状態の「戻す」を押してください。今の状態も、履歴に残ります。" : "",
         bodyEl: body,
         buttons: [{ label: "閉じる", value: "close", cls: "btn-secondary", primary: true }]
     }, () => {});
@@ -141,7 +141,7 @@ function chistConfirmRestore(name, idx) {
     if (!e) return;
     presetDialog({
         title: "この状態に戻しますか？",
-        message: `クラス「${name}」を、${chistWhen(e.t)}より前の状態（${chistSummary(e.p)}）に戻します。いまの状態は、履歴に残るので、あとから戻せます。画面で変えて、まだ保存していない内容は、消えます。`,
+        message: `クラス「${name}」を、${chistWhen(e.t)}より前の状態（${chistSummary(e.p)}）に戻します。今の状態は、履歴に残るので、あとから戻せます。画面で変えて、まだ保存していない内容は、消えます。`,
         buttons: [
             { label: "やめる", value: "cancel", cls: "btn-secondary" },
             { label: "戻す", value: "ok", cls: "btn-connect is-primary", primary: true }
@@ -160,7 +160,7 @@ function chistRestore(name, idx) {
     const keep = {};
     ["archived", "pinned", "lastUsed", "csettings"].forEach(k => { if (cur[k] !== undefined) keep[k] = cur[k]; });
     presets[name] = { ...keep, ...chistContent(e.p) };
-    savePresetsObject(presets);   // ここで、いまの状態が、履歴に残ります
+    savePresetsObject(presets);   // ここで、今の状態が、履歴に残ります
     loadPreset(name);
     if (typeof updatePresetRadioButtons === "function") updatePresetRadioButtons();
     showToast(`クラス「${name}」を、${chistWhen(e.t)}より前の状態に戻しました。`, "success");

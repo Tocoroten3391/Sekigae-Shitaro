@@ -157,8 +157,8 @@ function updHowtoHtml() {
     const last = typeof getBackupLastAt === "function" ? getBackupLastAt() : 0;
     const lastTxt = last ? `最後のバックアップ：${typeof formatBackupDate === "function" ? formatBackupDate(last) : new Date(last).toLocaleDateString()}` : "まだ、バックアップを取っていません。";
     const steps = web
-        ? ["「バックアップを開く」で、いまのデータを書き出して、とっておきます。", "このページを、再読み込みします。新しい版が、自動で入ります。", "変わらない時は、もう一度、再読み込みします。"]
-        : ["「バックアップを開く」で、いまのデータを書き出して、とっておきます。", "「最新バージョンはこちら」で、新しい版のzipをダウンロードして、展開します。", "展開してできたファイルを、いま使っているフォルダに上書きして、アプリを開き直します。"];
+        ? ["「バックアップを開く」で、今のデータを書き出して、とっておきます。", "このページを、再読み込みします。新しい版が、自動で入ります。", "変わらない時は、もう一度、再読み込みします。"]
+        : ["「バックアップを開く」で、今のデータを書き出して、とっておきます。", "「最新バージョンはこちら」で、新しい版のzipをダウンロードして、展開します。", "展開してできたファイルを、今使っているフォルダに上書きして、アプリを開き直します。"];
     return `<details class="upd-howto"><summary>更新のしかた</summary><ol>${steps.map(t => `<li>${t}</li>`).join("")}</ol>
         <div class="upd-howto-last${last ? "" : " is-warn"}">${updEsc(lastTxt)}</div>
         <button type="button" class="btn-secondary upd-howto-btn">バックアップを開く</button></details>`;
@@ -181,7 +181,7 @@ function updSnoozeFor(days) {
 function updSnoozeAsk() {
     if (typeof presetDialog !== "function") { updSnoozeFor(3); return; }
     presetDialog({
-        title: "あとで知らせる",
+        title: "後で知らせる",
         message: "いつ、また知らせますか？",
         buttons: [
             { label: "やめる", value: "cancel", cls: "btn-secondary" },
@@ -274,7 +274,7 @@ function renderUpdateInfoModal(entries) {
         tools.innerHTML = `
             <input type="search" id="updateInfoSearch" class="upd-search" placeholder="言葉でさがす　例：タイマー、指名" autocomplete="off">
             <div class="upd-chips" role="group" aria-label="種類で絞りこむ">
-                ${[["all", "すべて"], ["new", "新機能"], ["improve", "改善"], ["fix", "修正"]].map(c => `<button type="button" class="upd-chip${c[0] === "all" ? " is-on" : ""}" data-filter="${c[0]}">${c[1]}</button>`).join("")}
+                ${[["all", "全て"], ["new", "新機能"], ["improve", "改善"], ["fix", "修正"]].map(c => `<button type="button" class="upd-chip${c[0] === "all" ? " is-on" : ""}" data-filter="${c[0]}">${c[1]}</button>`).join("")}
             </div>`;
         const input = $id("updateInfoSearch");
         if (input) input.addEventListener("input", () => { updHist.query = input.value; renderUpdateInfoList(); });
@@ -294,7 +294,7 @@ function renderUpdateInfoList() {
     let html = "";
     const latest = entries[0];
     if (latest && compareVersions(latest.version, APP_VERSION) > 0) {
-        html += `<div class="upd-banner">新しいバージョン <b>Ver.${updEsc(latest.version)}</b> があります（いま Ver.${updEsc(APP_VERSION)}）</div>` + updHowtoHtml();
+        html += `<div class="upd-banner">新しいバージョン <b>Ver.${updEsc(latest.version)}</b> があります（今 Ver.${updEsc(APP_VERSION)}）</div>` + updHowtoHtml();
     }
     let shown = 0;
     entries.forEach((e, i) => {
@@ -302,7 +302,7 @@ function renderUpdateInfoList() {
         if (!bullets) return;
         shown++;
         const cmp = compareVersions(e.version, APP_VERSION);
-        const mark = cmp > 0 ? '<span class="upd-mark upd-mark-new">新着</span>' : (cmp === 0 ? '<span class="upd-mark upd-mark-now">いま使用中</span>' : "");
+        const mark = cmp > 0 ? '<span class="upd-mark upd-mark-new">新着</span>' : (cmp === 0 ? '<span class="upd-mark upd-mark-now">今使用中</span>' : "");
         const first = updParseNotes(e.notes)[0];
         const preview = first ? `<span class="upd-prev">${updEsc(first.text)}</span>` : "";
         const open = filtering || cmp >= 0 || shown <= 3;
@@ -402,7 +402,7 @@ SekigaeApp.registerPlugin({
     id: "updateinfo",
     name: "更新情報",
     version: "1.2",
-    description: "新しいバージョンの知らせを確かめます。自前のサーバーか GAS から取り、通信できないときは、アプリの中の履歴を出します。更新したあとに、変わったところも見せます。",
+    description: "新しいバージョンの知らせを確かめます。自前のサーバーか GAS から取り、通信できない時は、アプリの中の履歴を出します。更新した後に、変わったところも見せます。",
     stubs: ["checkForAppUpdates"],
     backupKeys: [UPD_MODE_KEY],
     mount() {

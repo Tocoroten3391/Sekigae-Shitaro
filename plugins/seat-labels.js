@@ -187,12 +187,12 @@ function slbRender() {
         (d.fits ? "" : '<p class="slb-warn">この寸法だとA4の用紙からはみ出します。寸法を見直してください。</p>') +
         '<div class="slb-row"><label>中身 <select data-slb-cfg="kind">' + SLB_KINDS.map(k => opt(k.id, cfg.kind, k.label)).join("") + '</select></label>' +
         '<label>並び順 <select data-slb-cfg="order">' + opt("no", cfg.order, "出席番号順") + opt("seat", cfg.order, "座席順（前列の左から）") + '</select></label></div>' +
-        '<div class="slb-row"><label>1人あたりの枚数 <input type="number" data-slb-cfg="copies" value="' + cfg.copies + '" min="1" max="10" step="1"></label>' +
+        '<div class="slb-row"><label>1人当たりの枚数 <input type="number" data-slb-cfg="copies" value="' + cfg.copies + '" min="1" max="10" step="1"></label>' +
         '<label>最初の <input type="number" data-slb-cfg="skip" value="' + cfg.skip + '" min="0" max="200" step="1"> 枚は飛ばす（使いかけの用紙）</label></div>' +
         '<div class="slb-row"><label>位置の微調整 右へ <input type="number" data-slb-cfg="dx" value="' + cfg.dx + '" step="0.5" min="-10" max="10">mm</label>' +
         '<label>下へ <input type="number" data-slb-cfg="dy" value="' + cfg.dy + '" step="0.5" min="-10" max="10">mm</label>' +
-        '<label><input type="checkbox" data-slb-cfg="border"' + (cfg.border ? " checked" : "") + '> 枠線も印刷する（ふつうの紙で試すとき）</label></div>' +
-        '<p class="config-note" style="margin:0 0 6px;">' + r.count + ' 枚で、A4が ' + r.pages + ' 枚です。用紙の寸法は目安です。まずふつうの紙に「枠線も印刷」で試し刷りして、ラベル用紙に重ねて光に透かし、ずれを「位置の微調整」で直してください。印刷ダイアログでは倍率を、実際のサイズの100％にしてください。</p>' +
+        '<label><input type="checkbox" data-slb-cfg="border"' + (cfg.border ? " checked" : "") + '> 枠線も印刷する（普通の紙で試す時）</label></div>' +
+        '<p class="config-note" style="margin:0 0 6px;">' + r.count + ' 枚で、A4が ' + r.pages + ' 枚です。用紙の寸法は目安です。まず普通の紙に「枠線も印刷」で試し刷りして、ラベル用紙に重ねて光に透かし、ずれを「位置の微調整」で直してください。印刷ダイアログでは倍率を、実際のサイズの100％にしてください。</p>' +
         '<div class="slb-preview">' + (r.count ? r.html : '<p class="config-note">座席表に生徒がいません。</p>') + '</div>' +
         '<div class="slb-row"><button type="button" data-slb="print">印刷する</button></div>';
 }
