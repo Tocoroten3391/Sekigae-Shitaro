@@ -66,12 +66,12 @@ function renderTimeline() {
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}` === timelineFilter.slice(2);
     });
     const summary = $id("timelineSummary");
-    if (summary) summary.textContent = seatTimeline.length === 0 ? "" : `${shown.length}回分の席替えを、新しい順に表示しています。`;
+    if (summary) summary.textContent = seatTimeline.length === 0 ? "" : `${shown.length}回分の席替えを新しい順に表示しています。`;
     const clr = $id("timelineClearBtn");
     if (clr) clr.style.display = seatTimeline.length === 0 ? "none" : "";
 
     if (shown.length === 0) {
-        list.innerHTML = '<p class="stats-empty">' + (seatTimeline.length === 0 ? "まだ履歴はありません。席替えをすると、自動で残ります。" : "この期間の席替えはありません。") + "</p>";
+        list.innerHTML = '<p class="stats-empty">' + (seatTimeline.length === 0 ? "まだ履歴はありません。席替えをすると自動で残ります。" : "この期間の席替えはありません。") + "</p>";
         return;
     }
     const wd = ["日", "月", "火", "水", "木", "金", "土"];
@@ -94,7 +94,7 @@ function restoreTimelineLayout(id) {
     if (isAppLocked()) { showLockedToast(); return; }
     const e = seatTimeline.find(x => x.id === id);
     if (!e) return;
-    if (!confirm("今の座席表を、この日の座席表に置き換えます。置き換えた後も、「戻す」で今の座席表に戻れます。よろしいですか？")) return;
+    if (!confirm("今の座席表をこの日の座席表に置き換えます。置き換えた後も「戻す」で今の座席表に戻れます。よろしいですか？")) return;
     saveSeatHistory();
     const colSel = $id("columnSelect"), rowSel = $id("rowSelect");
     const rows = Math.ceil(e.n.length / e.cols);
@@ -109,7 +109,7 @@ function restoreTimelineLayout(id) {
     });
     renderClassroom("none");
     closeStatsModal();
-    showToast("過去の席順に戻しました。", "success");
+    showToast("過去の席順に戻しました", "success");
 }
 function deleteTimelineEntry(id) {
     seatTimeline = seatTimeline.filter(x => x.id !== id);
@@ -117,11 +117,11 @@ function deleteTimelineEntry(id) {
     renderTimeline();
 }
 function clearSeatTimeline() {
-    if (!confirm("席替えの履歴を、全て消します。元に戻せません。よろしいですか？")) return;
+    if (!confirm("席替えの履歴を全て消します。元に戻せません。よろしいですか？")) return;
     seatTimeline = [];
     saveSeatTimeline();
     renderTimeline();
-    showToast("席替えの履歴を消しました。", "success");
+    showToast("席替えの履歴を消しました", "success");
 }
 
 // ---- 本体への登録 ----
@@ -129,6 +129,6 @@ SekigaeApp.registerPlugin({
     id: "history",
     name: "席替え履歴",
     version: "1.0",
-    description: "過去の座席表を、学期や月ごとに見返せます。",
+    description: "過去の座席表を学期や月ごとに見返せます。",
     stubs: ["loadSeatTimeline", "recordSeatTimeline", "renderTimeline"]
 });

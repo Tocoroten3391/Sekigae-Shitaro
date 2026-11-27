@@ -4,10 +4,10 @@
 // このファイルを index.html から外すと、この機能は、まとめて使えなくなります
 // ==========================================
 const SCR_THEME_KEY = "second_screen_theme";          // "normal"（ふだんの色）／"dark"（黒板のように暗く）
-const SCR_TIMER_KEY = "second_screen_timer";          // 巨大タイマーも映す（はじめは、映す）
-const SCR_NOM_KEY = "second_screen_nominate";         // 指名の名前も大きく映す（はじめは、映す）
-const SCR_HOLD_KEY = "second_screen_hold";            // 席替えの結果を、確認してから映す（はじめは、映さな今ま止めない）
-const SCR_TOPBTN_KEY = "second_screen_topbtn";        // 拡張画面がつながったら、画面の上にボタンを出す（はじめは、出す）
+const SCR_TIMER_KEY = "second_screen_timer";          // 巨大タイマーも映す（はじめは映す）
+const SCR_NOM_KEY = "second_screen_nominate";         // 指名の名前も大きく映す（はじめは映す）
+const SCR_HOLD_KEY = "second_screen_hold";            // 席替えの結果を、確認してから映す（はじめは映さな今ま止めない）
+const SCR_TOPBTN_KEY = "second_screen_topbtn";        // 拡張画面がつながったら、画面の上にボタンを出す（はじめは出す）
 const SCR_WINDOW_NAME = "sekigae_second_screen";
 // 先生だけが見る印は、映しません
 const SCR_HIDE_SELECTOR = ".seat-note, .seat-wish, .nb-badge";
@@ -52,7 +52,7 @@ function scrSetTheme() {
 function scrBuildWindow(win) {
     const doc = win.document;
     doc.open();
-    doc.write('<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>座席表</title></head><body class="scr-body"><div id="scrStage"><div id="classroom"></div></div><div id="giantTimeOverlay" style="display: none;"></div><div id="nominateDisplayArea" class="nominate-display-area"><div id="nominateNameDisplay" class="nominate-name-display"></div></div><div id="scrHint">ダブルクリックで、全画面になります。Esc キーで、もどります。</div></body></html>');
+    doc.write('<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>座席表</title></head><body class="scr-body"><div id="scrStage"><div id="classroom"></div></div><div id="giantTimeOverlay" style="display: none;"></div><div id="nominateDisplayArea" class="nominate-display-area"><div id="nominateNameDisplay" class="nominate-name-display"></div></div><div id="scrHint">ダブルクリックで全画面になります。Esc キーで、もどります。</div></body></html>');
     doc.close();
     // 本体と同じ見た目にするため、スタイルを写します
     document.querySelectorAll('link[rel="stylesheet"]').forEach(l => {
@@ -253,7 +253,7 @@ function scrStop() {
 function scrCheckClosed() {
     if (scrWin && !scrIsOpen()) {
         scrStop();
-        showToast("拡張画面の表示が、閉じられました。", "success");
+        showToast("拡張画面の表示が閉じられました", "success");
     }
 }
 
@@ -285,14 +285,14 @@ function scrToggle() {
     scrPaused = false;
     scrHeld = false;
     scrFoundExtended = null;
-    try { scrBuildWindow(win); } catch (e) { console.warn("拡張画面の準備に失敗しました:", e); try { win.close(); } catch (e2) { /* 何もしない */ } scrWin = null; showToast("拡張画面を開けませんでした。", "error"); return; }
+    try { scrBuildWindow(win); } catch (e) { console.warn("拡張画面の準備に失敗しました:", e); try { win.close(); } catch (e2) { /* 何もしない */ } scrWin = null; showToast("拡張画面を開けませんでした", "error"); return; }
     scrStart();
     scrSyncNow();
     scrRefreshUi();
     closePopMenus();
     scrMoveToExtended(win).then(() => {
         scrRefreshUi();
-        showToast(scrFoundExtended ? "拡張画面に、座席表を映しました。ダブルクリックで、全画面になります。" : "別ウィンドウに、座席表を映しました。拡張画面に動かして、ダブルクリックで全画面にしてください。", "success");
+        showToast(scrFoundExtended ? "拡張画面に座席表を映しました。ダブルクリックで全画面になります。" : "別ウィンドウに座席表を映しました。拡張画面に動かして、ダブルクリックで全画面にしてください。", "success");
     });
 }
 
@@ -300,7 +300,7 @@ function scrClose() {
     const w = scrWin;
     scrStop();
     try { if (w) w.close(); } catch (e) { /* 何もしない */ }
-    showToast("拡張画面への表示を、やめました。", "success");
+    showToast("拡張画面への表示をやめました", "success");
 }
 
 // 席替えが始まったら、結果を確認するまで、拡張画面を止めておきます
@@ -316,15 +316,15 @@ function scrRelease() {
     scrHeld = false;
     scrSyncNow();
     scrRefreshUi();
-    showToast("席替えの結果を、拡張画面に映しました。", "success");
+    showToast("席替えの結果を拡張画面に映しました", "success");
 }
 
 function scrTogglePause() {
     if (!scrIsOpen()) return;
     scrPaused = !scrPaused;
     scrRefreshUi();
-    if (scrPaused) showToast("拡張画面を、今の表示のまま止めました。", "success");
-    else { scrSyncNow(); showToast("拡張画面の表示を、再開しました。", "success"); }
+    if (scrPaused) showToast("拡張画面を今の表示のまま止めました", "success");
+    else { scrSyncNow(); showToast("拡張画面の表示を再開しました", "success"); }
 }
 
 function scrUpdateTopButtons() {
@@ -334,7 +334,7 @@ function scrUpdateTopButtons() {
     if (top) {
         top.style.display = (scrOpt(SCR_TOPBTN_KEY) && (ext || open)) ? "" : "none";
         top.textContent = open ? "🖥️ 映し中" : "拡張画面へ";
-        top.title = open ? "拡張画面を、前に出します。やめる時は、設定か「他の操作」から、やめてください。" : "拡張画面に、座席表を映します。";
+        top.title = open ? "拡張画面を前に出します。やめる時は設定か「他の操作」から、やめてください。" : "拡張画面に座席表を映します。";
     }
     if (rel) rel.style.display = (open && scrHeld) ? "" : "none";
 }
@@ -349,16 +349,16 @@ function scrRefreshUi() {
     [["scrOptTimer", SCR_TIMER_KEY], ["scrOptNom", SCR_NOM_KEY], ["scrOptHold", SCR_HOLD_KEY], ["scrOptTop", SCR_TOPBTN_KEY]].forEach(([id, key]) => { const el = $id(id); if (el) el.checked = scrOpt(key); });
     const open = scrIsOpen();
     const b = $id("btnSsOpen"), p = $id("btnSsPause"), m = $id("btnSsMenu"), st = $id("scrStatus"), t = $id("scrTheme");
-    if (b) b.textContent = open ? "拡張画面への表示を、やめる" : "拡張画面に座席表を映す";
-    if (m) m.textContent = open ? "拡張画面に映すのを、やめる" : "拡張画面に映す";
-    if (p) { p.disabled = !open; p.textContent = scrPaused ? "▶️ 映すのを、再開する" : "映すのを、一時止める"; }
+    if (b) b.textContent = open ? "拡張画面への表示をやめる" : "拡張画面に座席表を映す";
+    if (m) m.textContent = open ? "拡張画面に映すのをやめる" : "拡張画面に映す";
+    if (p) { p.disabled = !open; p.textContent = scrPaused ? "▶️ 映すのを、再開する" : "映すのを一時止める"; }
     if (t) t.value = scrTheme();
     if (st) {
-        if (!open) st.textContent = "今は、映していません。";
-        else if (scrHeld) st.textContent = "席替えの結果を、確認しています。画面の上の「結果を映す」を押すと、拡張画面に映ります。";
-        else if (scrPaused) st.textContent = "一時止めています。拡張画面には、止めた時の座席表が出たままです。";
-        else if (scrFoundExtended === false) st.textContent = "別ウィンドウに映しています（拡張画面は、見つかりませんでした）。";
-        else st.textContent = "拡張画面に映しています。席替えや指名は、このまま、操作できます。";
+        if (!open) st.textContent = "今は映していません";
+        else if (scrHeld) st.textContent = "席替えの結果を確認しています。画面の上の「結果を映す」を押すと拡張画面に映ります。";
+        else if (scrPaused) st.textContent = "一時止めています。拡張画面には止めた時の座席表が出たままです。";
+        else if (scrFoundExtended === false) st.textContent = "別ウィンドウに映しています（拡張画面は見つかりませんでした）";
+        else st.textContent = "拡張画面に映しています。席替えや指名はこのまま、操作できます。";
     }
 }
 
@@ -383,11 +383,11 @@ SekigaeApp.registerPlugin({
     id: "second-screen",
     name: "拡張画面",
     version: "1.2",
-    description: "電子黒板などの拡張画面に、座席表を映します（巨大タイマーと、指名の名前も選べます）。席替えや指名は、手元のパソコンで操作できます。",
+    description: "電子黒板などの拡張画面に、座席表を映します（巨大タイマーと指名の名前も選べます）。席替えや指名は手元のパソコンで操作できます。",
     backupKeys: [SCR_THEME_KEY, SCR_TIMER_KEY, SCR_NOM_KEY, SCR_HOLD_KEY, SCR_TOPBTN_KEY],
     searchWords: "拡張画面 電子黒板 モニター 2画面 外部ディスプレイ プロジェクター 座席表だけ 映す 別ウィンドウ プレゼン 発表者 タイマー 指名 確認 結果 先に見る",
     mount(app) {
-        app.insertInto("guide-faq", "<li data-plugin=\"second-screen\"><strong>電子黒板には座席表を映して、手元で操作したい</strong>：拡張画面がつながると、画面の上に「拡張画面へ」が出ます。設定の「拡張画面に座席表を映す」や、「他の操作」の「拡張画面に映す」からも開けます。電子黒板側には座席表が出て、席替えや指名は、手元のパソコンで、いつもどおりできます。巨大タイマーと、指名の名前も、映せます。席替えの結果を先に見たい時は、設定の「席替えの結果を、確認してから映す」をオンにしてください。</li>");
+        app.insertInto("guide-faq", "<li data-plugin=\"second-screen\"><strong>電子黒板には座席表を映して、手元で操作したい</strong>：拡張画面がつながると画面の上に「拡張画面へ」が出ます。設定の「拡張画面に座席表を映す」や、「他の操作」の「拡張画面に映す」からも開けます。電子黒板側には座席表が出て、席替えや指名は手元のパソコンでいつもどおりできます。巨大タイマーと指名の名前も映せます。席替えの結果を先に見たい時は、設定の「席替えの結果を確認してから映す」をオンにしてください。</li>");
         const st = document.createElement("style");
         st.id = "secondScreenStyle";
         st.textContent = SCR_CSS;
@@ -396,18 +396,18 @@ SekigaeApp.registerPlugin({
             '<div class="scr-box" data-plugin="second-screen">' +
             '<div class="scr-head">拡張画面<span id="scrInfoSlot"></span></div>' +
             '<button type="button" class="btn-secondary" id="btnSsOpen" onclick="scrToggle()">拡張画面に座席表を映す</button>' +
-            '<button type="button" class="btn-secondary" id="btnSsPause" onclick="scrTogglePause()" disabled>映すのを、一時止める</button>' +
+            '<button type="button" class="btn-secondary" id="btnSsPause" onclick="scrTogglePause()" disabled>映すのを一時止める</button>' +
             '<div class="scr-row"><span class="switch-label">巨大タイマーも映す</span><label class="switch"><input type="checkbox" id="scrOptTimer" onchange="scrOptChanged()"><span class="slider"></span></label></div>' +
             '<div class="scr-row"><span class="switch-label">指名の名前も大きく映す</span><label class="switch"><input type="checkbox" id="scrOptNom" onchange="scrOptChanged()"><span class="slider"></span></label></div>' +
-            '<div class="scr-row"><span class="scr-label-wrap">席替えの結果を、確認してから映す<span id="scrHoldInfoSlot"></span></span><label class="switch"><input type="checkbox" id="scrOptHold" onchange="scrOptChanged()"><span class="slider"></span></label></div>' +
+            '<div class="scr-row"><span class="scr-label-wrap">席替えの結果を確認してから映す<span id="scrHoldInfoSlot"></span></span><label class="switch"><input type="checkbox" id="scrOptHold" onchange="scrOptChanged()"><span class="slider"></span></label></div>' +
             '<div class="scr-row"><span class="switch-label">つながったら、画面の上にボタンを出す</span><label class="switch"><input type="checkbox" id="scrOptTop" onchange="scrOptChanged()"><span class="slider"></span></label></div>' +
             '<div class="scr-row"><label for="scrTheme" class="switch-label">映す色</label><select id="scrTheme" onchange="scrSetTheme()"><option value="normal">ふだんの色</option><option value="dark">黒板のように暗く</option></select></div>' +
             '<div id="scrStatus"></div>' +
             '</div>');
         const slot = $id("scrInfoSlot");
-        if (slot && typeof makeInfoTip === "function") slot.appendChild(makeInfoTip("電子黒板や大型モニターなどの拡張画面に、座席表を映します。パソコンの画面には、いつもの操作画面が出たままなので、席替えや指名は、手元で操作できます。付箋、希望のしるし、発言の回数など、先生だけが見る印は、映りません。巨大タイマーを出した時は、拡張画面にもタイマーが出ます（ボタンは映りません）。拡張画面がつながっていない時は、普通の別ウィンドウで開くので、黒板の画面へ動かして、ダブルクリックで全画面にしてください。「一時止める」を押すと、席替えの準備をしている間、今の表示のままにできます。"));
+        if (slot && typeof makeInfoTip === "function") slot.appendChild(makeInfoTip("電子黒板や大型モニターなどの拡張画面に、座席表を映します。パソコンの画面にはいつもの操作画面が出たままなので、席替えや指名は手元で操作できます。付箋、希望のしるし、発言の回数など、先生だけが見る印は映りません。巨大タイマーを出した時は、拡張画面にもタイマーが出ます（ボタンは映りません）。拡張画面がつながっていない時は、普通の別ウィンドウで開くので、黒板の画面へ動かして、ダブルクリックで全画面にしてください。「一時止める」を押すと席替えの準備をしている間、今の表示のままにできます。"));
         const hslot = $id("scrHoldInfoSlot");
-        if (hslot && typeof makeInfoTip === "function") hslot.appendChild(makeInfoTip("オンにすると、席替えを始めた時に、拡張画面を、前の座席表のまま止めます。結果は、パソコンの画面で確認できます。よければ、画面の上に出る「結果を映す」を押すと、拡張画面に、新しい座席表が出ます。"));
+        if (hslot && typeof makeInfoTip === "function") hslot.appendChild(makeInfoTip("オンにすると席替えを始めた時に拡張画面を前の座席表のまま止めます。結果はパソコンの画面で確認できます。よければ、画面の上に出る「結果を映す」を押すと拡張画面に新しい座席表が出ます。"));
         const topFull = $id("btnTopFullscreen");
         if (topFull && !$id("btnTopScreen")) {
             const tb = document.createElement("button");

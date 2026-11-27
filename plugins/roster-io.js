@@ -4,7 +4,7 @@
 // ==========================================
 function downloadAsCSV() {
     if (currentStudents.length === 0) { 
-        showToast("座席表が空です。", "error"); 
+        showToast("座席表が空です", "error"); 
         return; 
     }
     const cSel = $id("columnSelect");
@@ -28,7 +28,7 @@ function downloadAsCSV() {
     document.body.appendChild(a); 
     a.click(); 
     document.body.removeChild(a); 
-    showToast("CSVファイルとしてダウンロードしました。", "success");
+    showToast("CSVファイルとしてダウンロードしました", "success");
 }
 
 // 名簿の書き出し：座席・わがままの指定や欠席などの印は付けず、「番号.名前」だけを出す。
@@ -42,7 +42,7 @@ function getRosterNamesForExport() {
 function exportRosterFile(kind) {
     const names = getRosterNamesForExport();
     if (names.length === 0) {
-        showToast("書き出せる名簿がありません。", "error");
+        showToast("書き出せる名簿がありません", "error");
         return;
     }
     const baseName = getSelectedPresetName() || ($id("presetNameInput") && $id("presetNameInput").value.trim()) || "名簿";
@@ -71,7 +71,7 @@ function exportRosterFile(kind) {
     document.body.appendChild(a);
     a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
-    showToast(`名簿${names.length}人分を、${ext.toUpperCase()}で書き出しました。`, "success");
+    showToast(`名簿${names.length}人分を、${ext.toUpperCase()}で書き出しました`, "success");
 }
 
 // ==========================================
@@ -104,7 +104,7 @@ function importOfflineFile(input) {
         
         lastRawList = [...cleanedNames]; 
         parseAndSetSeats(cleanedNames, false, "initial"); 
-        showToast("ファイルから名簿を取り込みました。", "success"); 
+        showToast("ファイルから名簿を取り込みました", "success"); 
         const fileIssues = analyzeRosterStrings(cleanedNames).filter(i => i.level === "warn");
         if (fileIssues.length) showToast(`名簿に注意があります。${fileIssues[0].title}`, "error");
         input.value = ""; 
@@ -121,7 +121,7 @@ const WELCOME_SAMPLE_NAMES = ["青木", "石川", "井上", "遠藤", "大野", 
 function buildWelcomeCardHtml() {
     return `<div class="welcome-card welcome-guide">
         <div class="welcome-title">はじめまして、席替えし太郎です</div>
-        <p class="welcome-lead">名簿を用意すると、席替えと指名が使えます。まずは試してみましょう。</p>
+        <p class="welcome-lead">名簿を用意すると席替えと指名が使えます。まずは試してみましょう。</p>
         <div class="welcome-quick">
             <input type="number" id="welcomeCountInput" min="1" max="100" placeholder="人数" aria-label="人数" onkeydown="if(event.key==='Enter'){welcomeStartWithCount();}">
             <button type="button" class="welcome-btn welcome-btn-primary" onclick="welcomeStartWithCount()">👥 人数だけで始める</button>
@@ -132,11 +132,11 @@ function buildWelcomeCardHtml() {
             <button type="button" class="welcome-btn" onclick="welcomeOpenRoster()">📝 設定から名簿を用意する</button>
         </div>
         <ol class="welcome-steps">
-            <li><strong>名簿を用意します。</strong>上のボタンで、すぐに始められます。</li>
+            <li><strong>名簿を用意します。</strong>上のボタンですぐに始められます。</li>
             <li><strong>「席替えスタート！」を押します。</strong>席が決まります。</li>
-            <li><strong>「指名する」を押します。</strong>授業で、ランダムに指名できます。</li>
+            <li><strong>「指名する」を押します。</strong>授業でランダムに指名できます。</li>
         </ol>
-        <p class="welcome-note">サンプルで試した記録は、本物のクラスには入りません。試した後は、設定の「名簿」で、本物の名簿に入れ替えられます。</p>
+        <p class="welcome-note">サンプルで試した記録は、本物のクラスには入りません。試した後は設定の「名簿」で、本物の名簿に入れ替えられます。</p>
     </div>`;
 }
 
@@ -146,7 +146,7 @@ function welcomeStartWithCount() {
     if (!w || !q) return;
     q.value = w.value;
     generateNumbersOnlyList();
-    if (currentStudents && currentStudents.some(isRealStudentSeat)) showToast("「席替えスタート！」を押すと、席が決まります。", "success");
+    if (currentStudents && currentStudents.some(isRealStudentSeat)) showToast("「席替えスタート！」を押すと席が決まります", "success");
 }
 
 function welcomeStartSample() {
@@ -179,7 +179,7 @@ function generateNumbersOnlyList() {
     const qInput = $id("quickCountInput");
     const count = qInput ? parseInt(qInput.value, 10) : 0; 
     if (!count || count < 1 || count > 100) { 
-        showToast("1〜100の範囲で入力してください。", "error"); 
+        showToast("1〜100の範囲で入力してください", "error"); 
         return; 
     }
     endTrialIfActive(true);
@@ -194,7 +194,7 @@ function generateNumbersOnlyList() {
     
     lastRawList = [...temporaryList]; 
     parseAndSetSeats(temporaryList, false, "initial"); 
-    showToast(`${count}人分の名簿を生成しました。`, "success"); 
+    showToast(`${count}人分の名簿を生成しました`, "success"); 
     
     if(qInput) qInput.value = "";
 }
@@ -205,7 +205,7 @@ function resetToNumberOrder() {
     
     const inputText = sInput.value; 
     if (!inputText) { 
-        showToast("名簿データがありません。", "error"); 
+        showToast("名簿データがありません", "error"); 
         return; 
     }
     
@@ -214,7 +214,7 @@ function resetToNumberOrder() {
     sInput.value = cleanList.join(", "); 
     
     parseAndSetSeats(cleanList, false, document.body.classList.contains("no-animation") ? "none" : "initial"); 
-    showToast("出席番号順にリセットしました。", "success");
+    showToast("出席番号順にリセットしました", "success");
 }
 
 function handleAdminToggle() {
@@ -247,10 +247,10 @@ function checkPassword() {
         const aSec = $id("adminSection");
         if(aSec) aSec.style.display = "block"; 
         
-        showToast("管理者認証に成功しました。", "success"); 
+        showToast("管理者認証に成功しました", "success"); 
     } 
     else { 
-        showToast("パスワードが違います。", "error"); 
+        showToast("パスワードが違います", "error"); 
         const tog = $id("adminToggle");
         if(tog) tog.checked = false; 
         

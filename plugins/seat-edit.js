@@ -99,7 +99,7 @@ function redoSeatArrangement() {
     seatHistory.push(snapshotSeatState());
     restoreSeatState(state);
     persistSeatUndoSoon();
-    showToast("取り消しを、やり直しました。" + (seatRedo.length ? "あと" + seatRedo.length + "回、やり直せます。" : ""), "success");
+    showToast("取り消しをやり直しました。" + (seatRedo.length ? "あと" + seatRedo.length + "回、やり直せます。" : ""), "success");
 }
 
 function updateUndoButton() {
@@ -254,7 +254,7 @@ function swapSeats(fromIndex, toIndex, cols) {
     if (currentStudents[toIndex] && currentStudents[toIndex].type === "STUDENT") currentStudents[toIndex].isFixed = true;
     
     renderClassroom("none"); 
-    showToast("座席を入れ替えて固定しました。", "success");
+    showToast("座席を入れ替えて固定しました", "success");
 }
 
 // 席替えの演出は、最初の席が動き出してから最後の席が止まるまで、最長でも5秒に収める

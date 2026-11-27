@@ -48,7 +48,7 @@ function dsApply(refit) {
     if (note) {
         const parts = [];
         if (cur.mode === "auto") parts.push("今は " + Math.round(cur.z * 100) + "% です。");
-        if (cur.z > 1 && window.innerWidth / cur.z < 1000) parts.push("この画面では、大きすぎて、ボタンがせまくなることがあります。");
+        if (cur.z > 1 && window.innerWidth / cur.z < 1000) parts.push("この画面では大きすぎて、ボタンがせまくなることがあります。");
         note.textContent = parts.join("");
     }
     // 座席表の大きさなどを、新しい倍率に合わせ直します（起動の時は、あとで本体が合わせるので、省きます）
@@ -62,7 +62,7 @@ function onUiScaleChange() {
     if (!sel) return;
     lsSet(DS_KEY, sel.value);
     dsApply();
-    showToast("画面の大きさを変えました。", "success");
+    showToast("画面の大きさを変えました", "success");
 }
 
 const DS_CSS = `
@@ -97,7 +97,7 @@ SekigaeApp.registerPlugin({
         const opts = DS_CHOICES.map(c => '<option value="' + c.v + '">' + c.label + '</option>').join("") + '<option value="auto">画面に合わせる</option>';
         app.insertInto("settings-display", '<div class="ds-row" data-plugin="display-scale"><label for="uiScaleSelect" class="switch-label">画面の大きさ</label><select id="uiScaleSelect" onchange="onUiScaleChange()">' + opts + '</select><span id="uiScaleInfoSlot"></span></div><div class="ds-note" id="uiScaleNote" data-plugin="display-scale"></div>');
         const slot = $id("uiScaleInfoSlot");
-        if (slot && typeof makeInfoTip === "function") slot.appendChild(makeInfoTip("画面全体の、文字やボタンの大きさを、まとめて変えます。大型モニターや電子黒板で、うしろの席から見にくい時に、大きくしてください。「画面に合わせる」を選ぶと、画面の広さから、見やすい大きさを自動で選びます。巨大タイマーなど、画面いっぱいに出る表示は、もともと大きいので、変わりません。"));
+        if (slot && typeof makeInfoTip === "function") slot.appendChild(makeInfoTip("画面全体の、文字やボタンの大きさを、まとめて変えます。大型モニターや電子黒板で、うしろの席から見にくい時に、大きくしてください。「画面に合わせる」を選ぶと画面の広さから、見やすい大きさを自動で選びます。巨大タイマーなど、画面いっぱいに出る表示は、もともと大きいので変わりません。"));
         dsApply(false);
     },
     ready() { dsApply(false); }

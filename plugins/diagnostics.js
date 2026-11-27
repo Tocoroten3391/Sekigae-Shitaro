@@ -75,12 +75,12 @@ function diagAdvise(r) {
     const slow = (r.cpu !== null && r.cpu > 400) || (r.frames && (r.frames.fps < 40 || r.frames.slow > 12)) || (r.startup !== null && r.startup > 4000);
     const veryslow = (r.cpu !== null && r.cpu > 900) || (r.frames && r.frames.fps < 25);
     if (slow && !lite) list.push({ t: "軽量モードをオンにすると、ぼかしや影を減らして、動きが軽くなります。", b: "軽量モードをオンにする", a: "diagLite" });
-    if (veryslow && animOn) list.push({ t: "全体アニメーション演出をオフにすると、席替えの演出が、かなり軽くなります。", b: "全体アニメーションをオフにする", a: "diagAnim" });
+    if (veryslow && animOn) list.push({ t: "全体アニメーション演出をオフにすると、席替えの演出がかなり軽くなります。", b: "全体アニメーションをオフにする", a: "diagAnim" });
     if (slow && SekigaeApp.plugins.filter(p => !p.required && SekigaeApp.isEnabled(p.id)).length > 25 && typeof presetApply === "function")
-        list.push({ t: "使う機能を減らすと、読み込みと画面の部品が減ります。「簡単」か「授業用」が、お勧めです。", b: "「授業用」に切りかえる", a: "diagPreset" });
+        list.push({ t: "使う機能を減らすと読み込みと画面の部品が減ります。「簡単」か「授業用」が、お勧めです。", b: "「授業用」に切りかえる", a: "diagPreset" });
     if (r.storageKB !== null && r.storageKB > 3000) list.push({ t: "保存してあるデータが多めです（" + Math.round(r.storageKB / 1024 * 10) / 10 + "MB）。設定のバックアップを取ってから、使わない記録を整理すると、軽くなることがあります。" });
-    if (r.mem.deviceGB && r.mem.deviceGB <= 4) list.push({ t: "この端末のメモリは、少なめです（" + r.mem.deviceGB + "GB以下）。他のタブやアプリを閉じると、動きが安定します。" });
-    if (!list.length) list.push({ t: "今のところ、重くなる原因は見つかりませんでした。動きが重い時は、他のタブやアプリを閉じてから、もう一度、診断してみてください。" });
+    if (r.mem.deviceGB && r.mem.deviceGB <= 4) list.push({ t: "この端末のメモリは少なめです（" + r.mem.deviceGB + "GB以下）。他のタブやアプリを閉じると、動きが安定します。" });
+    if (!list.length) list.push({ t: "今のところ、重くなる原因は見つかりませんでした。動きが重い時は他のタブやアプリを閉じてから、もう一度、診断してみてください。" });
     return list;
 }
 function diagLite() { const t = $id("liteModeToggle"); if (t) { t.checked = true; toggleLiteMode(); } diagRender(); }
@@ -130,7 +130,7 @@ function diagRender() {
     const body = $id("diagBody");
     if (!body || diagBusy) return;
     const r = diagResult;
-    if (!r) { body.innerHTML = '<p class="config-note" data-keep="1">「診断する」を押すと、この端末での動きの速さを測ります。</p>'; $id("diagCopyBtn").disabled = true; return; }
+    if (!r) { body.innerHTML = '<p class="config-note" data-keep="1">「診断する」を押すとこの端末での動きの速さを測ります</p>'; $id("diagCopyBtn").disabled = true; return; }
     $id("diagCopyBtn").disabled = false;
     const card = (label, value, level, note) => '<div class="diag-card diag-' + level + '"><span class="diag-label">' + label + '</span><strong>' + value + '</strong><span class="diag-note">' + note + "</span></div>";
     const lvl = { good: "速い", mid: "普通", bad: "遅め", none: "測れませんでした" };
@@ -145,7 +145,7 @@ function diagRender() {
     // 起動の準備に、時間がかかった機能（プラグインのメニューの「重さの目安」と同じ測り方です）
     try {
         const cost = SekigaeApp.plugins.filter(p => !p.required && SekigaeApp.isEnabled(p.id)).map(p => [p.name || p.id, (p._t_mount || 0) + (p._t_ready || 0)]).sort((a, b) => b[1] - a[1]).slice(0, 3).filter(c => c[1] >= 0.5);
-        if (cost.length) html += '<p class="config-note" data-keep="1" style="margin: 8px 0;">起動の準備に時間がかかった機能：' + cost.map(c => diagEsc(c[0]) + " " + c[1].toFixed(1) + "ミリ秒").join("、") + '。使わない機能は、「プラグインの設定」でオフにできます。</p>';
+        if (cost.length) html += '<p class="config-note" data-keep="1" style="margin: 8px 0;">起動の準備に時間がかかった機能：' + cost.map(c => diagEsc(c[0]) + " " + c[1].toFixed(1) + "ミリ秒").join("、") + '。使わない機能は「プラグインの設定」でオフにできます。</p>';
     } catch (e) { /* 何もしない */ }
     html += '<label class="input-label">お勧め</label><div class="diag-advice">' + diagAdvise(r).map(a => '<div class="diag-adv"><span>' + diagEsc(a.t) + "</span>" + (a.b ? '<button type="button" class="btn-secondary" onclick="' + a.a + '()">' + diagEsc(a.b) + "</button>" : "") + "</div>").join("") + "</div>";
     body.innerHTML = html;
@@ -158,9 +158,9 @@ function diagCopy() {
         "描画の速さ：" + (r.frames ? r.frames.fps + " コマ/秒、カクつき " + r.frames.slow + " 回、最大 " + r.frames.worst + "ミリ秒" : "-"),
         "メモリ：" + (r.mem.heapMB !== null ? r.mem.heapMB + "MB" : "-") + "　端末：" + (r.mem.deviceGB ? r.mem.deviceGB + "GB" : "-") + "　CPUコア：" + (r.mem.cores || "-"),
         "使っている機能：" + r.plugins + "/" + r.pluginsAll + "　座席：" + r.seats + "席　保存データ：" + (r.storageKB === null ? "-" : r.storageKB + "KB") + "　軽量モード：" + (r.lite ? "オン" : "オフ")].join("\n");
-    const done = () => showToast("診断の結果をコピーしました。", "success");
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => showToast("コピーできませんでした。", "error"));
-    else showToast("コピーできませんでした。", "error");
+    const done = () => showToast("診断の結果をコピーしました", "success");
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => showToast("コピーできませんでした", "error"));
+    else showToast("コピーできませんでした", "error");
 }
 
 const DIAG_CSS = `
@@ -180,7 +180,7 @@ const DIAG_CSS = `
 const DIAG_HTML = `
 <div id="diagModalOverlay" class="modal-overlay" style="display: none;">
     <div class="modal-content" style="max-width: 600px; width: 95%; max-height: 92vh; overflow-y: auto;">
-        <h4 style="color: #0f766e;">🩺 動作の診断 <span data-diagtip="この端末での、起動の時間、計算の速さ、描画の速さ、メモリの使用量を測ります。測っている間（2秒程）は、画面を触らないでください。結果をもとに、軽量モードなどの対処を勧めます。目安なので、その時の、他のアプリの使い方でも、変わります。"></span></h4>
+        <h4 style="color: #0f766e;">🩺 動作の診断 <span data-diagtip="この端末での、起動の時間、計算の速さ、描画の速さ、メモリの使用量を測ります。測っている間（2秒程）は、画面を触らないでください。結果をもとに軽量モードなどの対処を勧めます。目安なのでその時の、他のアプリの使い方でも、変わります。"></span></h4>
         <div class="modal-btn-row" style="justify-content: flex-start; margin: 4px 0 8px;">
             <button type="button" id="diagRunBtn" class="btn-save" onclick="diagRun()">▶️ 診断する</button>
         </div>
@@ -208,7 +208,7 @@ SekigaeApp.registerPlugin({
         document.body.insertAdjacentHTML("beforeend", DIAG_HTML);
         document.querySelectorAll("#diagModalOverlay [data-diagtip]").forEach(el => el.replaceWith(makeInfoTip(el.dataset.diagtip)));
         app.insertInto("settings-perf", '<button type="button" onclick="openDiagnostics()" class="btn-secondary" id="btnDiagnostics" style="margin-top: 10px;">動作の診断</button>');
-        app.insertInto("guide-tools", '<li><strong>動作の診断</strong>：設定の「動作の軽さ」の「動作の診断」で、この端末での、起動の時間、計算と描画の速さ、メモリの目安を測ります。動きが重い時に、軽量モードなどの対処を、ボタンで試せます。</li>');
+        app.insertInto("guide-tools", '<li><strong>動作の診断</strong>：設定の「動作の軽さ」の「動作の診断」で、この端末での、起動の時間、計算と描画の速さ、メモリの目安を測ります。動きが重い時に軽量モードなどの対処を、ボタンで試せます。</li>');
     }
 });
 document.addEventListener("keydown", e => {

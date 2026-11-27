@@ -10,7 +10,7 @@ const STICKY_COLORS = [
     { id: "blue", label: "青" },
     { id: "green", label: "緑" }
 ];
-let stickyMode = false;      // 「付箋モード」：席を押すと、付箋を書く画面が開く
+let stickyMode = false;      // 「付箋モード」：席を押すと付箋を書く画面が開く
 let stickyEditing = null;    // 書いている最中の { key, name }
 let stickyColor = "yellow";
 
@@ -47,7 +47,7 @@ function stickyDecorate() {
         const tag = document.createElement("span");
         tag.className = "seat-note sn-" + (n.c || "yellow");
         tag.textContent = n.t;
-        tag.title = n.t + "（押すと、書き直せます）";
+        tag.title = n.t + "（押すと書き直せます）";
         tag.onclick = ev => { ev.stopPropagation(); stickyOpenEditor(el); };
         el.appendChild(tag);
     });
@@ -69,7 +69,7 @@ function toggleStickyMode() {
     document.body.classList.toggle("sticky-mode", stickyMode);
     if (stickyMode && document.body.classList.contains("sticky-hidden")) toggleStickyHide(true);
     stickyUpdateLabels();
-    if (stickyMode) showToast("付箋モードです。席を押すと、付箋を書けます。", "info");
+    if (stickyMode) showToast("付箋モードです。席を押すと付箋を書けます。", "info");
 }
 function toggleStickyHide(silent) {
     const hide = !document.body.classList.contains("sticky-hidden");
@@ -134,7 +134,7 @@ function deleteStickyNote() {
     stickySaveNotes(notes);
     closeStickyEditor();
     stickyDecorate();
-    showToast("付箋を消しました。", "success");
+    showToast("付箋を消しました", "success");
 }
 
 // ---- 付箋の一覧 ----
@@ -152,7 +152,7 @@ function renderStickyList() {
     const keys = Object.keys(notes);
     const cls = stickyClassName();
     $id("stickyListClass").textContent = cls ? `クラス：${cls}` : "今のクラス";
-    if (!keys.length) { body.innerHTML = '<p class="config-note" data-keep="1">付箋は、まだありません。</p>'; $id("stickyClearAllBtn").style.display = "none"; return; }
+    if (!keys.length) { body.innerHTML = '<p class="config-note" data-keep="1">付箋はまだありません</p>'; $id("stickyClearAllBtn").style.display = "none"; return; }
     $id("stickyClearAllBtn").style.display = "";
     body.innerHTML = keys.map(k => {
         const n = notes[k];
@@ -167,11 +167,11 @@ function renderStickyList() {
     });
 }
 function clearAllStickyNotes() {
-    if (!confirm("このクラスの付箋を、全て消します。よろしいですか？")) return;
+    if (!confirm("このクラスの付箋を全て消します。よろしいですか？")) return;
     stickySaveNotes({});
     renderStickyList();
     stickyDecorate();
-    showToast("付箋を、全て消しました。", "success");
+    showToast("付箋を全て消しました", "success");
 }
 
 const STICKY_HTML = `
@@ -188,7 +188,7 @@ const STICKY_HTML = `
             <button type="button" class="sticky-chip sn-blue" data-color="blue" onclick="stickyPickColor('blue')">青</button>
             <button type="button" class="sticky-chip sn-green" data-color="green" onclick="stickyPickColor('green')">緑</button>
         </div>
-        <p class="config-note" style="margin: 10px 0 0;">付箋は、席ではなく生徒についていきます。席替えをしても、そのまま動きます。</p>
+        <p class="config-note" style="margin: 10px 0 0;">付箋は席ではなく生徒についていきます。席替えをしてもそのまま動きます。</p>
         <div class="modal-btn-row">
             <button onclick="closeStickyEditor()" class="btn-secondary">キャンセル</button>
             <button id="stickyDeleteBtn" onclick="deleteStickyNote()" class="btn-delete">🗑️ 消す</button>
@@ -213,20 +213,20 @@ SekigaeApp.registerPlugin({
     id: "seatnote",
     name: "座席の付箋メモ",
     version: "1.0",
-    description: "生徒ごとに、付箋メモを付けて、座席表に小さく出します。席替えをしても、付箋は生徒についていきます。",
+    description: "生徒ごとに付箋メモを付けて、座席表に小さく出します。席替えをしても付箋は生徒についていきます。",
     backupKeys: [STICKY_KEY, STICKY_HIDE_KEY],
     searchWords: "付箋 メモ 付箋メモ 配慮 ふせん",
     stubs: [],
     mount(app) {
         document.body.insertAdjacentHTML("beforeend", STICKY_HTML);
-        const bar = '<div id="stickyModeBar" class="sticky-mode-bar" style="display: none;">📝 付箋モード：席を押すと、付箋を書けます<button type="button" onclick="toggleStickyMode()">やめる</button></div>';
+        const bar = '<div id="stickyModeBar" class="sticky-mode-bar" style="display: none;">📝 付箋モード：席を押すと付箋を書けます<button type="button" onclick="toggleStickyMode()">やめる</button></div>';
         const room = $id("classroom");
         if (room) room.insertAdjacentHTML("beforebegin", bar);
         app.insertInto("settings-seatview",
             '<button type="button" onclick="closeConfigMenuIfOpen(); toggleStickyMode()" class="btn-secondary" id="btnStickyMode" style="margin-top: 10px;">付箋モードにする</button>' +
             '<button type="button" onclick="toggleStickyHide()" class="btn-secondary" id="btnStickyHide" style="margin-top: 10px;">付箋を隠す</button>' +
             '<button type="button" onclick="openStickyList()" class="btn-secondary" id="btnStickyList" style="margin-top: 10px;">付箋メモの一覧</button>');
-        app.insertInto("guide-faq", "<li><strong>生徒に印を付けたい</strong>：設定の「座席の見え方」の「付箋モードにする」を押してから、席を押すと、付箋メモを書けます。付箋は、席ではなく生徒についていくので、席替えをしても動きます。みんなに見せる時は、「付箋を隠す」を押してください。</li>");
+        app.insertInto("guide-faq", "<li><strong>生徒に印を付けたい</strong>：設定の「座席の見え方」の「付箋モードにする」を押してから、席を押すと付箋メモを書けます。付箋は席ではなく生徒についていくので、席替えをしても動きます。みんなに見せる時は「付箋を隠す」を押してください。</li>");
     },
     ready() {
         if (lsGet(STICKY_HIDE_KEY, "0") === "1") document.body.classList.add("sticky-hidden");

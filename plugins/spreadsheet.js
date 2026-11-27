@@ -22,7 +22,7 @@ const GAS_ERRORS = {
     "E-SHEET-03": { kind: "シート", title: "GASがシートの処理でエラーを返しました", cause: "タブ名や列がGASのプログラムの想定と違います。", fix: "下の「詳しい内容」を見て、スプレッドシートのタブ名や列がGASのプログラムと合っているか確認してください。" },
     "E-SHEET-04": { kind: "シート", title: "シートに保存できませんでした", cause: "GASが保存できたと返しませんでした。シートが閲覧専用かGASの実行エラーです。", fix: "スプレッドシートが編集できる状態か確認してください。" },
     "E-GAS-01": { kind: "GAS", title: "GASがエラーを返しました", cause: "GASのプログラムの中でエラーが起きました。", fix: "下の「詳しい内容」をGASを作った人に伝えてください。GASの「実行数」からログも見られます。" },
-    "E-DATA-01": { kind: "データ", title: "GASからの返事を読み取れませんでした", cause: "返ってきたデータの形がアプリの想定と違います。GASのプログラムが古い可能性があります。", fix: "GASのプログラムが、最新か確認してください。" }
+    "E-DATA-01": { kind: "データ", title: "GASからの返事を読み取れませんでした", cause: "返ってきたデータの形がアプリの想定と違います。GASのプログラムが古い可能性があります。", fix: "GASのプログラムが最新か確認してください。" }
 };
 const GAS_ACTION_NAMES = { save: "シートに保存", load: "前回を復元", history: "履歴の一覧", loadHistoryItem: "履歴から復元", specialSlots: "特別保存／接続の確認", saveSpecial: "特別保存", loadSpecial: "特別保存から復元", names: "名簿の読み込み" };
 let gasLastToastAt = 0;
@@ -88,7 +88,7 @@ document.addEventListener("click", ev => {
         const r = gasReadLast();
         if (!r) return;
         const txt = gasErrText(r);
-        const done = () => showToast("エラーの内容をコピーしました。", "success");
+        const done = () => showToast("エラーの内容をコピーしました", "success");
         if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, () => showToast(txt, "error"));
         else showToast(txt, "error");
     }
@@ -141,7 +141,7 @@ window.addEventListener("error", ev => {
         const p = gasPending[key];
         if (!p || p.suspect) return;
         // 本当の返事が、すぐあとに届く場合もあるので、少しだけ待ってから決めます
-        p.suspect = setTimeout(() => gasWatchFail(key, "E-AUTH-01", "返事が、データではなくWebページでした"), 1200);
+        p.suspect = setTimeout(() => gasWatchFail(key, "E-AUTH-01", "返事がデータではなくWebページでした"), 1200);
     });
 });
 // 返事の中身がエラーのとき、原因の種類を決める
@@ -172,7 +172,7 @@ function saveAndConnectGas() {
     const gInput = $id("gasUrlInput");
     const url = gInput ? gInput.value.trim() : ""; 
     if (!url) { 
-        showToast("GASのURLを入力してください。", "error"); 
+        showToast("GASのURLを入力してください", "error"); 
         return; 
     } 
     const bad = gasUrlProblem(url);
@@ -194,7 +194,7 @@ function connectGasOnly() {
     const gInput = $id("gasUrlInput");
     const url = gInput ? gInput.value.trim() : "";
     if (!url) {
-        showToast("GASのURLを入力してください。", "error");
+        showToast("GASのURLを入力してください", "error");
         return;
     }
     const bad = gasUrlProblem(url);
@@ -253,7 +253,7 @@ window.handleData = function(studentList) {
             localStorage.setItem(`gas_student_cache_${activeLoadingPresetName}`, JSON.stringify(studentList)); 
             updateStatus("connected", "接続完了"); 
             gasErrClearFor("names");
-            showToast(`クラス【${activeLoadingPresetName}】の名簿を同期しました。`, "success"); 
+            showToast(`クラス【${activeLoadingPresetName}】の名簿を同期しました`, "success"); 
             applyStudentListToApp(studentList); 
         } else if (Array.isArray(studentList) || !studentList) { 
             gasFail("E-SHEET-01", { action: "names", detail: "名簿が、0人でした" });
@@ -318,11 +318,11 @@ function saveResultToSpreadsheet() {
     const gInput = $id("gasUrlInput");
     const url = gInput ? gInput.value.trim() : ""; 
     if (!url) { 
-        showToast("GASのURLを設定してください。", "error"); 
+        showToast("GASのURLを設定してください", "error"); 
         return; 
     } 
     if (currentStudents.length === 0) { 
-        showToast("座席データがありません。", "error"); 
+        showToast("座席データがありません", "error"); 
         return; 
     }
     
@@ -360,7 +360,7 @@ function saveResultToSpreadsheet() {
     }, "handleSaveResult", function(res) { 
         if (res && res.success) { 
             updateStatus("connected", "接続完了"); 
-            showToast(`クラウドに結果を保存しました。`, "success"); 
+            showToast(`クラウドに結果を保存しました`, "success"); 
             lastSyncedSnapshot = fullJsonDataStr;
             protectRestoredSeatsFromAutoSync = false;
             markWorkSyncedToCloud(workSnapAtSave);
@@ -406,7 +406,7 @@ function applySpreadsheetResult(res) {
         renderClassroom("initial");
     }
     lastSyncedSnapshot = res.fullJsonData || "";
-    protectRestoredSeatsFromAutoSync = false; // 自分で読み込んだ（または取り込みを許可した）ので、保護は解除
+    protectRestoredSeatsFromAutoSync = false; // 自分で読み込んだ（または取り込みを許可した）ので保護は解除
     return true;
 }
 
@@ -415,7 +415,7 @@ function applySpreadsheetResult(res) {
 
 function confirmOverwriteRestoredSeats() {
     if (!protectRestoredSeatsFromAutoSync) return true;
-    return confirm("キャッシュから復元した座席表は、まだクラウドのGASに保存されていません。\nクラウドの内容で上書きしてもよいですか？\n\n「キャンセル」を押すと、今の座席表をそのまま残します。");
+    return confirm("キャッシュから復元した座席表は、まだクラウドのGASに保存されていません。\nクラウドの内容で上書きしてもよいですか？\n\n「キャンセル」を押すと今の座席表をそのまま残します。");
 }
 
 function loadResultFromSpreadsheet() {
@@ -425,7 +425,7 @@ function loadResultFromSpreadsheet() {
     const presetName = getSelectedPresetName() || (pInput ? pInput.value.trim() : "default");
     
     if (!url || !presetName) { 
-        showToast("URLとクラス名が必要です。", "error"); 
+        showToast("URLとクラス名が必要です", "error"); 
         return; 
     } 
     if (!confirmOverwriteRestoredSeats()) { showToast("読み込みをやめました。今の座席表はそのままです。", "success"); return; }

@@ -6,7 +6,7 @@
 function openRouletteMode() {
     let allActive = getNominationCandidates();
     if (allActive.length === 0) { 
-        showToast("座席に誰もいません。", "error"); 
+        showToast("座席に誰もいません", "error"); 
         return; 
     }
     
@@ -198,7 +198,7 @@ function spinRoulette(flickV) {
                 let cleanName = name.includes(".") ? name.split(".")[1].trim() : name;
                 return { fullText: s.text, cleanName: cleanName };
             });
-            showToast("全員一巡したので指名履歴をリセットしました。", "success");
+            showToast("全員一巡したので指名履歴をリセットしました", "success");
         }
         rAngle = getRouletteRestAngle();
         drawRoulette();
@@ -237,7 +237,7 @@ function finishRoulette(winnerIndex) {
     
     pushNominationUndo("roulette", winnerFull, nominatedHistoryList.slice(), recordNominationHistory(winnerFull));
     updateNominationProgress();
-    showToast(`🎯 ルーレット当選：【 ${winnerClean} 】 さんです。`, "success");
+    showToast(`🎯 ルーレット当選：【 ${winnerClean} 】 さんです`, "success");
 
 }
 // 円盤の物理は、画面の更新の速さに関係なく、同じ時間で止まるようにします（1/60秒を1コマとして、経過した時間の分だけ進めます）
@@ -274,7 +274,7 @@ const ROULETTE_SPEED_KEY = "roulette_speed";   // "short"（短め）／ "normal
 const ROULETTE_SOUND_KEY = "roulette_sound";   // "1"（音を出す）／ "0"（出さない）
 function rouletteSpeedName() { const v = lsGet(ROULETTE_SPEED_KEY, "normal"); return v === "short" || v === "long" ? v : "normal"; }
 function rouletteSpeedMult() { return { short: 0.6, normal: 1, long: 1.4 }[rouletteSpeedName()]; }
-function rouletteWheelDamp() { return { short: 0.98, normal: 0.99, long: 0.9925 }[rouletteSpeedName()]; }   // 円盤は、1コマごとに、この割合で遅くなります
+function rouletteWheelDamp() { return { short: 0.98, normal: 0.99, long: 0.9925 }[rouletteSpeedName()]; }   // 円盤は、1コマごとにこの割合で遅くなります
 function setRouletteSpeed(v) { if (rSpinning) { const sel = $id("rouletteSpeedSelect"); if (sel) sel.value = rouletteSpeedName(); return; } lsSet(ROULETTE_SPEED_KEY, v); }
 
 function rouletteSoundOn() {
@@ -321,7 +321,7 @@ function rouletteWinSound() {
 // 最初にじわじわ加速して、そのあと減速します。止まる直前に、「進む」「戻る」「そのまま留まる」を、ランダムに2〜3回くり返してから、本当の人で止まります
 // ==========================================
 const TEASE_MAIN_MS = 3200;
-const WHEEL_TEASE_MS = 4600;                    // 円盤の、焦らし演出の時の回る時間（この後に、突起に引っ掛かる動きが続きます）
+const WHEEL_TEASE_MS = 4600;                    // 円盤の、焦らし演出の時の回る時間（この後に突起に引っ掛かる動きが続きます）
 const TEASE_RAMP = 0.25;   // 加速する時間の割合（最初の4分の1）
 // 0→1 の時間を、0→1 の進み具合にします。最初はじわじわ加速して、そのあと、長く減速して、そっと止まります
 function rouletteDecayProfile(u) {
@@ -396,7 +396,7 @@ function rouletteWheelTeasePlan(mainMs) {
     const n = rItems.length || 1, scale = rCanvas && rCanvas.clientWidth ? rCanvas.clientWidth / rCanvas.width : 1;
     const arcPx = Math.max(12, (Math.PI * 2 / n) * ((rCanvas ? rCanvas.width / 2 : 300) - 10 - PEG_INSET) * scale);
     const near = () => Math.max(0.012, Math.min(0.08, R(2, 4.5) / arcPx));
-    const kinds = rouletteTeaseOn() ? ["back", "over", "plain"] : ["plain"];   // 焦らし演出がオフの時（順番リストで、当たる人が決まっている時）は、普通に止まります
+    const kinds = rouletteTeaseOn() ? ["back", "over", "plain"] : ["plain"];   // 焦らし演出がオフの時（順番リストで当たる人が決まっている時）は、普通に止まります
     const kind = kinds[Math.floor(Math.random() * kinds.length)];
     // 止まる位置：真ん中に近い所が多めで、端（±0.4）にも止まります
     let fin = (Math.random() < 0.5 ? -1 : 1) * 0.4 * Math.pow(Math.random(), 0.6);
@@ -409,8 +409,8 @@ function rouletteWheelTeasePlan(mainMs) {
         pos = fin;
     } else if (kind === "back") {
         const c = 0.5 - near();                                       // 次の突起に引っ掛かる位置
-        fin = Math.min(fin, c - 0.12);                                // 戻る幅は、すくなくとも、これだけ取ります
-        pos = c; segs.push({ kind: "main", dur: Math.round(mainMs * 1.2), to: c });   // 回る勢いが、そのまま、突起に近づく動きにつながります（途中で、いったん止まりません）
+        fin = Math.min(fin, c - 0.12);                                // 戻る幅は、すくなくともこれだけ取ります
+        pos = c; segs.push({ kind: "main", dur: Math.round(mainMs * 1.2), to: c });   // 回る勢いが、そのまま、突起に近づく動きにつながります（途中でいったん止まりません）
         hold(Math.round(R(380, 560)), 0.012);                         // 針がたわんで、ひと呼吸、止まる
         move(fin, Math.round(450 + 650 * Math.abs(c - fin)), "out");  // 押し戻されて、戻る
     } else {
@@ -468,7 +468,7 @@ function spinWheelTease() {
 const ROULETTE_STYLE_KEY = "roulette_style";   // "wheel"（円盤）／ "marble"（ビー玉）／ "reel"（縦スクロール）
 const REEL_W = 1100, REEL_H = 440, REEL_ROW_H = 104;   // 画面の大きさと、1人分の高さ
 const REEL_MS = 10500;                          // 普通の回る時間
-const REEL_TEASE_MAIN_MS = 7000;                // 焦らし演出の時の、回る時間（この後に、進む・戻る・留まるが続きます）
+const REEL_TEASE_MAIN_MS = 7000;                // 焦らし演出の時の、回る時間（この後に進む・戻る・留まるが続きます）
 const REEL_FADE_IN_MS = 300, REEL_HOLD_MS = 1200, REEL_FADE_OUT_MS = 500;
 let rReelFrame = 0, rReelPos = 0, rReelCanvas = null, rReelCtx = null, rReelFade = 0;
 
@@ -769,7 +769,7 @@ SekigaeApp.registerPlugin({
     id: "roulette",
     name: "巨大ルーレット",
     version: "1.20",
-    description: "指名の時、大きなルーレットで決めます。円盤と、縦に流れる名前の列（柔道ルーレットのような見た目）を切り替えられます。焦らし演出がONの時は、最初にじわじわ加速して、止まる直前に、「進む」「戻る」「そのまま留まる」を、ランダムにくり返してから止まります。",
+    description: "指名の時、大きなルーレットで決めます。円盤と縦に流れる名前の列（柔道ルーレットのような見た目）を切り替えられます。焦らし演出がONの時は、最初にじわじわ加速して、止まる直前に「進む」「戻る」「そのまま留まる」を、ランダムにくり返してから止まります。",
     backupKeys: [ROULETTE_STYLE_KEY, ROULETTE_SPEED_KEY, ROULETTE_SOUND_KEY],
     stubs: ["drawRoulette", "spinRoulette"],
     mount(app) {
@@ -785,14 +785,14 @@ SekigaeApp.registerPlugin({
             spin.parentNode.insertAdjacentHTML("afterend", '<div id="rouletteOptions" data-plugin="roulette"><label id="rouletteSpeedLabel">回る時間　<select id="rouletteSpeedSelect" onchange="setRouletteSpeed(this.value)"><option value="short">短め</option><option value="normal">普通</option><option value="long">長め</option></select></label><button type="button" class="btn-secondary" id="btnRouletteSound" onclick="toggleRouletteSound()"></button><label id="roulettePointerLabel" data-wheel-only="1">針　<select id="roulettePointerSelect" onchange="setRoulettePointer(this.value)"></select></label><span id="rouletteDragNote" class="roulette-note" data-wheel-only="1"></span></div>');
             $id("roulettePointerSelect").innerHTML = Object.keys(POINTER_SKINS).map(k => '<option value="' + k + '">' + POINTER_SKINS[k].label + "</option>").join("");
             $id("roulettePointerSelect").value = roulettePointerSkin();
-            if (typeof makeInfoTip === "function") $id("rouletteDragNote").appendChild(makeInfoTip("円盤は、指やマウスでつかんで回せます。時計回りに、すばやくはじくと、その強さで回り出します。焦らし演出がONの時は、はじくと焦らし演出で回ります。"));
+            if (typeof makeInfoTip === "function") $id("rouletteDragNote").appendChild(makeInfoTip("円盤は指やマウスでつかんで回せます。時計回りにすばやくはじくとその強さで回り出します。焦らし演出がONの時は、はじくと焦らし演出で回ります。"));
             rouletteDragSetup();
             $id("rouletteSpeedSelect").value = rouletteSpeedName();
-            if (typeof makeInfoTip === "function") $id("rouletteSpeedLabel").appendChild(makeInfoTip("回る時間の目安です。円盤は、短めが約4秒、普通が約9秒、長めが約12秒です。ビー玉は、短めが約5秒、普通が約8秒、長めが約11秒です。縦スクロールは、短めが約6秒、普通が約10秒、長めが約15秒です。"));
+            if (typeof makeInfoTip === "function") $id("rouletteSpeedLabel").appendChild(makeInfoTip("回る時間の目安です。円盤は短めが約4秒、普通が約9秒、長めが約12秒です。ビー玉は短めが約5秒、普通が約8秒、長めが約11秒です。縦スクロールは短めが約6秒、普通が約10秒、長めが約15秒です。"));
             rouletteUpdateSoundButton();
         }
         rouletteApplyStyle();
-        app.insertInto("guide-faq", "<li><strong>ルーレットを、縦に流れる形にしたい</strong>：ルーレットの画面で「縦スクロールにする」を押します。名前の列が上から下へ流れて、だんだん遅くなって止まり、当たった名前だけが光ります。ボタンを押すたびに、円盤・ビー玉・縦スクロールの順に切り替わります。回る時間は、画面の下の「回る時間」で、短め・普通・長めから選べます。名前が流れる時の「カチカチ」という音は、「音」のボタンで、あり・なしを切り替えられます。</li>");
-        app.insertInto("guide-faq", "<li><strong>ルーレットを、ビー玉にしたい／円盤をはじきたい／針を変えたい</strong>：ルーレットの画面のボタンで「ビー玉にする」を選ぶと、円盤の上をビー玉が転がって、区画に落ちます。円盤の見た目の時は、円盤を指やマウスでつかんで回せて、時計回りにすばやくはじくと、その強さで回ります。「針」では、ピン・指さしの手・チョーク・ミニ先生から選べます。焦らし演出がONの時は、円盤の針が突起に引っ掛かって戻ったり、引っ掛かっても乗り越えたり、何もなくそのまま止まったりします。止まる位置も、区画の真ん中だけでなく、端に近い所になることがあります。</li>");
+        app.insertInto("guide-faq", "<li><strong>ルーレットを縦に流れる形にしたい</strong>：ルーレットの画面で「縦スクロールにする」を押します。名前の列が上から下へ流れて、だんだん遅くなって止まり、当たった名前だけが光ります。ボタンを押すたびに円盤・ビー玉・縦スクロールの順に切り替わります。回る時間は画面の下の「回る時間」で、短め・普通・長めから選べます。名前が流れる時の「カチカチ」という音は「音」のボタンであり・なしを切り替えられます。</li>");
+        app.insertInto("guide-faq", "<li><strong>ルーレットをビー玉にしたい／円盤をはじきたい／針を変えたい</strong>：ルーレットの画面のボタンで「ビー玉にする」を選ぶと円盤の上をビー玉が転がって、区画に落ちます。円盤の見た目の時は円盤を指やマウスでつかんで回せて、時計回りにすばやくはじくと、その強さで回ります。「針」ではピン・指さしの手・チョーク・ミニ先生から選べます。焦らし演出がONの時は、円盤の針が突起に引っ掛かって戻ったり、引っ掛かっても乗り越えたり、何もなくそのまま止まったりします。止まる位置も区画の真ん中だけでなく、端に近い所になることがあります。</li>");
     }
 });

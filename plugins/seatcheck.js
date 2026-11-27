@@ -36,16 +36,16 @@ function buildSeatCheckReport() {
     if (names.length === 0) return { items: items, warn: 0 };
     const avoidSt = getAvoidSettings();
     const avoidHint = (avoidSt.sameSeat || avoidSt.neighbor)
-        ? "避ける設定を入れていても、条件が多いと、避けきれないことがあります。もう一度席替えするか、優先順位を変えてください。"
-        : "設定の「前回までと同じ席や隣を避ける」を入れて席替えすると、減らせます。";
-    const sepNearHint = "もう一度席替えすると、守れることがあります。守りたい条件を先にするには、優先順位を変えてください。席の数に対して条件が多いと、全ては守れません。";
+        ? "避ける設定を入れていても、条件が多いと避けきれないことがあります。もう一度席替えするか、優先順位を変えてください。"
+        : "設定の「前回までと同じ席や隣を避ける」を入れて席替えすると減らせます。";
+    const sepNearHint = "もう一度席替えすると守れることがあります。守りたい条件を先にするには、優先順位を変えてください。席の数に対して条件が多いと、全ては守れません。";
 
     // 0. この席替えの決め方
     if (lastShuffleInfo) {
         if (lastShuffleInfo.sig === seatSignatureOf(currentStudents)) {
             const li = lastShuffleInfo, how = [];
             if (!li.needSearch) how.push("条件の指定がなかったので、ランダムに決めました。");
-            else if (li.perfect) how.push(`${li.tried}通り目で、全ての条件を守れる席ができたので、それに決めました。`);
+            else if (li.perfect) how.push(`${li.tried}通り目で全ての条件を守れる席ができたので、それに決めました。`);
             else how.push(`${li.tried}通りの席を作り、条件を一番守れたものを選びました。`);
             const used = [];
             if (li.sep > 0) used.push(`離す設定${li.sep}組`);
@@ -53,7 +53,7 @@ function buildSeatCheckReport() {
             if (li.sameSeat) used.push(`直近${li.depth}回分の同じ席を避ける`);
             if (li.neighbor) used.push(`直近${li.depth}回分の同じ隣を避ける`);
             if (used.length > 0) how.push("使った条件：" + used.join("、"));
-            if (li.rules > 0) how.push(`わがまま指定${li.rules}人分を、反映しています。`);
+            if (li.rules > 0) how.push(`わがまま指定${li.rules}人分を反映しています。`);
             if (used.length >= 2) {
                 const sel = $id("conditionPrioritySelect");
                 const opt = sel ? Array.from(sel.options).find(o => o.value === li.priority) : null;
@@ -61,7 +61,7 @@ function buildSeatCheckReport() {
             }
             add("info", "この席替えの決め方", how);
         } else {
-            add("info", "この座席表は、席替えの後で変わっています", ["席替えの決め方は、変わる前の席についてのものなので、表示しません。"]);
+            add("info", "この座席表は席替えの後で変わっています", ["席替えの決め方は変わる前の席についてのものなので、表示しません。"]);
         }
     }
 
@@ -108,7 +108,7 @@ function buildSeatCheckReport() {
             const n = pastPairSets.filter(s => s.has(k)).length;
             if (n >= 2) often.push(`${seatCheckPairText(k)}　過去${recent.length}回のうち${n}回`);
         });
-        if (often.length > 0) add("warn", "過去の席替えで、何度も隣になった組があります", often, avoidHint);
+        if (often.length > 0) add("warn", "過去の席替えで何度も隣になった組があります", often, avoidHint);
         else add("ok", "何度も隣になった組はありません", []);
     }
 
@@ -129,7 +129,7 @@ function buildSeatCheckReport() {
             }
         });
         if (bad.length > 0) add("warn", "離す設定を守れていない組があります", bad, sepNearHint + (useGroups ? "班の色を使っている時は、同じ班も避けるため、守りにくくなります。" : ""));
-        else add("ok", "離す設定は、全て守れています", []);
+        else add("ok", "離す設定は全て守れています", []);
     }
 
     // 5. 近くに置く設定
@@ -143,7 +143,7 @@ function buildSeatCheckReport() {
             if (!areSeatsAdjacent(ia, ib, cols)) far.push(`${p.a}・${p.b}　離れています`);
         });
         if (far.length > 0) add("warn", "近くに置けていない組があります", far, sepNearHint);
-        else add("ok", "近くに置く設定は、全て守れています", []);
+        else add("ok", "近くに置く設定は全て守れています", []);
     }
 
     // 6. わがまま指定
@@ -166,7 +166,7 @@ function buildSeatCheckReport() {
             else if (p.type === "custom") { ok = isSeatInCustom(seat, p.areaVal, rows); text = getCustomRuleText(p.areaVal).replace(/^\S+ /, ""); }
             if (!ok) ng.push(`${k}　${text}`);
         });
-        if (ng.length > 0) add("warn", "わがまま指定を守れていない人がいます", ng, "指定した席や範囲を、他の人と取り合っていないか、名簿を確認してください。");
+        if (ng.length > 0) add("warn", "わがまま指定を守れていない人がいます", ng, "指定した席や範囲を他の人と取り合っていないか、名簿を確認してください。");
         else add("ok", `わがまま指定は、${counted}人全て守れています`, []);
     }
 
@@ -180,9 +180,9 @@ function buildSeatCheckReport() {
         const lastPrev = Math.max.apply(null, Object.keys(prevPos).map(n => rowOf(prevPos[n])));
         const front = names.filter(n => !isFixedKey(n) && rowOf(posOf[n]) === 0 && prevPos[n] !== undefined && rowOf(prevPos[n]) === 0);
         const back = lastNow === 0 ? [] : names.filter(n => !isFixedKey(n) && rowOf(posOf[n]) === lastNow && prevPos[n] !== undefined && rowOf(prevPos[n]) === lastPrev && lastPrev > 0);
-        if (front.length > 0) add("warn", "2回続けて、一番前の列の人がいます", [front.join("、")], "もう一度席替えすると、変わることがあります。");
+        if (front.length > 0) add("warn", "2回続けて、一番前の列の人がいます", [front.join("、")], "もう一度席替えすると変わることがあります。");
         else add("ok", "2回続けて、一番前の列の人はいません", []);
-        if (back.length > 0) add("warn", "2回続けて、一番後ろの列の人がいます", [back.join("、")], "もう一度席替えすると、変わることがあります。");
+        if (back.length > 0) add("warn", "2回続けて、一番後ろの列の人がいます", [back.join("、")], "もう一度席替えすると変わることがあります。");
         else add("ok", "2回続けて、一番後ろの列の人はいません", []);
     }
 
@@ -208,7 +208,7 @@ function updateSeatCheckButton() {
     // 「ほかの操作」のメニューを閉じていても、注意があることが分かるように、ボタンに印を付けます
     if (more) {
         more.classList.toggle("has-warn", warn > 0);
-        more.title = warn > 0 ? "結果のチェックに、注意が" + warn + "件あります" : "";
+        more.title = warn > 0 ? "結果のチェックに注意が" + warn + "件あります" : "";
     }
     syncSeatToolsRow();
 }
@@ -229,7 +229,7 @@ function openSeatCheck() {
     if (!body || !overlay) return;
     const r = buildSeatCheckReport();
     if (sum) {
-        sum.textContent = r.warn > 0 ? `注意が${r.warn}件あります。` : "気になる点は、ありませんでした。";
+        sum.textContent = r.warn > 0 ? `注意が${r.warn}件あります。` : "気になる点はありませんでした。";
         sum.className = "seatcheck-summary " + (r.warn > 0 ? "is-warn" : "is-ok");
     }
     const mark = { ok: "✅", warn: "⚠️", info: "ℹ️" };
@@ -273,6 +273,6 @@ SekigaeApp.registerPlugin({
     id: "seatcheck",
     name: "結果のチェック",
     version: "1.0",
-    description: "席替えの結果に、気になる点がないかを確かめます。",
+    description: "席替えの結果に気になる点がないかを確かめます。",
     stubs: ["syncSeatToolsRow", "updateSeatCheckButton"]
 });

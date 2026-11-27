@@ -306,7 +306,7 @@ function shareDownload(blob, name) {
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
 }
 function openShareModal() {
-    if (!shareHasSeats()) { showToast("座席表が空です。", "error"); return; }
+    if (!shareHasSeats()) { showToast("座席表が空です", "error"); return; }
     const t = $id("shareTitle");
     if (t && !t.value) t.value = shareDefaultTitle();
     const imgBox = $id("shareImageBtns");
@@ -329,11 +329,11 @@ function shareRefreshPreview() {
 }
 async function shareCopyText() {
     const text = shareText(shareOptions(), false);
-    try { await navigator.clipboard.writeText(text); showToast("座席表をテキストでコピーしました。", "success"); }
+    try { await navigator.clipboard.writeText(text); showToast("座席表をテキストでコピーしました", "success"); }
     catch (e) {
         const pre = $id("sharePreview");
         if (pre) { const r = document.createRange(); r.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
-        showToast("自動でコピーできませんでした。選んだ文字を、コピーしてください。", "error");
+        showToast("自動でコピーできませんでした。選んだ文字をコピーしてください。", "error");
     }
 }
 function shareCanvasBlob() {
@@ -341,38 +341,38 @@ function shareCanvasBlob() {
 }
 async function shareCopyImage() {
     const blob = await shareCanvasBlob();
-    if (!blob) { showToast("画像を作れませんでした。", "error"); return; }
+    if (!blob) { showToast("画像を作れませんでした", "error"); return; }
     try {
         await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-        showToast("座席表を画像でコピーしました。", "success");
+        showToast("座席表を画像でコピーしました", "success");
     } catch (e) {
         shareDownload(blob, shareFileName("png"));
-        showToast("この環境では、画像をコピーできませんでした。画像を保存しました。", "info");
+        showToast("この環境では画像をコピーできませんでした。画像を保存しました。", "info");
     }
 }
 async function shareSaveImage() {
     const blob = await shareCanvasBlob();
-    if (!blob) { showToast("画像を作れませんでした。", "error"); return; }
+    if (!blob) { showToast("画像を作れませんでした", "error"); return; }
     shareDownload(blob, shareFileName("png"));
-    showToast("座席表を画像で保存しました。", "success");
+    showToast("座席表を画像で保存しました", "success");
 }
 async function shareNative() {
     const blob = await shareCanvasBlob();
-    if (!blob) { showToast("画像を作れませんでした。", "error"); return; }
+    if (!blob) { showToast("画像を作れませんでした", "error"); return; }
     const file = new File([blob], shareFileName("png"), { type: "image/png" });
     const data = { files: [file], title: shareOptions().title || "座席表" };
     try {
-        if (navigator.canShare && !navigator.canShare(data)) { shareDownload(blob, shareFileName("png")); showToast("共有に使えなかったので、画像を保存しました。", "info"); return; }
+        if (navigator.canShare && !navigator.canShare(data)) { shareDownload(blob, shareFileName("png")); showToast("共有に使えなかったので、画像を保存しました", "info"); return; }
         await navigator.share(data);
     } catch (e) {
         if (e && e.name === "AbortError") return;
         shareDownload(blob, shareFileName("png"));
-        showToast("共有できなかったので、画像を保存しました。", "info");
+        showToast("共有できなかったので画像を保存しました", "info");
     }
 }
 function shareSaveHtml() {
     shareDownload(new Blob([shareHtml(shareOptions())], { type: "text/html" }), shareFileName("html"));
-    showToast("スマホでも見やすいHTMLで保存しました。", "success");
+    showToast("スマホでも見やすいHTMLで保存しました", "success");
 }
 function shareShowQr() {
     const box = $id("shareQrBox"), canvas = $id("shareQrCanvas"), note = $id("shareQrNote");
@@ -392,7 +392,7 @@ function shareShowQr() {
     }
     canvas.hidden = false;
     qrDrawTo(canvas, qr, 360);
-    note.textContent = (mode === "number" ? "入りきらないので、番号だけにしました。" : "") + (qr.version > 20 ? "文字が多いので、画面を大きく見せて、読み取ってください。" : "カメラで読み取ると、座席表の文字が出ます。");
+    note.textContent = (mode === "number" ? "入りきらないので番号だけにしました。" : "") + (qr.version > 20 ? "文字が多いので画面を大きく見せて、読み取ってください。" : "カメラで読み取ると座席表の文字が出ます。");
 }
 function shareToggleQr() {
     const box = $id("shareQrBox");
@@ -452,7 +452,7 @@ SekigaeApp.registerPlugin({
     requires: ["print"],   // 前提のプラグイン（無いと使えません）
     name: "座席表の共有",
     version: "1.1",
-    description: "座席表を、テキスト、画像、スマホで見やすいHTML、QRコードにして、配ったり見せたりできます。",
+    description: "座席表をテキスト、画像、スマホで見やすいHTML、QRコードにして、配ったり見せたりできます。",
     searchWords: "共有 QR コード テキスト コピー 画像 HTML スマホ 配る",
     stubs: [],
     mount(app) {
@@ -463,7 +463,7 @@ SekigaeApp.registerPlugin({
         const more = $id("moreMenu");
         if (more) more.insertAdjacentHTML("beforeend", '<button type="button" onclick="closePopMenus(); openShareModal()" class="pop-item pop-item-gray" id="btnShareMenu">座席表を共有する</button>');
         const printLi = document.querySelector('li[data-plugin="print"]');
-        const li = "<li>「座席表を共有する」で、座席表を、テキスト、画像、スマホで見やすいHTML、QRコードにできます。テキストは、メールやチャットにそのまま貼り付けられます。QRコードは、カメラで読み取ると座席表の文字が出ます。</li>";
+        const li = "<li>「座席表を共有する」で、座席表をテキスト、画像、スマホで見やすいHTML、QRコードにできます。テキストはメールやチャットにそのまま貼り付けられます。QRコードはカメラで読み取ると座席表の文字が出ます。</li>";
         if (printLi) printLi.insertAdjacentHTML("afterend", li); else app.insertInto("guide-faq", li);
     }
 });

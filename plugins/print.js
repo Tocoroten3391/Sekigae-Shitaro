@@ -9,7 +9,7 @@ function getChartDefaultTitle() {
 }
 function openChartExportModal() {
     if (!currentStudents || currentStudents.length === 0 || !currentStudents.some(s => s && s.type === "STUDENT")) {
-        showToast("座席表が空です。", "error");
+        showToast("座席表が空です", "error");
         return;
     }
     const t = $id("chartExportTitle");
@@ -213,14 +213,14 @@ function saveChartAsPng() {
     const opts = getChartExportOptions();
     const canvas = renderSeatChartCanvas(opts);
     canvas.toBlob(blob => {
-        if (!blob) { showToast("画像を作れませんでした。", "error"); return; }
+        if (!blob) { showToast("画像を作れませんでした", "error"); return; }
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
         a.download = `${(opts.title || "座席表").replace(/[\\/:*?"<>|]/g, "_")}.png`;
         document.body.appendChild(a);
         a.click();
         setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
-        showToast("座席表を画像で保存しました。", "success");
+        showToast("座席表を画像で保存しました", "success");
     }, "image/png");
 }
 async function printSeatChart() {
@@ -245,6 +245,6 @@ SekigaeApp.registerPlugin({
     suggests: ["furigana"],   // あわせて使うと便利なプラグイン
     name: "印刷・画像保存",
     version: "1.1",
-    description: "座席表を、印刷用の画像にして、印刷やPNG保存ができます。",
+    description: "座席表を印刷用の画像にして、印刷やPNG保存ができます。",
     stubs: []
 });

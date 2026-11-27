@@ -19,7 +19,7 @@ function updateCompareButton() {
 }
 function toggleCompare() {
     if (!compareOn && !getCompareBase()) {
-        showToast("比べられる前回の席替えが、まだありません。列数を変えた直後は、比べられません。", "error");
+        showToast("比べられる前回の席替えが、まだありません。列数を変えた直後は比べられません。", "error");
         return;
     }
     compareOn = !compareOn;

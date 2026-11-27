@@ -41,19 +41,19 @@ function findStudentInModalByQuery() {
     });
 
     if (foundIdx === -1) {
-        showToast(`「${query}」に当てはまる生徒がいません。`, "error");
+        showToast(`「${query}」に当てはまる生徒がいません`, "error");
         return;
     }
 
     select.value = foundIdx;
     if (typeof select.onchange === "function") select.onchange();
-    showToast(`「${select.options[select.selectedIndex].textContent}」を選択しました。`, "success");
+    showToast(`「${select.options[select.selectedIndex].textContent}」を選択しました`, "success");
 }
 
 function openSeatModalFromPicker() {
     const picker = $id("seatPickerSelect");
     const label = picker ? picker.value : "";
-    if (!label) { showToast("座席を選んでください。", "error"); return; }
+    if (!label) { showToast("座席を選んでください", "error"); return; }
 
     const container = $id("configContainer");
     const btn = $id("configMenuBtn");
@@ -245,7 +245,7 @@ function toggleEmptyFromModal() {
     
     if (existIndex > -1) { 
         emptyArray.splice(existIndex, 1); 
-        showToast(`座席 ${label} の空席指定を解除しました。`, "success"); 
+        showToast(`座席 ${label} の空席指定を解除しました`, "success"); 
     } else {
         emptyArray.push(label);
         lastRawList = lastRawList.map(s => { 
@@ -257,7 +257,7 @@ function toggleEmptyFromModal() {
         });
         const sInput = $id("studentInput");
         if (sInput) sInput.value = lastRawList.join(", "); 
-        showToast(`座席 ${label} を空席に指定しました。`, "success"); 
+        showToast(`座席 ${label} を空席に指定しました`, "success"); 
         if (manualGroupMap[label]) delete manualGroupMap[label];
     }
     input.value = emptyArray.join(", "); 
@@ -271,7 +271,7 @@ function applyStudentFromModal() {
     const preAreaSel = $id("modalAreaSelect"), preStudentSel = $id("modalStudentSelect");
     if (preStudentSel && preStudentSel.value !== "" && preAreaSel && (preAreaSel.value === "customRC" || preAreaSel.value === "customSeats" || preAreaSel.value === "priority")) {
         customTag = preAreaSel.value === "priority" ? readPriorityPicker() : readCustomPickers(preAreaSel.value);
-        if (!customTag) { showToast("カスタム範囲の行・列か座席を1つ以上選んでください。", "error"); return; }
+        if (!customTag) { showToast("カスタム範囲の行・列か座席を1つ以上選んでください", "error"); return; }
     }
     saveSeatHistory(); 
     const label = activeTargetSeatLabel;
@@ -343,7 +343,7 @@ function applyStudentFromModal() {
             currentStudents[seatIdx] = { type: "STUDENT", text: cleanName.replace(/\[休\]/g, "").trim(), isFixed: false, fixedType: "none", isAbsent: isAbsent, memo: reasonText };
         }
     } else { 
-        showToast(`座席 ${label} の指定を解除しました。`, "success"); 
+        showToast(`座席 ${label} の指定を解除しました`, "success"); 
     }
 
     const showFixedSeatEl = $id("modalYaochoShowFixedToggle");

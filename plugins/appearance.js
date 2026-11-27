@@ -161,7 +161,7 @@ function changeTheme() {
     const r = applyTheme();
     if (r.auto) showToast("テーマを選びました。端末がダークモードの間は、ダークモードで表示します。", "success");
     else if (r.chosen === "theme-auto") showToast(`季節おまかせにしました。今は「${THEME_LABELS[r.resolved] || ""}」です。`, "success");
-    else showToast("テーマを着せ替えました。", "success");
+    else showToast("テーマを着せ替えました", "success");
 }
 
 // ---- 季節の飾り（背景に、花びら・あわ・落ち葉・雪をゆっくり舞わせる）
@@ -189,7 +189,7 @@ function onSeasonDecoToggle() {
     lsSet("season_deco", t && t.checked ? "1" : "0");
     updateSeasonDeco();
     const key = seasonDeco.key;
-    if (t && t.checked && !key) showToast("今のテーマには、飾りがありません。サクラ、新学期、サマー、オータム、ハロウィン、ウィンター、クリスマスで出ます。", "success");
+    if (t && t.checked && !key) showToast("今のテーマには飾りがありません。サクラ、新学期、サマー、オータム、ハロウィン、ウィンター、クリスマスで出ます。", "success");
 }
 
 function stopSeasonDeco() {
@@ -322,7 +322,7 @@ document.addEventListener('fullscreenchange', () => {
     if (tbtn) tbtn.textContent = document.fullscreenElement ? "✖ 全画面表示を終える" : "全画面表示";
     if (document.fullscreenElement) {
         if (btn) btn.innerHTML = "✖ 全画面表示を終える";
-        showToast("全画面モードになりました。", "success");
+        showToast("全画面モードになりました", "success");
     } else {
         if (btn) btn.innerHTML = "全画面表示";
     }
@@ -350,7 +350,7 @@ function wrapEmojiIn(el) {
     const span = document.createElement("span");
     span.className = "emo";
     span.setAttribute("aria-hidden", "true");
-    span.textContent = m[2] + m[3]; // 絵文字のあとの空白も、この中に入れる（ボタンの中でも、間があく）
+    span.textContent = m[2] + m[3]; // 絵文字のあとの空白も、この中に入れる（ボタンの中でも間があく）
     const rest = node.nodeValue.slice(m[0].length);
     node.nodeValue = m[1] + "";
     node.parentNode.insertBefore(span, node.nextSibling);

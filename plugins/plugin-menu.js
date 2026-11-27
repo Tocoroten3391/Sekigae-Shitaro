@@ -136,7 +136,7 @@ function pmJump(id) {
     const name = def ? (def.name || id) : id;
     if (!SekigaeApp.isEnabled(id)) { showToast("「" + name + "」はオフです。オンにして再読み込みすると、設定に出ます。", "info"); return; }
     const t = pmTargets(id);
-    if (!t.length) { showToast("「" + name + "」の操作は、設定の中にはありません。", "info"); return; }
+    if (!t.length) { showToast("「" + name + "」の操作は設定の中にはありません。", "info"); return; }
     const el = t[0], sec = el.closest(".config-section");
     if (typeof closePluginModal === "function") closePluginModal();
     const cc = $id("configContainer");
@@ -277,7 +277,7 @@ function pmDecorate() {
         nameEl.classList.toggle("is-link", hasTarget);
         if (hasTarget) { nameEl.setAttribute("role", "button"); nameEl.tabIndex = 0; } else { nameEl.removeAttribute("role"); nameEl.removeAttribute("tabindex"); }
         const rec = pmUse.p[def.id];
-        let tip = hasTarget ? "押すと、設定の中の、この機能のボタンがある場所へ移ります。" : "";
+        let tip = hasTarget ? "押すと設定の中の、この機能のボタンがある場所へ移ります。" : "";
         if (rec && on) tip += (tip ? "\n" : "") + "この端末で、" + rec[0] + "回使いました。" + (rec[0] ? "最後に使ったのは、" + Math.max(0, pmDay() - rec[1]) + "日前です。" : "");
         if (tip) nameEl.title = tip; else nameEl.removeAttribute("title");
         // 重さの目安
@@ -289,14 +289,14 @@ function pmDecorate() {
             const b = document.createElement("span");
             b.className = "pm-weight pm-w-" + w.level;
             b.textContent = PM_WEIGHT_LABEL[w.level];
-            b.title = "起動の準備に、約 " + w.ms.toFixed(1) + " ミリ秒かかりました（この端末で測りました）。\nファイルの読み込みに、約 " + w.load.toFixed(1) + " ミリ秒かかっていて、これは、オフにしても、ファイルを外さないと減りません。\n動いている間の重さは、入っていません。目安です。";
+            b.title = "起動の準備に約 " + w.ms.toFixed(1) + " ミリ秒かかりました（この端末で測りました）。\nファイルの読み込みに、約 " + w.load.toFixed(1) + " ミリ秒かかっていて、これはオフにしてもファイルを外さないと減りません。\n動いている間の重さは、入っていません。目安です。";
             badges.appendChild(b);
         }
         if (unused.has(def.id)) {
             const u = document.createElement("span");
             u.className = "pm-unused";
             u.textContent = PM_UNUSED_DAYS + "日使っていません";
-            u.title = PM_UNUSED_DAYS + "日以上、この機能を押した記録がありません。使わないなら、オフにすると、少し軽くなります。\n数えているのは、この端末の中だけです。";
+            u.title = PM_UNUSED_DAYS + "日以上、この機能を押した記録がありません。使わないなら、オフにすると少し軽くなります。\n数えているのはこの端末の中だけです。";
             badges.insertBefore(u, badges.firstChild);
         }
         if (badges.firstChild) sc.appendChild(badges);
@@ -327,7 +327,7 @@ function pmRenderSummary() {
     const total = on.reduce((a, p) => a + pmWeightOf(p).ms, 0);
     const heavy = on.filter(p => pmWeightOf(p).level === "heavy");
     el.textContent = "起動の準備にかかった時間（オンの機能の合計）：約 " + total.toFixed(0) + " ミリ秒。" +
-        (heavy.length ? "重い機能：" + heavy.sort((a, b) => pmWeightOf(b).ms - pmWeightOf(a).ms).map(p => p.name || p.id).join("、") + "。" : "重い機能は、ありません。");
+        (heavy.length ? "重い機能：" + heavy.sort((a, b) => pmWeightOf(b).ms - pmWeightOf(a).ms).map(p => p.name || p.id).join("、") + "。" : "重い機能はありません。");
 }
 // 変更の数（読み込んだ時と比べて、オン・オフが変わったもの）
 function pmChanges() {
@@ -353,7 +353,7 @@ function pmUndoChanges() {
     if (typeof isAppLocked === "function" && isAppLocked()) { if (typeof showLockedToast === "function") showLockedToast(); return; }
     pmChanges().forEach(c => SekigaeApp.setEnabled(c.id, !c.on));
     SekigaeApp.renderPluginList();
-    showToast("変更を、もとに戻しました。", "success");
+    showToast("変更をもとに戻しました", "success");
 }
 
 // ---- 使っていない機能 ----
@@ -400,16 +400,16 @@ function pmRenderUnused() {
     if (!list.length || box.dataset.dismissed === "1") { box.hidden = true; box.innerHTML = ""; return; }
     box.hidden = false;
     box.innerHTML = '<span class="pm-unused-text">' + PM_UNUSED_DAYS + '日以上、使っていない機能が ' + list.length + ' 個あります：' + list.map(p => (p.name || p.id).replace(/[&<>]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[ch]))).join("、") +
-        '。オフにすると、少し軽くなります。</span><span class="pm-unused-btns"><button type="button" class="btn-compact" data-pm="unused-off">まとめてオフにする</button><button type="button" class="btn-compact" data-pm="unused-later">後で</button></span>';
+        '。オフにすると少し軽くなります。</span><span class="pm-unused-btns"><button type="button" class="btn-compact" data-pm="unused-off">まとめてオフにする</button><button type="button" class="btn-compact" data-pm="unused-later">後で</button></span>';
 }
 function pmUnusedOff() {
     if (typeof isAppLocked === "function" && isAppLocked()) { if (typeof showLockedToast === "function") showLockedToast(); return; }
     const list = pmUnusedList();
     if (!list.length) return;
-    if (!confirm(PM_UNUSED_DAYS + "日以上、使っていない機能を、オフにします。\n" + list.map(p => "・" + (p.name || p.id)).join("\n") + "\n\n反映するには、再読み込みが必要です。オフにしますか？")) return;
+    if (!confirm(PM_UNUSED_DAYS + "日以上、使っていない機能をオフにします。\n" + list.map(p => "・" + (p.name || p.id)).join("\n") + "\n\n反映するには再読み込みが必要です。オフにしますか？")) return;
     list.forEach(p => SekigaeApp.setEnabled(p.id, false));
     SekigaeApp.renderPluginList();
-    showToast(list.length + "個を、オフにしました。再読み込みの後に、反映されます。", "success");
+    showToast(list.length + "個をオフにしました。再読み込みの後に反映されます。", "success");
 }
 
 // ---- 画面の部品と、CSS ----
@@ -560,7 +560,7 @@ SekigaeApp.registerPlugin({
     id: "plugin-menu",
     name: "プラグインメニュー強化",
     version: "1.1",
-    description: "「プラグインの設定」の画面を、使いやすくします。名前や説明でさがせて、一致した文字に色が付きます。グループごとに折りたためます。切りかえた件数と「今すぐ再読み込み」を、画面の下に固定します。機能ごとに、軽い・普通・重いの目安を出します。広い画面では、左に目次、右に2列で並びます。名前を押すと、設定の中のボタンの場所へ移ります。60日使っていない機能には印が付きます。使った回数は、この端末の中だけで数えます。",
+    description: "「プラグインの設定」の画面を使いやすくします。名前や説明でさがせて、一致した文字に色が付きます。グループごとに折りたためます。切りかえた件数と「今すぐ再読み込み」を、画面の下に固定します。機能ごとに軽い・普通・重いの目安を出します。広い画面では左に目次、右に2列で並びます。名前を押すと設定の中のボタンの場所へ移ります。60日使っていない機能には印が付きます。使った回数はこの端末の中だけで数えます。",
     searchWords: "プラグイン メニュー 検索 折りたたみ 再読み込み 重さ 軽い 重い 目次 2列 ジャンプ 使っていない 未使用 整理 軽量",
     mount(app) {
         const st = document.createElement("style");
@@ -587,7 +587,7 @@ SekigaeApp.registerPlugin({
             };
         }
         window.pmRevealRow = pmRevealRow;
-        app.insertInto("guide-tools", '<li><strong>プラグインメニュー強化</strong>：設定の「機能・プラグイン」の「プラグインの設定」で、上の検索ボックスから、名前や説明で絞れます。グループは折りたためます。切りかえた件数は、画面の下に固定して出ます。機能の名前を押すと、設定の中のその場所へ移ります。「軽い・普通・重い」は、起動の準備にかかった時間の目安です。60日使っていない機能には印が付きます（使った回数は、この端末の中だけで数えます）。</li>');
+        app.insertInto("guide-tools", '<li><strong>プラグインメニュー強化</strong>：設定の「機能・プラグイン」の「プラグインの設定」で、上の検索ボックスから、名前や説明で絞れます。グループは折りたためます。切りかえた件数は画面の下に固定して出ます。機能の名前を押すと設定の中のその場所へ移ります。「軽い・普通・重い」は、起動の準備にかかった時間の目安です。60日使っていない機能には印が付きます（使った回数はこの端末の中だけで数えます）。</li>');
     },
     ready() {
         pmTrackInit();

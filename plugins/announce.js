@@ -7,7 +7,7 @@ let announceState = { open: false, snapshot: [], cols: 6, order: [], cursor: 0, 
 function isAnnounceOpen() { return announceState.open; }
 function openAnnounce() {
     if (!currentStudents || !currentStudents.some(seat => seat && seat.type === "STUDENT" && seat.text)) {
-        showToast("座席表が空です。", "error");
+        showToast("座席表が空です", "error");
         return;
     }
     const colSel = $id("columnSelect");
@@ -123,7 +123,7 @@ function toggleAnnounceFullscreen(event) {
     try {
         if (document.fullscreenElement) document.exitFullscreen();
         else if (overlay.requestFullscreen) overlay.requestFullscreen();
-    } catch (error) { showToast("全画面にできませんでした。", "error"); }
+    } catch (error) { showToast("全画面にできませんでした", "error"); }
 }
 function capNameHtml(text, p) {
     const furi = getFuriganaFor(text);
@@ -146,7 +146,7 @@ const ANNOUNCE_WX = {
     back: [
         { e: "🌈", t: "後ろの席は虹がかかる予報です。見晴らしは抜群です" },
         { e: "🔭", t: "遠くまで見わたせる、見晴らし良好の席です" },
-        { e: "🌙", t: "夜のように静かで、おだやかな席です" }
+        { e: "🌙", t: "夜のように静かでおだやかな席です" }
     ]
 };
 function announceHash(idx) { return (idx * 7919 + 131) % 9973; }
@@ -163,14 +163,14 @@ function announceWxInfo(idx) {
     const h = announceHash(idx);
     const base = list[h % list.length];
     let extra = "";
-    if (col === 0 || col === cols - 1) extra = "かべ際で、風通しがよいでしょう。";
-    else if (cols >= 5 && Math.abs(col - (cols - 1) / 2) <= 0.5) extra = "教室の中心で、まわりの人とよく話せそうです。";
+    if (col === 0 || col === cols - 1) extra = "かべ際で風通しがよいでしょう。";
+    else if (cols >= 5 && Math.abs(col - (cols - 1) / 2) <= 0.5) extra = "教室の中心でまわりの人とよく話せそうです。";
     return { emoji: base.e, text: base.t, extra, pct: (h % 9 + 1) * 10 };
 }
 
 // 今日のラッキー席：発表が終わったあとに、1席だけ選んで発表する
 const LUCKY_ITEMS = ["赤いペン", "青いハンカチ", "けしゴム", "水筒", "えんぴつ", "みどり色の付せん", "じょうぎ", "ノート", "ハンカチ", "まる付け用の色えんぴつ"];
-const LUCKY_ADVICE = ["今日は元気に手をあげると、いいことがありそうです", "となりの人にあいさつすると、運気が上がります", "姿勢をよくすると、集中力が上がります", "最初の授業でノートをていねいに書くと、一日うまくいきます", "休み時間に、ふだん話さない人に話しかけてみましょう"];
+const LUCKY_ADVICE = ["今日は元気に手をあげると、いいことがありそうです", "となりの人にあいさつすると、運気が上がります", "姿勢をよくすると集中力が上がります", "最初の授業でノートをていねいに書くと、一日うまくいきます", "休み時間にふだん話さない人に話しかけてみましょう"];
 function announceLucky(event) {
     if (event) event.stopPropagation();
     if (!announceState.open) return;
@@ -235,7 +235,7 @@ function renderAnnounce() {
         } else if (cursor === 0) {
             cap.innerHTML = weatherOn
                 ? `<span class="an-cap-sub">☁️ 席替え天気予報、まもなく始まります。「発表スタート」を押してください</span>`
-                : `<span class="an-cap-sub">「発表スタート」を押すか、スペースキーで、席の発表が始まります</span>`;
+                : `<span class="an-cap-sub">「発表スタート」を押すか、スペースキーで席の発表が始まります</span>`;
         } else {
             const p = getSeatDisplayParts(snapshot[currentIdx].text);
             const done = cursor >= order.length;

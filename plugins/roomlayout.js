@@ -176,7 +176,7 @@ function roomRenameSelected(v) {
 }
 function roomClearAll() {
     if (!roomObjs().length) return;
-    if (!confirm("このクラスの、教室の物を、全て消します。よろしいですか？")) return;
+    if (!confirm("このクラスの、教室の物を全て消します。よろしいですか？")) return;
     roomSave([]);
     roomSelId = null;
     roomRender();
@@ -226,7 +226,7 @@ function roomApplyTemplate(name) {
     roomSave(list);
     roomSelId = null;
     roomRender();
-    showToast("ひな形を置きました。ドラッグで、動かせます。", "success");
+    showToast("ひな形を置きました。ドラッグで動かせます。", "success");
 }
 
 // ---- 編集 ----
@@ -306,7 +306,7 @@ function roomPointerUp() {
 const ROOM_HTML = `
 <div id="roomPanel" class="room-panel" style="display: none;">
     <div class="room-panel-head">🏫 教室の配置<button type="button" class="room-done" onclick="toggleRoomEdit()">終える</button></div>
-    <p class="room-help">置きたい物を押すと、座席表の上に出ます。ドラッグで動かして、右下の角で大きさを変えます。</p>
+    <p class="room-help">置きたい物を押すと座席表の上に出ます。ドラッグで動かして、右下の角で大きさを変えます。</p>
     <div class="room-kinds" id="roomKinds"></div>
     <div class="room-sub">ひな形</div>
     <div class="room-tpls">
@@ -333,7 +333,7 @@ SekigaeApp.registerPlugin({
     id: "roomlayout",
     name: "教室の配置",
     version: "1.0",
-    description: "黒板、電子黒板、教卓、ドア、窓、通り道などを、座席表のまわりに置いて、本物の教室のように再現します。ドラッグで動かせます。",
+    description: "黒板、電子黒板、教卓、ドア、窓、通り道などを座席表のまわりに置いて、本物の教室のように再現します。ドラッグで動かせます。",
     backupKeys: [ROOM_KEY, ROOM_SHOW_KEY],
     searchWords: "教室 配置 黒板 電子黒板 教卓 ドア 窓 通り道 ロッカー レイアウト 再現",
     stubs: [],
@@ -343,7 +343,7 @@ SekigaeApp.registerPlugin({
         app.insertInto("settings-seat",
             '<button type="button" onclick="if (!roomEditing) closeConfigMenuIfOpen(); toggleRoomEdit()" class="btn-secondary" id="btnRoomSettings" style="margin-top: 10px;">教室の配置を直す</button>' +
             '<button type="button" onclick="toggleRoomShow()" class="btn-secondary" id="btnRoomShow" style="margin-top: 10px;">教室の物を隠す</button>');
-        app.insertInto("guide-faq", "<li><strong>本物の教室のように見せたい</strong>：設定の「座席のレイアウト」の「教室の配置を直す」を押すと、黒板、電子黒板、教卓、ドア、窓、通り道などを、座席表のまわりに置けます。ひな形から始めると、簡単です。座席を空席にすると、通り道を作れます。</li>");
+        app.insertInto("guide-faq", "<li><strong>本物の教室のように見せたい</strong>：設定の「座席のレイアウト」の「教室の配置を直す」を押すと黒板、電子黒板、教卓、ドア、窓、通り道などを座席表のまわりに置けます。ひな形から始めると簡単です。座席を空席にすると通り道を作れます。</li>");
     },
     ready() {
         document.addEventListener("pointerdown", roomPointerDown, true);

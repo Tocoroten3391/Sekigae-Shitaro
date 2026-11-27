@@ -53,7 +53,7 @@ function rsetSummary(set) {
     const avoid = [];
     if (g("avoid_same_seat") === "1") avoid.push("前と同じ席");
     if (g("avoid_neighbor") === "1") avoid.push("前と同じ隣");
-    parts.push(avoid.length ? avoid.join("・") + "を避ける（" + g("avoid_depth") + "回分）" : "前の席は、避けない");
+    parts.push(avoid.length ? avoid.join("・") + "を避ける（" + g("avoid_depth") + "回分）" : "前の席は避けない");
     parts.push("優先：" + ({ separate: "離す", near: "近くに置く", balance: "同じくらい" }[g("condition_priority")] || "離す"));
     if (JSON.parse(g("seat_fair_v1"))[0]) parts.push("席の公平性");
     if (g("luck_use") === "1") parts.push("運の貯金");
@@ -111,8 +111,8 @@ function rsetSaveNew() {
     const list = rsetLoad();
     if (list.length >= RSET_MAX) { showToast(`条件セットは、${RSET_MAX}個までです。使わないものを消してください。`, "error"); return; }
     presetDialog({
-        title: "今の条件を、保存する",
-        message: "今の席替えの条件に、名前を付けて保存します。",
+        title: "今の条件を保存する",
+        message: "今の席替えの条件に名前を付けて保存します。",
         bodyEl: rsetBodyEl(),
         input: { value: "", placeholder: "例：ふだん用", label: "条件セットの名前" },
         check: { label: "離す・近くに置く人の組み合わせも、入れる", checked: true },
@@ -123,13 +123,13 @@ function rsetSaveNew() {
     }, (v, o) => {
         if (v !== "ok") return;
         const name = (o.text || "").slice(0, 30);
-        if (!name) { showToast("名前を入れてください。", "error"); return; }
+        if (!name) { showToast("名前を入れてください", "error"); return; }
         const cur = rsetLoad();
-        if (cur.some(s => s.name === name)) { showToast(`「${name}」という条件セットは、もうあります。上書きしたい時は、一覧の「上書き」を使ってください。`, "error"); return; }
+        if (cur.some(s => s.name === name)) { showToast(`「${name}」という条件セットはもうあります。上書きしたい時は一覧の「上書き」を使ってください。`, "error"); return; }
         const keys = RSET_BASE_KEYS.concat(o.checked ? RSET_PAIR_KEYS : []);
         const vals = rsetCurrentVals(keys);
         cur.push({ id: rsetNewId(), name: name, t: Date.now(), keys: keys, vals: vals, sig: rsetSig(keys, vals) });
-        if (rsetSave(cur)) { rsetRender(); showToast(`条件セット「${name}」を保存しました。`, "success"); }
+        if (rsetSave(cur)) { rsetRender(); showToast(`条件セット「${name}」を保存しました`, "success"); }
     });
 }
 
@@ -141,7 +141,7 @@ function rsetOverwrite(id) {
     if (!set) return;
     presetDialog({
         title: `「${set.name}」を、上書きする`,
-        message: "今の席替えの条件で、この条件セットの中身を入れかえます。もとの中身には、戻せません。",
+        message: "今の席替えの条件でこの条件セットの中身を入れかえます。もとの中身には戻せません。",
         bodyEl: rsetBodyEl(),
         check: { label: "離す・近くに置く人の組み合わせも、入れる", checked: set.keys.includes("separation_pairs") },
         buttons: [
@@ -157,7 +157,7 @@ function rsetOverwrite(id) {
         s.vals = rsetCurrentVals(s.keys);
         s.sig = rsetSig(s.keys, s.vals);
         s.t = Date.now();
-        if (rsetSave(cur)) { rsetRender(); showToast(`条件セット「${s.name}」を上書きしました。`, "success"); }
+        if (rsetSave(cur)) { rsetRender(); showToast(`条件セット「${s.name}」を上書きしました`, "success"); }
     });
 }
 
@@ -168,14 +168,14 @@ function rsetDelete(id) {
     if (!set) return;
     presetDialog({
         title: `「${set.name}」を、消す`,
-        message: "この条件セットを消します。今の席替えの条件は、変わりません。",
+        message: "この条件セットを消します。今の席替えの条件は変わりません。",
         buttons: [
             { label: "キャンセル", value: "cancel", cls: "btn-secondary" },
             { label: "消す", value: "ok", cls: "btn-delete is-primary", primary: true }
         ]
     }, v => {
         if (v !== "ok") return;
-        if (rsetSave(rsetLoad().filter(s => s.id !== id))) { rsetRender(); showToast(`条件セット「${set.name}」を消しました。`, "success"); }
+        if (rsetSave(rsetLoad().filter(s => s.id !== id))) { rsetRender(); showToast(`条件セット「${set.name}」を消しました`, "success"); }
     });
 }
 
@@ -187,7 +187,7 @@ function rsetRender() {
     if (!list.length) {
         const p = document.createElement("p");
         p.className = "rset-empty";
-        p.textContent = "まだ、保存した条件セットはありません。";
+        p.textContent = "まだ、保存した条件セットはありません";
         box.appendChild(p);
         return;
     }
@@ -246,7 +246,7 @@ const RSET_CSS = `
 const RSET_HTML = `
 <div class="rset-block">
     <h4 class="rset-title">席替えの条件セット</h4>
-    <p class="config-note">前の席を避ける・離す／近くに置く・優先順位などを、名前を付けて、いくつか保存できます。1回押すと、切り替わります。</p>
+    <p class="config-note">前の席を避ける・離す／近くに置く・優先順位などを、名前を付けて、いくつか保存できます。1回押すと切り替わります。</p>
     <div id="rsetList" class="rset-list"></div>
     <button type="button" id="rsetSaveBtn" onclick="rsetSaveNew()" class="btn-secondary">今の条件を保存</button>
 </div>`;

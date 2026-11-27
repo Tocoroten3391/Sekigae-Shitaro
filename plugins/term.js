@@ -65,7 +65,7 @@ function renderStatsSummary(data) {
         let verdict;
         if (total === 0) verdict = "まだ指名の記録がありません。";
         else if (never.length > 0) verdict = `まだ一度も当たっていない人が、${never.length}人います。`;
-        else if (max - min <= 1) verdict = "全員が、ほぼ同じ回数で当たっています。";
+        else if (max - min <= 1) verdict = "全員がほぼ同じ回数で当たっています。";
         else verdict = `多い人と少ない人で、${max - min}回の差があります。`;
         html += `<p class="stats-note">${esc(verdict)}</p>`;
         const most = order.slice().sort((a, b) => b.count - a.count).filter(r => r.count > 0).slice(0, 5).map(r => [r.name, r.count]);
@@ -76,26 +76,26 @@ function renderStatsSummary(data) {
     // 席
     html += '<label class="input-label" style="margin-top: 16px;">席の偏り</label>';
     if (data.isArchive) {
-        html += '<p class="stats-empty">アーカイブには、席替えの履歴が入っていません。「現在の記録」を選ぶと、見られます。</p>';
+        html += '<p class="stats-empty">アーカイブには席替えの履歴が入っていません。「現在の記録」を選ぶと見られます。</p>';
     } else {
         const entries = timelineEntriesForPeriod(statsSummaryPeriod);
         if (entries.length === 0) {
-            html += '<p class="stats-empty">この期間の席替えの記録が、まだありません。</p>';
+            html += '<p class="stats-empty">この期間の席替えの記録が、まだありません</p>';
         } else {
             const sm = summarizeSeatTimeline(entries);
-            html += `<p class="stats-note">${entries.length}回分の席替えを、集計しました。</p>`;
+            html += `<p class="stats-note">${entries.length}回分の席替えを集計しました</p>`;
             const pairs = Object.keys(sm.pairCount).filter(k => sm.pairCount[k] >= 2).sort((a, b) => sm.pairCount[b] - sm.pairCount[a]).slice(0, 8)
                 .map(k => [k.split("\u0001").join("・"), sm.pairCount[k]]);
             html += '<div class="stats-sub">何度も同じ隣になった組</div>';
-            html += entries.length < 2 ? '<p class="stats-note">席替えが2回分たまると、調べられます。</p>'
-                : (pairs.length ? '<div class="stats-trend-list stats-list-short">' + topList(pairs, "回") + "</div>" : '<p class="stats-note">2回以上、同じ隣になった組は、ありません。</p>');
+            html += entries.length < 2 ? '<p class="stats-note">席替えが2回分たまると、調べられます</p>'
+                : (pairs.length ? '<div class="stats-trend-list stats-list-short">' + topList(pairs, "回") + "</div>" : '<p class="stats-note">2回以上、同じ隣になった組はありません</p>');
             const frontTop = Object.keys(sm.front).sort((a, b) => sm.front[b] - sm.front[a]).slice(0, 5).map(k => [k, sm.front[k]]);
             const backTop = Object.keys(sm.back).sort((a, b) => sm.back[b] - sm.back[a]).slice(0, 5).map(k => [k, sm.back[k]]);
-            html += '<div class="stats-sub">一番前の列になった回数が多い人</div>' + (frontTop.length ? '<div class="stats-trend-list stats-list-short">' + topList(frontTop, "回") + "</div>" : '<p class="stats-note">記録がありません。</p>');
-            html += '<div class="stats-sub">一番後ろの列になった回数が多い人</div>' + (backTop.length ? '<div class="stats-trend-list stats-list-short">' + topList(backTop, "回") + "</div>" : '<p class="stats-note">記録がありません。</p>');
+            html += '<div class="stats-sub">一番前の列になった回数が多い人</div>' + (frontTop.length ? '<div class="stats-trend-list stats-list-short">' + topList(frontTop, "回") + "</div>" : '<p class="stats-note">記録がありません</p>');
+            html += '<div class="stats-sub">一番後ろの列になった回数が多い人</div>' + (backTop.length ? '<div class="stats-trend-list stats-list-short">' + topList(backTop, "回") + "</div>" : '<p class="stats-note">記録がありません</p>');
             if (entries.length >= 3) {
                 const noFront = sm.seen.filter(k => !sm.front[k]);
-                html += '<div class="stats-sub">一度も一番前の列になっていない人</div><p class="stats-note">' + (noFront.length ? esc(noFront.slice(0, 20).join("、")) + (noFront.length > 20 ? `　ほか${noFront.length - 20}人` : "") : "全員が、一度は前の列になっています。") + "</p>";
+                html += '<div class="stats-sub">一度も一番前の列になっていない人</div><p class="stats-note">' + (noFront.length ? esc(noFront.slice(0, 20).join("、")) + (noFront.length > 20 ? `　ほか${noFront.length - 20}人` : "") : "全員が一度は前の列になっています。") + "</p>";
             }
         }
     }
@@ -108,16 +108,16 @@ SekigaeApp.registerPlugin({
     requires: ["history"],   // 前提のプラグイン（無いと使えません）
     name: "学期のまとめ",
     version: "1.1",
-    description: "記録・統計の画面に、「まとめ」のタブを出します。学期の終わりに、指名や席が偏っていなかったかを確かめられます。",
+    description: "記録・統計の画面に、「まとめ」のタブを出します。学期の終わりに指名や席が偏っていなかったかを確かめられます。",
     statsTabs: [{
         id: "summary",
         label: "🧾 まとめ",
         hideReset: true,
         hideCsv: true,
-        paneHtml: "            <p style=\"font-size: 12px; color: var(--text-sub); margin: 0 0 10px; line-height: 1.6;\">学期の終わりに、指名や席が偏っていなかったかを確かめます。席の集計は、席替えの履歴から数えています。</p>\n            <div style=\"margin-bottom: 10px;\">\n                <label for=\"statsSummaryPeriod\" class=\"input-label\">席を集計する期間：</label>\n                <select id=\"statsSummaryPeriod\" onchange=\"setStatsSummaryPeriod(this.value)\"></select>\n            </div>\n            <div id=\"statsSummaryBody\" class=\"stats-summary-body\"></div>\n        ",
+        paneHtml: "            <p style=\"font-size: 12px; color: var(--text-sub); margin: 0 0 10px; line-height: 1.6;\">学期の終わりに指名や席が偏っていなかったかを確かめます。席の集計は席替えの履歴から数えています。</p>\n            <div style=\"margin-bottom: 10px;\">\n                <label for=\"statsSummaryPeriod\" class=\"input-label\">席を集計する期間：</label>\n                <select id=\"statsSummaryPeriod\" onchange=\"setStatsSummaryPeriod(this.value)\"></select>\n            </div>\n            <div id=\"statsSummaryBody\" class=\"stats-summary-body\"></div>\n        ",
         render: data => renderStatsSummary(data)
     }],
     mount(app) {
-        app.insertInto("guide-stats", "<li><strong>まとめ</strong>：学期の終わりに、指名の偏りと、席の偏りを確かめます。まだ当たっていない人、何度も同じ隣になった組、一番前や後ろの列になった回数が分かります。</li>", "beforebegin");
+        app.insertInto("guide-stats", "<li><strong>まとめ</strong>：学期の終わりに指名の偏りと席の偏りを確かめます。まだ当たっていない人、何度も同じ隣になった組、一番前や後ろの列になった回数が分かります。</li>", "beforebegin");
     }
 });

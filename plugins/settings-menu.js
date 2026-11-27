@@ -294,11 +294,11 @@ function toggleSmoothAnimation() {
     if (toggle.checked) { 
         document.body.classList.remove("no-animation"); 
         localStorage.setItem("smooth_animation", "true"); 
-        showToast("演出をONにしました。", "success"); 
+        showToast("演出をONにしました", "success"); 
     } else { 
         document.body.classList.add("no-animation"); 
         localStorage.setItem("smooth_animation", "false"); 
-        showToast("演出をOFFにしました。", "success"); 
+        showToast("演出をOFFにしました", "success"); 
     } 
 }
 
@@ -351,10 +351,10 @@ function toggleOfflineMode() {
     const toggle = $id("offlineModeToggle");
     if (toggle && toggle.checked) { 
         updateStatus("unconnected", "オフライン"); 
-        showToast("オフラインモードにしました。", "success"); 
+        showToast("オフラインモードにしました", "success"); 
     } else { 
         updateStatus("unconnected", "未接続"); 
-        showToast("オンラインモードにしました。", "success"); 
+        showToast("オンラインモードにしました", "success"); 
     } 
 }
 

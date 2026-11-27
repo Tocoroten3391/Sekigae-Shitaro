@@ -277,5 +277,5 @@ SekigaeApp.registerPlugin({
     name: "席の指定の読み取り",
     version: "1.0",
     required: true,
-    description: "名簿の読み取りと、「この席は〇〇」といった席の指定を読み取ります。"
+    description: "名簿の読み取りと「この席は〇〇」といった席の指定を読み取ります。"
 });

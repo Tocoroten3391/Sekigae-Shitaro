@@ -93,7 +93,7 @@ function schedClear() {
     lsSet(SCHED_SHOWN_KEY, "");
     schedRefreshUi();
     schedHideBanner();
-    showToast("席替えの予約を消しました。", "success");
+    showToast("席替えの予約を消しました", "success");
 }
 
 function schedHideBanner() {
@@ -147,10 +147,10 @@ function schedCheckOnStart() {
     if (lsGet(SCHED_SHOWN_KEY, "") === key) return;
     if (left <= 0) {
         lsSet(SCHED_SHOWN_KEY, key);
-        schedShowBanner(left === 0 ? "今日は、予約していた席替えの日です。" : "予約していた席替えの日は、" + schedLabel(s.date) + "でした。すぎています。", true);
+        schedShowBanner(left === 0 ? "今日は予約していた席替えの日です。" : "予約していた席替えの日は、" + schedLabel(s.date) + "でした。すぎています。", true);
     } else if (left === 1) {
         lsSet(SCHED_SHOWN_KEY, key);
-        schedShowBanner("あしたは、予約していた席替えの日です。", false);
+        schedShowBanner("あしたは予約していた席替えの日です。", false);
     }
 }
 
@@ -184,7 +184,7 @@ function schedOnShuffleDone() {
     schedWrite(s);
     schedHideBanner();
     schedRefreshUi();
-    showToast(next ? "席替えの予約を、次の" + schedLabel(next) + "に進めました。" : "予約していた席替えが終わったので、予約を消しました。", "success");
+    showToast(next ? "席替えの予約を次の" + schedLabel(next) + "に進めました。" : "予約していた席替えが終わったので、予約を消しました。", "success");
 }
 
 const SCHED_CSS = `
@@ -207,11 +207,11 @@ SekigaeApp.registerPlugin({
     id: "schedule",
     name: "席替えの予約",
     version: "1.2",
-    description: "次の席替え日を決めておくと、その日に、知らせます（起動した時と、開いたままの時）。くりかえしも選べます。",
+    description: "次の席替え日を決めておくと、その日に知らせます（起動した時と開いたままの時）。くりかえしも選べます。",
     backupKeys: [SCHED_KEY],
     searchWords: "予約 次の席替え 日付 知らせる 通知 お知らせ くりかえし 毎週 毎月 カレンダー 予定",
     mount(app) {
-        app.insertInto("guide-faq", "<li data-plugin=\"schedule\"><strong>席替えの日を、忘れないようにしたい</strong>：設定の「席替えのルール」にある「席替えの予約」で、次の席替え日を決めておくと、その日に起動した時に知らせます。毎週や毎月のくりかえしも選べます。</li>");
+        app.insertInto("guide-faq", "<li data-plugin=\"schedule\"><strong>席替えの日を忘れないようにしたい</strong>：設定の「席替えのルール」にある「席替えの予約」で、次の席替え日を決めておくと、その日に起動した時に知らせます。毎週や毎月のくりかえしも選べます。</li>");
         const st = document.createElement("style");
         st.id = "scheduleStyle";
         st.textContent = SCHED_CSS;
@@ -227,7 +227,7 @@ SekigaeApp.registerPlugin({
             '<button type="button" class="btn-secondary" id="btnSchedClear" onclick="schedClear()" style="margin-top: 8px;">予約を消す</button>' +
             '</div>');
         const slot = $id("schedInfoSlot");
-        if (slot && typeof makeInfoTip === "function") slot.appendChild(makeInfoTip("次の席替えの日を決めておくと、その日か、すぎた後に、このアプリを開いた時に、画面の上で知らせます。開いたままの時も、日付が変わった時や、画面に戻ってきた時に知らせます。あしたの分も、前の日に知らせます。知らせは、1日に1回だけです。席替えをすると、くりかえしの設定に合わせて、次の日付に進みます。"));
+        if (slot && typeof makeInfoTip === "function") slot.appendChild(makeInfoTip("次の席替えの日を決めておくと、その日か、すぎた後にこのアプリを開いた時に、画面の上で知らせます。開いたままの時も日付が変わった時や、画面に戻ってきた時に知らせます。あしたの分も前の日に知らせます。知らせは、1日に1回だけです。席替えをするとくりかえしの設定に合わせて、次の日付に進みます。"));
         schedRefreshUi();
         document.addEventListener("sekigae:shuffle-done", schedOnShuffleDone);
     },

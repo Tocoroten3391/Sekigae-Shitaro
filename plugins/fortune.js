@@ -18,11 +18,11 @@ const FORTUNE_COLORS = [
     { n: "ピンク", c: "#ec4899" }, { n: "しろ", c: "#f8fafc" }, { n: "はいいろ", c: "#94a3b8" }, { n: "ちゃいろ", c: "#a16207" }
 ];
 const FORTUNE_WORDS = {
-    5: ["今日は、なにをやってもうまくいく日です。思いきって手をあげましょう。", "すてきな出会いがある日です。となりの人に、声をかけてみましょう。", "ひらめきが冴える日です。気づいたことを、ノートにメモしましょう。", "あなたの笑顔が、まわりを明るくします。"],
-    4: ["いい流れの日です。いつもより、少しだけがんばってみましょう。", "友だちとの話が、はずみそうです。", "小さな「ありがとう」が、運を呼びます。", "授業で、いい発見がありそうです。"],
-    3: ["普通が一番の日です。いつものペースで進みましょう。", "ていねいな字で書くと、運が上がります。", "休み時間は、外の空気をすいましょう。", "落ち着いて、一つずつ進めれば大丈夫です。"],
-    2: ["ゆっくり進む日です。深呼吸をして、始めましょう。", "忘れ物に気を付けると、いい日になります。", "わからないことは、早めに聞きましょう。", "のんびりした気持ちが、運を連れてきます。"],
-    1: ["あしたにつながる、充電の日です。ゆっくり過ごしましょう。", "ラッキーアイテムを持てば、運が戻ってきます。", "今日の小さながんばりが、あした大きく実ります。", "お水をたくさん飲んで、元気にいきましょう。"]
+    5: ["今日はなにをやってもうまくいく日です。思いきって手をあげましょう。", "すてきな出会いがある日です。となりの人に声をかけてみましょう。", "ひらめきが冴える日です。気づいたことをノートにメモしましょう。", "あなたの笑顔がまわりを明るくします。"],
+    4: ["いい流れの日です。いつもより、少しだけがんばってみましょう。", "友だちとの話がはずみそうです。", "小さな「ありがとう」が、運を呼びます。", "授業でいい発見がありそうです。"],
+    3: ["普通が一番の日です。いつものペースで進みましょう。", "ていねいな字で書くと運が上がります。", "休み時間は外の空気をすいましょう。", "落ち着いて、一つずつ進めれば大丈夫です。"],
+    2: ["ゆっくり進む日です。深呼吸をして、始めましょう。", "忘れ物に気を付けるといい日になります。", "わからないことは早めに聞きましょう。", "のんびりした気持ちが運を連れてきます。"],
+    1: ["あしたにつながる、充電の日です。ゆっくり過ごしましょう。", "ラッキーアイテムを持てば、運が戻ってきます。", "今日の小さながんばりが、あした大きく実ります。", "お水をたくさん飲んで元気にいきましょう。"]
 };
 const FORTUNE_WEIGHTS = [[1, 10], [2, 20], [3, 35], [4, 23], [5, 12]];
 
@@ -109,7 +109,7 @@ let fortuneTimer = null;
 function fortuneModalOpen() { const o = $id("fortuneModalOverlay"); return !!o && o.style.display !== "none"; }
 function openFortuneModal() {
     if (typeof closePopMenus === "function") closePopMenus();
-    if (!fortuneList().length) { showToast("座席表に、生徒がいません。名簿を入れて、席替えをしてください。", "error"); return; }
+    if (!fortuneList().length) { showToast("座席表に生徒がいません。名簿を入れて、席替えをしてください。", "error"); return; }
     $id("fortuneBadgeToggle").checked = fortuneBadgeOn();
     $id("fortuneModalOverlay").style.display = "flex";
     fortuneStartReading();
@@ -140,7 +140,7 @@ function renderFortuneResult() {
     const teacher = fortuneFor("先生", fortuneToday());
     $id("fortuneBest").innerHTML = `<div class="fortune-best-title">🌟 今日のベスト席（${fortuneStarText(best)}）</div>` +
         `<div>${tops.slice(0, 4).map(x => `<b>${fortuneEsc(x.label)}</b> ${fortuneEsc(x.name)}`).join("　")}${tops.length > 4 ? "　ほか" + (tops.length - 4) + "人" : ""}</div>` +
-        `<div class="fortune-teacher">先生のラッキーアイテムは「${fortuneEsc(teacher.item)}」、ラッキーカラーは「${fortuneEsc(teacher.color.n)}」です。</div>`;
+        `<div class="fortune-teacher">先生のラッキーアイテムは「${fortuneEsc(teacher.item)}」、ラッキーカラーは「${fortuneEsc(teacher.color.n)}」です</div>`;
     const rows = list.slice().sort((a, b) => b.f.stars - a.f.stars || a.idx - b.idx);
     $id("fortuneRows").innerHTML = rows.map((x, i) =>
         `<div class="fortune-row" style="animation-delay: ${Math.min(i, 30) * 45}ms">` +
@@ -163,7 +163,7 @@ const FORTUNE_HTML = `
         </div>
         <div class="switch-container" style="margin-top: 10px;">
             <label class="switch"><input type="checkbox" id="fortuneBadgeToggle" onchange="onFortuneBadgeToggle()"><span class="slider"></span></label>
-            <span class="switch-label">座席表に、星の数を出す<span data-ftip="占いの結果は、今日の日付と、生徒と、席から決まります。同じ日の同じ席なら、何度見ても同じ結果です。席替えをすると、結果も変わります。占いは、遊びです。"></span></span>
+            <span class="switch-label">座席表に星の数を出す<span data-ftip="占いの結果は今日の日付と生徒と席から決まります。同じ日の同じ席なら、何度見ても同じ結果です。席替えをすると結果も変わります。占いは遊びです。"></span></span>
         </div>
         <div class="modal-btn-row">
             <button id="fortuneAgainBtn" onclick="fortuneStartReading()" class="btn-secondary">🔮 もう一度、占う</button>
@@ -177,7 +177,7 @@ SekigaeApp.registerPlugin({
     id: "fortune",
     name: "席替え占い",
     version: "1.0",
-    description: "席替えの後に、生徒ごとの「今日の運勢」を出します。星の数、ラッキーアイテム、ラッキーカラー、ひとことが出ます。座席表に星を出すこともできます。",
+    description: "席替えの後に生徒ごとの「今日の運勢」を出します。星の数、ラッキーアイテム、ラッキーカラー、ひとことが出ます。座席表に星を出すこともできます。",
     backupKeys: [FORTUNE_BADGE_KEY],
     searchWords: "占い 運勢 星 ラッキー おみくじ 席替え占い",
     stubs: [],
@@ -188,7 +188,7 @@ SekigaeApp.registerPlugin({
         });
         const more = $id("moreMenu");
         if (more) more.insertAdjacentHTML("beforeend", '<button type="button" onclick="openFortuneModal()" class="pop-item pop-item-gray" id="btnFortune">席替え占い</button>');
-        app.insertInto("guide-faq", "<li><strong>席替えの後に盛り上がりたい</strong>：「他の操作」の「席替え占い」を押すと、生徒ごとの今日の運勢が出ます。座席表に星の数を出すこともできます。占いは、遊びです。</li>");
+        app.insertInto("guide-faq", "<li><strong>席替えの後に盛り上がりたい</strong>：「他の操作」の「席替え占い」を押すと生徒ごとの今日の運勢が出ます。座席表に星の数を出すこともできます。占いは遊びです。</li>");
     },
     ready() { fortuneDecorate(); },
     afterRender() { fortuneDecorate(); }

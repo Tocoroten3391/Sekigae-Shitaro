@@ -23,17 +23,17 @@ function toggleYaochoShowFixed() {
     showToast(yaochoShowFixed ? "八百長モード中も指定席を表示します。次の席替えから反映されます。" : "八百長モード中は指定席の表示を行いません。", "success");
 }
 function saveYaochoResult() {
-    if (!currentStudents || currentStudents.length === 0) { showToast("座席データがありません。", "error"); return; }
+    if (!currentStudents || currentStudents.length === 0) { showToast("座席データがありません", "error"); return; }
     yaochoRiggedResult = JSON.parse(JSON.stringify(currentStudents));
     localStorage.setItem("yaocho_rigged_result", JSON.stringify(yaochoRiggedResult));
     updateYaochoStatusText();
-    showToast("今の配置を仕込み結果として保存しました。", "success");
+    showToast("今の配置を仕込み結果として保存しました", "success");
 }
 function clearYaochoResult() {
     yaochoRiggedResult = null;
     localStorage.removeItem("yaocho_rigged_result");
     updateYaochoStatusText();
-    showToast("仕込み結果を削除しました。", "success");
+    showToast("仕込み結果を削除しました", "success");
 }
 function updateYaochoStatusText() {
     const el = $id("yaochoStatusText");

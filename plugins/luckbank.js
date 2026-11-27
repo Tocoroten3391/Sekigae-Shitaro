@@ -113,7 +113,7 @@ function luckRecord() {
             if (luckZoneOf(idx, cols, seats.length) === "b") unmet++; else helped++;
         });
         if (helped > 0 || unmet > 0) {
-            showToast("運の貯金：後ろが続いていた" + helped + "人は、後ろの席を避けました。" + (unmet ? unmet + "人は、席の都合で後ろのままです。" : ""), unmet ? "info" : "success");
+            showToast("運の貯金：後ろが続いていた" + helped + "人は後ろの席を避けました。" + (unmet ? unmet + "人は席の都合で後ろのままです。" : ""), unmet ? "info" : "success");
         }
     }
     const z = {};
@@ -157,13 +157,13 @@ function luckSaveSettings() {
 function renderLuckModal() {
     const entries = luckEntries();
     const cls = luckClassName();
-    $id("luckInfo").textContent = (cls ? "クラス：" + cls + "　" : "") + "記録：" + entries.length + "回分" + (entries.length > luckWindow() ? "（数えるのは、直近の" + luckWindow() + "回分）" : "");
+    $id("luckInfo").textContent = (cls ? "クラス：" + cls + "　" : "") + "記録：" + entries.length + "回分" + (entries.length > luckWindow() ? "（数えるのは直近の" + luckWindow() + "回分）" : "");
     const bal = luckBalances();
     const keys = Object.keys(bal).sort((a, b) => bal[b].bal - bal[a].bal || a.localeCompare(b, "ja"));
     const th = luckThreshold();
     const body = $id("luckList");
     if (!keys.length) {
-        body.innerHTML = '<p class="config-note" data-keep="1">まだ記録がありません。席替えをするたびに、自動で記録します。</p>';
+        body.innerHTML = '<p class="config-note" data-keep="1">まだ記録がありません。席替えをするたびに自動で記録します。</p>';
     } else {
         body.innerHTML = keys.map(k => {
             const o = bal[k];
@@ -181,23 +181,23 @@ function luckUndoLast() {
     list.shift();
     luckSaveEntries(list);
     renderLuckModal();
-    showToast("最後の記録を、取り消しました。", "success");
+    showToast("最後の記録を取り消しました", "success");
 }
 function luckClearAll() {
-    if (!confirm("このクラスの、運の貯金の記録を、全て消します。よろしいですか？")) return;
+    if (!confirm("このクラスの、運の貯金の記録を全て消します。よろしいですか？")) return;
     luckSaveEntries([]);
     renderLuckModal();
-    showToast("運の貯金の記録を、全て消しました。", "success");
+    showToast("運の貯金の記録を全て消しました", "success");
 }
 
 const LUCK_HTML = `
 <div id="luckModalOverlay" class="modal-overlay" style="display: none;">
     <div class="modal-content" style="max-width: 560px; width: 95%;">
         <h4 style="color: #16a34a;">🍀 運の貯金</h4>
-        <p class="config-note" data-keep="1" style="margin: -6px 0 10px;">後ろの席が続いた生徒には、運が貯まっていきます。席替えで、その生徒を後ろの席にしにくくします。<span data-lbtip="座席表を、前（黒板側）・中・後ろの3つに分けて、席替えのたびに、誰がどこに座ったかを覚えます。貯金は、後ろに座った回数から、前に座った回数を引いた数です。貯金がしきい値以上の生徒は、後ろの席を避け、さらに2回分多い生徒は、前の席を優先します。前が続いた生徒は、前の席を避けます。名簿で席を決めている生徒は、動かしません。他の条件（離す・近くに置く・前と同じ席を避ける）が、いつも先です。"></span></p>
+        <p class="config-note" data-keep="1" style="margin: -6px 0 10px;">後ろの席が続いた生徒には、運が貯まっていきます。席替えでその生徒を後ろの席にしにくくします。<span data-lbtip="座席表を前（黒板側）・中・後ろの3つに分けて、席替えのたびに誰がどこに座ったかを覚えます。貯金は後ろに座った回数から、前に座った回数を引いた数です。貯金がしきい値以上の生徒は、後ろの席を避け、さらに2回分多い生徒は、前の席を優先します。前が続いた生徒は前の席を避けます。名簿で席を決めている生徒は、動かしません。他の条件（離す・近くに置く・前と同じ席を避ける）が、いつも先です。"></span></p>
         <div class="switch-container">
             <label class="switch"><input type="checkbox" id="luckUseToggle" onchange="luckSaveSettings()"><span class="slider"></span></label>
-            <span class="switch-label">席替えで、運の貯金を使う</span>
+            <span class="switch-label">席替えで運の貯金を使う</span>
         </div>
         <div class="layout-grid-fields" style="margin: 10px 0;">
             <div><label for="luckWindowSelect">数える回数</label>
@@ -220,7 +220,7 @@ SekigaeApp.registerPlugin({
     id: "luckbank",
     name: "運の貯金",
     version: "1.0",
-    description: "前の席・後ろの席に座った回数を、生徒ごとに覚えます。後ろの席が続いた生徒は、次の席替えで、後ろの席になりにくくなります。",
+    description: "前の席・後ろの席に座った回数を、生徒ごとに覚えます。後ろの席が続いた生徒は、次の席替えで後ろの席になりにくくなります。",
     backupKeys: [LUCK_KEY, LUCK_USE_KEY, LUCK_WINDOW_KEY, LUCK_TH_KEY],
     searchWords: "運 貯金 運の貯金 公平 後ろの席 前の席 ふこうへい 不公平",
     stubs: ["luckActive", "luckPenalty"],
@@ -230,7 +230,7 @@ SekigaeApp.registerPlugin({
             if (typeof makeInfoTip === "function") el.replaceWith(makeInfoTip(el.dataset.lbtip)); else el.remove();
         });
         app.insertInto("settings-rules", '<button type="button" onclick="openLuckModal()" class="btn-secondary" id="btnLuckBank" style="margin-top: 10px;">運の貯金</button>');
-        app.insertInto("guide-faq", "<li><strong>後ろの席が続く生徒がいる</strong>：設定の「運の貯金」を開いて、「席替えで、運の貯金を使う」をオンにします。席替えのたびに前・中・後ろを記録して、後ろの席が続いた生徒を、次は後ろにしにくくします。</li>");
+        app.insertInto("guide-faq", "<li><strong>後ろの席が続く生徒がいる</strong>：設定の「運の貯金」を開いて、「席替えで運の貯金を使う」をオンにします。席替えのたびに前・中・後ろを記録して、後ろの席が続いた生徒を、次は後ろにしにくくします。</li>");
     },
     afterShuffle() { luckRecord(); }
 });

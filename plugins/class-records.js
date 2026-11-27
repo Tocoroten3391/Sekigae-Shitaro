@@ -37,9 +37,9 @@ function flushActiveClassRecords() {
 }
 
 function describeActiveClassRecords() {
-    if (activeClassId === TRIAL_CLASS_ID) return "今見ているのは、サンプルのクラスの記録です。サンプルを終わると、消えます。";
-    if (activeClassId) return `今見ているのは、クラス「${activeClassId}」の記録です。クラスを切り替えると、記録も切り替わります。`;
-    return "今見ているのは、クラスを選んでいない時の記録です。クラスを選ぶと、そのクラスの記録に切り替わります。";
+    if (activeClassId === TRIAL_CLASS_ID) return "今見ているのはサンプルのクラスの記録です。サンプルを終わると消えます。";
+    if (activeClassId) return `今見ているのはクラス「${activeClassId}」の記録です。クラスを切り替えると記録も切り替わります。`;
+    return "今見ているのはクラスを選んでいない時の記録です。クラスを選ぶとそのクラスの記録に切り替わります。";
 }
 
 function updateStatsClassNote() { const n = $id("statsClassNote"); if (n) n.textContent = describeActiveClassRecords(); }
@@ -49,7 +49,7 @@ function updateClassStatusBar() {
     if (!bar || !txt) return;
     if (activeClassId === TRIAL_CLASS_ID) {
         txt.textContent = "サンプルで試し中";
-        bar.title = "サンプルのクラスで試し中です。この記録は、本物のクラスには入りません。";
+        bar.title = "サンプルのクラスで試し中です。この記録は本物のクラスには入りません。";
         if (btn) btn.hidden = false;
         bar.classList.add("is-trial");
         bar.hidden = false;
@@ -115,7 +115,7 @@ function switchRecordClass(newId) {
     activeClassId = newId;
     lsSet("active_class_id", newId);
     reloadRecordsIntoMemory();
-    if (adopted) showToast(`これまでの記録を、クラス「${newId}」の記録として引き継ぎました。`, "success");
+    if (adopted) showToast(`これまでの記録をクラス「${newId}」の記録として引き継ぎました`, "success");
     return true;
 }
 
@@ -149,7 +149,7 @@ function endTrialFromBar() {
     try { localStorage.removeItem("seat_undo_v1"); } catch (error) { /* そのまま続ける */ }
     try { localStorage.removeItem(WORK_STATE_KEY); } catch (error) { /* そのまま続ける */ }
     renderClassroom("none");
-    showToast("サンプルのクラスを終わりました。", "success");
+    showToast("サンプルのクラスを終わりました", "success");
 }
 
 // ==========================================
@@ -173,11 +173,11 @@ function readPresetsSafe() {
 function openPromoteModal() {
     if (isAppLocked()) { showLockedToast(); return; }
     if (!activeClassId || activeClassId === TRIAL_CLASS_ID) {
-        showToast("進級させるクラスを、先に選んでください。クラスは、名前を付けて「保存」すると選べます。", "error");
+        showToast("進級させるクラスを先に選んでください。クラスは名前を付けて「保存」すると選べます。", "error");
         return;
     }
     const from = $id("promoteFromText");
-    if (from) from.textContent = `今のクラス「${activeClassId}」から、新しい学年のクラスを作ります。`;
+    if (from) from.textContent = `今のクラス「${activeClassId}」から、新しい学年のクラスを作ります`;
     const inp = $id("promoteNewName");
     if (inp) inp.value = suggestNextGradeName(activeClassId);
     const ra = document.querySelector('input[name="promoteRoster"][value="reset"]');
@@ -201,7 +201,7 @@ function updatePromoteHint() {
     const name = inp.value.trim();
     let msg = "", ok = true;
     if (!name) { msg = "新しいクラスの名前を入れてください。"; ok = false; }
-    else if (name === activeClassId || readPresetsSafe()[name]) { msg = "その名前のクラスは、もうあります。別の名前にしてください。"; ok = false; }
+    else if (name === activeClassId || readPresetsSafe()[name]) { msg = "その名前のクラスはもうあります。別の名前にしてください。"; ok = false; }
     hint.textContent = msg;
     if (btn) btn.disabled = !ok;
 }
@@ -285,7 +285,7 @@ function adoptRecordsForSavedClass(name) {
     const own = hasMeaningfulRecords(store[name]);
     const fromUnsaved = activeClassId === "" || activeClassId === TRIAL_CLASS_ID;
     if (fromUnsaved && !own && hasMeaningfulRecords(snapshotMainRecords())) {
-        if (confirm(`今の記録を、クラス「${name}」の記録として引き継ぎますか？\n「キャンセル」を選ぶと、クラス「${name}」は、新しい記録から始まります。`)) {
+        if (confirm(`今の記録をクラス「${name}」の記録として引き継ぎますか？\n「キャンセル」を選ぶとクラス「${name}」は、新しい記録から始まります。`)) {
             if (activeClassId === "") store[""] = {};
             delete store[TRIAL_CLASS_ID];
             writeClassRecordStore(store);
@@ -294,7 +294,7 @@ function adoptRecordsForSavedClass(name) {
             lsSet("legacy_records_pending", "0");
             try { localStorage.removeItem("trial_return_class"); } catch (error) { /* そのまま続ける */ }
             reloadRecordsIntoMemory();
-            showToast(`今の記録を、クラス「${name}」の記録にしました。`, "success");
+            showToast(`今の記録をクラス「${name}」の記録にしました`, "success");
             return;
         }
         lsSet("legacy_records_pending", "0");

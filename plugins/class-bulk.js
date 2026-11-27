@@ -33,10 +33,10 @@ function cbList(rows) {
 function cbExportAll() {
     const presets = readPresetsSafe();
     const names = Object.keys(presets);
-    if (!names.length) { showToast("書き出せるクラスがありません。先に、クラスを保存してください。", "error"); return; }
+    if (!names.length) { showToast("書き出せるクラスがありません。先にクラスを保存してください。", "error"); return; }
     presetDialog({
         title: "全クラスを書き出す",
-        message: `保存してある ${names.length} クラスの、名簿と設定を、1つのファイルにまとめます。生徒の名前が入るので、ファイルの取りあつかいに気を付けてください。`,
+        message: `保存してある ${names.length} クラスの、名簿と設定を、1つのファイルにまとめます。生徒の名前が入るのでファイルの取りあつかいに気を付けてください。`,
         check: { label: "これまでの記録（指名・席の履歴）も、入れる", checked: true },
         buttons: [
             { label: "キャンセル", value: "cancel", cls: "btn-secondary" },
@@ -109,7 +109,7 @@ function cbCleanRecords(r) {
 function cbParse(text) {
     let d = null;
     try { d = JSON.parse(text); } catch (e) { return { error: "ファイルを読めませんでした。「全クラスを書き出す」で作ったファイルを選んでください。" }; }
-    if (!d || d.format !== CB_FORMAT || !Array.isArray(d.classes)) return { error: "このファイルは、「全クラスを書き出す」で作ったものではないようです。" };
+    if (!d || d.format !== CB_FORMAT || !Array.isArray(d.classes)) return { error: "このファイルは「全クラスを書き出す」で作ったものではないようです。" };
     const list = [];
     const seen = new Set();
     d.classes.slice(0, 200).forEach(c => {
@@ -124,19 +124,19 @@ function cbParse(text) {
             gasCache: typeof c.gasCache === "string" && c.gasCache.length < 2 * 1024 * 1024 ? c.gasCache : null
         });
     });
-    if (!list.length) return { error: "ファイルの中に、読み込めるクラスがありませんでした。" };
+    if (!list.length) return { error: "ファイルの中に読み込めるクラスがありませんでした。" };
     return { classes: list };
 }
 function cbHandleFile(file) {
     if (!file) return;
-    if (file.size > CB_MAX_BYTES) { showToast("ファイルが大きすぎて、読み込めません。", "error"); return; }
+    if (file.size > CB_MAX_BYTES) { showToast("ファイルが大きすぎて、読み込めません", "error"); return; }
     const fr = new FileReader();
     fr.onload = () => {
         const res = cbParse(String(fr.result || ""));
         if (res.error) { showToast(res.error, "error"); return; }
         cbImportDialog(res.classes);
     };
-    fr.onerror = () => showToast("ファイルを読めませんでした。", "error");
+    fr.onerror = () => showToast("ファイルを読めませんでした", "error");
     fr.readAsText(file);
 }
 function cbImportDialog(classes) {
@@ -155,7 +155,7 @@ function cbImportDialog(classes) {
     body.appendChild(cbList(rows));
     const pol = document.createElement("div");
     pol.className = "cb-policy";
-    pol.innerHTML = '<div class="cb-policy-title">同じ名前のクラスが、すでにある時</div>'
+    pol.innerHTML = '<div class="cb-policy-title">同じ名前のクラスがすでにある時</div>'
         + '<label><input type="radio" name="cbPolicy" value="rename" checked> 別の名前で追加する（お勧め）</label>'
         + '<label><input type="radio" name="cbPolicy" value="overwrite"> ファイルの内容で、上書きする</label>'
         + '<label><input type="radio" name="cbPolicy" value="skip"> 読み込まない</label>';
@@ -176,7 +176,7 @@ function cbImportDialog(classes) {
     });
 }
 function cbApplyImport(picked, policy) {
-    if (!picked.length) { showToast("読み込むクラスが選ばれていません。", "error"); return; }
+    if (!picked.length) { showToast("読み込むクラスが選ばれていません", "error"); return; }
     if (isAppLocked()) { showLockedToast(); return; }
     const presets = readPresetsSafe();
     const store = readClassRecordStore();
@@ -204,7 +204,7 @@ function cbApplyImport(picked, policy) {
     const parts = [];
     const total = added + over + renamed;
     parts.push(total + " クラスを読み込みました");
-    if (renamed) parts.push(renamed + " 件は、同じ名前があったので、別の名前で追加");
+    if (renamed) parts.push(renamed + " 件は、同じ名前があったので別の名前で追加");
     if (over) parts.push(over + " 件は上書き");
     if (skipped) parts.push(skipped + " 件は読み込まず");
     if (busy) parts.push(busy + " 件は、今開いているクラスなので、上書きせず");
@@ -216,7 +216,7 @@ function cbPromoteAll() {
     if (isAppLocked()) { showLockedToast(); return; }
     const presets = readPresetsSafe();
     const names = Object.keys(presets).filter(n => !presets[n].archived);
-    if (!names.length) { showToast("進級させられるクラスがありません。", "error"); return; }
+    if (!names.length) { showToast("進級させられるクラスがありません", "error"); return; }
     const body = document.createElement("div");
     const rows = names.map((n, i) => {
         const row = document.createElement("div");
@@ -231,8 +231,8 @@ function cbPromoteAll() {
     const opt = document.createElement("div");
     opt.className = "cb-policy";
     opt.innerHTML = '<label><input type="checkbox" id="cbPromoArchive" checked> 古いクラスは、「去年度のクラス」にする</label>'
-        + '<label><input type="checkbox" id="cbPromoRoster"> 名簿も、新しいクラスにコピーする（はずすと、名簿は空から）</label>'
-        + '<div class="cb-note">座席の数や班の設定は、コピーされます。記録（指名・席の履歴）は、古いクラスに残り、新しいクラスは、まっさらから始まります。名前の「1年」のような数字は、自動で次の学年にしています。</div>';
+        + '<label><input type="checkbox" id="cbPromoRoster"> 名簿も、新しいクラスにコピーする（はずすと名簿は空から）</label>'
+        + '<div class="cb-note">座席の数や班の設定はコピーされます。記録（指名・席の履歴）は、古いクラスに残り、新しいクラスはまっさらから始まります。名前の「1年」のような数字は自動で次の学年にしています。</div>';
     body.appendChild(opt);
     const ask = (err) => presetDialog({
         title: "まとめて進級",
@@ -245,7 +245,7 @@ function cbPromoteAll() {
     }, v => {
         if (v !== "ok") return;
         const sel = [...body.querySelectorAll(".cb-promo-pick input:checked")].map(e => parseInt(e.dataset.i, 10));
-        if (!sel.length) { showToast("進級させるクラスが選ばれていません。", "error"); return; }
+        if (!sel.length) { showToast("進級させるクラスが選ばれていません", "error"); return; }
         const used = new Set(Object.keys(readPresetsSafe()));
         const pairs = [];
         for (const i of sel) {
@@ -253,7 +253,7 @@ function cbPromoteAll() {
             let err = "";
             if (!nn) err = "「" + names[i] + "」の、新しいクラス名を入れてください。";
             else if (nn === TRIAL_CLASS_ID || nn === "__proto__") err = "「" + nn + "」は、名前に使えません。";
-            else if (used.has(nn)) err = "「" + nn + "」というクラスは、もうあります。別の名前にしてください。";
+            else if (used.has(nn)) err = "「" + nn + "」というクラスはもうあります。別の名前にしてください。";
             if (err) { ask(err); return; }
             used.add(nn);
             pairs.push([names[i], nn]);
@@ -276,7 +276,7 @@ function cbApplyPromote(pairs, archiveOld, copyRoster) {
     });
     savePresetsObject(presets);
     updatePresetRadioButtons();
-    showToast(pairs.length + " クラスを、進級させました。" + (archiveOld ? "古いクラスは、「去年度のクラス」に移しています。" : ""), "success");
+    showToast(pairs.length + " クラスを、進級させました。" + (archiveOld ? "古いクラスは「去年度のクラス」に移しています。" : ""), "success");
 }
 
 const CB_CSS = `

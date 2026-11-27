@@ -70,7 +70,7 @@ function exportBackup() {
     lsSet("backup_snooze_until", "0");
     hideBackupReminder();
     updateBackupStatusText();
-    showToast(`設定・記録${count}件をバックアップしました。`, "success");
+    showToast(`設定・記録${count}件をバックアップしました`, "success");
 }
 
 // ==========================================
@@ -190,7 +190,7 @@ async function runAutoBackup(interactive, force) {
         lsSet("backup_snooze_until", "0");
         hideBackupReminder();
         updateBackupStatusText();
-        if (!isAppLocked()) showToast("自動バックアップを保存しました。", "success");
+        if (!isAppLocked()) showToast("自動バックアップを保存しました", "success");
         return true;
     } catch (error) {
         if (interactive) showToast("自動バックアップを保存できませんでした。保存先のフォルダを選び直してください。", "error");
@@ -205,7 +205,7 @@ function checkAutoBackup() {
 }
 
 async function chooseAutoBackupFolder() {
-    if (!autoBackupSupported()) { showToast("このブラウザでは、フォルダへの自動保存は使えません。", "error"); return; }
+    if (!autoBackupSupported()) { showToast("このブラウザではフォルダへの自動保存は使えません", "error"); return; }
     let handle;
     try { handle = await window.showDirectoryPicker({ mode: "readwrite", id: "seat-shuffler-backup" }); }
     catch (error) { return; }
@@ -222,14 +222,14 @@ async function onAutoBackupIntervalChange() {
     const v = parseInt(sel.value, 10);
     if (!AUTO_BACKUP_CHOICES.includes(v)) return;
     lsSet("auto_backup_days", String(v));
-    if (v > 0 && !(await loadAutoBackupHandle())) showToast("保存先のフォルダを選んでください。", "success");
+    if (v > 0 && !(await loadAutoBackupHandle())) showToast("保存先のフォルダを選んでください", "success");
     else if (v > 0) await runAutoBackup(true, false);
-    else showToast("自動バックアップを止めました。", "success");
+    else showToast("自動バックアップを止めました", "success");
     updateBackupStatusText();
 }
 
 async function autoBackupNowFromModal() {
-    if (!(await loadAutoBackupHandle())) { showToast("先に、保存先のフォルダを選んでください。", "error"); return; }
+    if (!(await loadAutoBackupHandle())) { showToast("先に保存先のフォルダを選んでください", "error"); return; }
     await runAutoBackup(true, true);
     updateBackupStatusText();
 }
@@ -238,7 +238,7 @@ async function releaseAutoBackupFolder() {
     await clearAutoBackupHandle();
     lsSet("auto_backup_days", "0");
     updateBackupStatusText();
-    showToast("保存先を解除し、自動バックアップを止めました。", "success");
+    showToast("保存先を解除し、自動バックアップを止めました", "success");
 }
 
 async function updateAutoBackupUi() {
@@ -311,9 +311,9 @@ function formatBackupDate(ms) {
 // バックアップが、いまどういう状態か。ok、warn、bad、none のどれか。
 
 function getBackupHealth() {
-    if (!hasBackupWorthyData()) return { level: "none", text: "記録がまだないので、バックアップは要りません。" };
+    if (!hasBackupWorthyData()) return { level: "none", text: "記録がまだないのでバックアップは要りません。" };
     const last = getBackupLastAt();
-    if (!last) return { level: "bad", text: "バックアップを、まだ取っていません。" };
+    if (!last) return { level: "bad", text: "バックアップをまだ取っていません。" };
     const n = Math.max(0, Math.floor((Date.now() - last) / DAY_MS));
     const when = n <= 0 ? "今日" : n + "日前";
     const autoDays = getAutoBackupDays(), remind = getBackupRemindDays();
@@ -340,10 +340,10 @@ function renderBackupHealth() {
 async function checkAutoBackupFolder() {
     const out = $id("autoBackupCheckResult");
     const show = (level, text) => { if (out) { out.textContent = text; out.className = "backup-health is-" + level; out.hidden = false; } };
-    if (!autoBackupSupported()) { show("bad", "このブラウザでは、フォルダへの自動保存は使えません。"); return; }
+    if (!autoBackupSupported()) { show("bad", "このブラウザではフォルダへの自動保存は使えません。"); return; }
     show("none", "確認しています。");
     const handle = await loadAutoBackupHandle();
-    if (!handle) { show("bad", "保存先のフォルダが、まだ決まっていません。"); return; }
+    if (!handle) { show("bad", "保存先のフォルダがまだ決まっていません。"); return; }
     if (!(await autoBackupPermission(handle, true))) { show("bad", "フォルダに書き込む許可がありません。「今すぐ自動保存する」を押して、許可してください。"); return; }
     try {
         const files = [];
@@ -353,7 +353,7 @@ async function checkAutoBackupFolder() {
                 files.push({ name: name, at: f.lastModified, file: f });
             }
         }
-        if (files.length === 0) { show("warn", "保存先のフォルダに、自動バックアップのファイルがありません。「今すぐ自動保存する」を押してください。"); return; }
+        if (files.length === 0) { show("warn", "保存先のフォルダに自動バックアップのファイルがありません。「今すぐ自動保存する」を押してください。"); return; }
         files.sort((a, b) => b.at - a.at);
         const d = new Date(files[0].at);
         const stamp = `${formatBackupDate(files[0].at)} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
@@ -362,8 +362,8 @@ async function checkAutoBackupFolder() {
             const data = JSON.parse(await files[0].file.text());
             if (data && data.app === "seat-shuffler-backup" && data.items && typeof data.items === "object") items = Object.keys(data.items).length;
         } catch (error) { items = -1; }
-        if (items < 0) { show("bad", `一番新しいファイルが、読めませんでした。「今すぐ自動保存する」で、保存し直してください。`); return; }
-        show("ok", `確認しました。自動バックアップのファイルが${files.length}個あります。一番新しいのは${stamp}のもので、中身も正しく読めました。設定・記録${items}件が入っています。`);
+        if (items < 0) { show("bad", `一番新しいファイルが読めませんでした。「今すぐ自動保存する」で、保存し直してください。`); return; }
+        show("ok", `確認しました。自動バックアップのファイルが${files.length}個あります。一番新しいのは${stamp}のもので中身も正しく読めました。設定・記録${items}件が入っています。`);
     } catch (error) {
         show("bad", "保存先のフォルダを読めませんでした。保存先を選び直してください。");
     }
@@ -417,11 +417,11 @@ function showBackupReminder(reason) {
     if (!bar || !msg || isAppLocked() || (!isAuto && getBackupRemindDays() <= 0) || !hasBackupWorthyData()) return;
     if (isAuto && !canShowBackupReminderNow()) return;
     const last = getBackupLastAt();
-    if (reason === "autoPermission") msg.textContent = "自動バックアップの保存先に、書き込む許可が必要です。ボタンを押すと、今すぐ保存します。";
+    if (reason === "autoPermission") msg.textContent = "自動バックアップの保存先に、書き込む許可が必要です。ボタンを押すと今すぐ保存します。";
     else if (reason === "autoFail") msg.textContent = "自動バックアップを保存できませんでした。保存先のフォルダを選び直してください。";
     else if (reason === "archive") msg.textContent = "学期の記録を保存しました。念のため、バックアップも取っておきませんか。";
-    else if (last) msg.textContent = `前回のバックアップから${Math.floor((Date.now() - last) / DAY_MS)}日たちました。記録を守るために、ファイルに書き出しておきませんか。`;
-    else msg.textContent = "バックアップをまだ取っていません。記録は、このブラウザの中にだけ保存されています。ファイルに書き出しておくと安心です。";
+    else if (last) msg.textContent = `前回のバックアップから${Math.floor((Date.now() - last) / DAY_MS)}日たちました。記録を守るためにファイルに書き出しておきませんか。`;
+    else msg.textContent = "バックアップをまだ取っていません。記録はこのブラウザの中にだけ保存されています。ファイルに書き出しておくと安心です。";
     bar.dataset.reason = reason || "";
     if (btn) btn.textContent = reason === "autoPermission" ? "💾 今すぐ保存する" : (reason === "autoFail" ? "📁 保存先を選び直す" : "💾 バックアップする");
     bar.hidden = false;
@@ -444,7 +444,7 @@ function backupReminderLater() { snoozeBackupReminder(BACKUP_SNOOZE_LATER_DAYS);
 function backupReminderStop() {
     lsSet("backup_remind_days", "0");
     hideBackupReminder();
-    showToast("お知らせを止めました。バックアップの画面で、いつでも戻せます。", "success");
+    showToast("お知らせを止めました。バックアップの画面でいつでも戻せます。", "success");
 }
 
 function checkBackupReminder() {
@@ -537,8 +537,8 @@ function buildRestorePreviewHtml(items, data, when, n) {
     }
     let days = 0;
     try { const d = new Date(data.createdAt); if (!isNaN(d)) days = Math.floor((Date.now() - d.getTime()) / DAY_MS); } catch (error) { /* 日数は出さない */ }
-    if (days >= 30) notes.push(`<li class="rp-warn">このバックアップは、保存してから${days}日たっています。今の端末のほうが新しいことはありませんか。</li>`);
-    if (loss.length && !notes.some(x => x.includes("rp-warn"))) notes.push(`<li class="rp-warn">減る項目があります。復元の前に、今の内容を書き出しておくと安心です。</li>`);
+    if (days >= 30) notes.push(`<li class="rp-warn">このバックアップは保存してから${days}日たっています。今の端末のほうが新しいことはありませんか。</li>`);
+    if (loss.length && !notes.some(x => x.includes("rp-warn"))) notes.push(`<li class="rp-warn">減る項目があります。復元の前に今の内容を書き出しておくと安心です。</li>`);
     pendingRestoreLoss = loss;
     const ver = data.appVersion ? `　バージョン ${escapeStatsHtml(String(data.appVersion))}` : "";
     return `<strong>${when ? escapeStatsHtml(when) + " のバックアップ" : "バックアップ"}　${n}件${ver}</strong>`
@@ -546,7 +546,7 @@ function buildRestorePreviewHtml(items, data, when, n) {
         + (notes.length ? `<ul class="rp-notes">${notes.join("")}</ul>` : "")
         + `<button type="button" class="btn-secondary btn-compact" onclick="exportBackup()" style="width: auto; margin-top: 6px; padding: 6px 12px; font-size: 12px;">📤 復元の前に、今の内容を書き出す</button>`
         + buildRestoreGroupsHtml(items)
-        + `<br><span style="color:#dc2626;">復元すると、選んだ内容は、このバックアップの内容で上書きされます。</span>`;
+        + `<br><span style="color:#dc2626;">復元すると選んだ内容はこのバックアップの内容で上書きされます</span>`;
 }
 
 function onBackupFileChosen(input) {
@@ -562,7 +562,7 @@ function onBackupFileChosen(input) {
         let data = null;
         try { data = JSON.parse(String(reader.result)); } catch (error) { data = null; }
         if (!data || data.app !== "seat-shuffler-backup" || !data.items || typeof data.items !== "object") {
-            if (info) info.textContent = "このファイルは、席替えし太郎のバックアップではないようです。";
+            if (info) info.textContent = "このファイルは席替えし太郎のバックアップではないようです";
             return;
         }
         const items = {};
@@ -572,14 +572,14 @@ function onBackupFileChosen(input) {
             if (isBackupKey(k) || (k === "saved_gas_url" && data.includesGasUrl === true)) items[k] = v;
         });
         const n = Object.keys(items).length;
-        if (n === 0) { if (info) info.textContent = "復元できる設定・記録が入っていませんでした。"; return; }
+        if (n === 0) { if (info) info.textContent = "復元できる設定・記録が入っていませんでした"; return; }
         pendingBackup = items;
         let when = "";
         try { const d = new Date(data.createdAt); if (!isNaN(d)) when = `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; } catch (error) { /* 日時は表示しない */ }
         if (info) info.innerHTML = buildRestorePreviewHtml(items, data, when, n);
         if (apply) apply.style.display = "";
     };
-    reader.onerror = () => { if (info) info.textContent = "ファイルを読み込めませんでした。"; };
+    reader.onerror = () => { if (info) info.textContent = "ファイルを読み込めませんでした"; };
     reader.readAsText(file);
 }
 
@@ -587,12 +587,12 @@ function applyBackupImport() {
     if (isAppLocked()) { showLockedToast(); return; }
     if (!pendingBackup) return;
     const sel = selectedRestoreGroups();   // null なら、全て
-    if (sel && sel.size === 0) { showToast("復元する内容を、1つ以上、選んでください。", "error"); return; }
+    if (sel && sel.size === 0) { showToast("復元する内容を、1つ以上、選んでください", "error"); return; }
     const items = {};
     Object.keys(pendingBackup).forEach(k => { if (!sel || sel.has(restoreGroupOf(k))) items[k] = pendingBackup[k]; });
     const includesClasses = !sel || sel.has("classes");
     const loss = pendingRestoreLoss.filter(x => !sel || sel.has(x.g)).map(x => x.t);
-    if (loss.length && !confirm(`復元すると、次のものが減ったり、消えたりします。\n・${loss.join("\n・")}\nよろしいですか？`)) return;
+    if (loss.length && !confirm(`復元すると次のものが減ったり、消えたりします。\n・${loss.join("\n・")}\nよろしいですか？`)) return;
     let saved = 0;
     if (includesClasses) {
         if (items.class_records_v1 !== undefined) {

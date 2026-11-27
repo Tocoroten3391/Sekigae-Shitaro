@@ -200,10 +200,10 @@ function fairRender() {
     const rep = fairReport();
     const cls = typeof getSelectedPresetName === "function" ? getSelectedPresetName() : "";
     const allN = (typeof seatTimeline !== "undefined" && Array.isArray(seatTimeline)) ? seatTimeline.length : 0;
-    $id("fairInfo").textContent = (cls ? "クラス：" + cls + "　" : "") + "席替えの記録：" + allN + "回分" + (rep.entries.length < allN ? "（数えるのは、直近の" + rep.entries.length + "回分）" : "");
+    $id("fairInfo").textContent = (cls ? "クラス：" + cls + "　" : "") + "席替えの記録：" + allN + "回分" + (rep.entries.length < allN ? "（数えるのは直近の" + rep.entries.length + "回分）" : "");
     $id("fairWinNote").style.display = rep.s.win === "none" ? "" : "none";
     $id("fairBody").innerHTML = allN === 0
-        ? '<p class="config-note" data-keep="1">まだ記録がありません。席替えをするたびに、座席表が記録されて、ここで集計できます。</p>'
+        ? '<p class="config-note" data-keep="1">まだ記録がありません。席替えをするたびに座席表が記録されて、ここで集計できます。</p>'
         : '<div class="fair-scroll">' + fairTableHtml(rep, false) + "</div>";
     $id("fairCopyBtn").disabled = $id("fairPrintBtn").disabled = allN === 0;
 }
@@ -212,7 +212,7 @@ function fairCopy() {
     const lines = [["名前", "参加"].concat(rep.zones.map(z => z.name), ["偏り"]).join("\t")];
     rep.rows.forEach(x => lines.push([(x.r.no ? x.r.no + "番 " : "") + x.r.name, x.c.n].concat(rep.zones.map(z => x.c[z.id]), [fairTag(x.d).t]).join("\t")));
     const text = lines.join("\n");
-    const done = () => showToast("表をコピーしました。スプレッドシートに、そのまま貼れます。", "success");
+    const done = () => showToast("表をコピーしました。スプレッドシートにそのまま貼れます。", "success");
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => fairCopyFallback(text, done));
     else fairCopyFallback(text, done);
 }
@@ -220,7 +220,7 @@ function fairCopyFallback(text, done) {
     const ta = document.createElement("textarea");
     ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
     document.body.appendChild(ta); ta.select();
-    try { document.execCommand("copy"); done(); } catch (e) { showToast("コピーできませんでした。", "error"); }
+    try { document.execCommand("copy"); done(); } catch (e) { showToast("コピーできませんでした", "error"); }
     ta.remove();
 }
 // 印刷：見えない枠の中に、報告用の表を作って、印刷します
@@ -233,15 +233,15 @@ function fairPrint() {
         'body{font-family:"Hiragino Sans","Noto Sans JP",sans-serif;color:#111;margin:18mm 14mm;font-size:12px}h1{font-size:18px;margin:0 0 4px}p{margin:2px 0 10px;color:#444}' +
         'table{border-collapse:collapse;width:100%}th,td{border:1px solid #888;padding:4px 6px;text-align:center}th{background:#eee}.fair-left{text-align:left}.fair-hot{background:#ffe3c2}.fair-cold{background:#d9ecff}.fair-mean td{background:#f5f5f5;font-weight:bold}.fair-tag{font-size:11px}' +
         '</style></head><body><h1>席の公平性レポート</h1><p>' + (cls ? fairEsc(cls) + "　" : "") + d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日　席替えの記録：" + rep.entries.length + "回分" + '</p>' +
-        '<p>席に座った回数です。薄いオレンジは平均より多い席、薄い青は平均より少ない席です。' + (rep.s.win === "none" ? "" : "窓側は、座席表の" + (rep.s.win === "left" ? "左" : "右") + "端の列です。") +
-        "「偏り」は、好まれやすい席（" + zn(rep.s.fav) + "）と、いやがられやすい席（" + zn(rep.s.bad) + "）に座った回数の差を、全体の平均と比べたものです。</p>" + fairTableHtml(rep, true) + "</body></html>";
+        '<p>席に座った回数です。薄いオレンジは平均より多い席、薄い青は平均より少ない席です。' + (rep.s.win === "none" ? "" : "窓側は座席表の" + (rep.s.win === "left" ? "左" : "右") + "端の列です。") +
+        "「偏り」は、好まれやすい席（" + zn(rep.s.fav) + "）と、いやがられやすい席（" + zn(rep.s.bad) + "）に座った回数の差を全体の平均と比べたものです。</p>" + fairTableHtml(rep, true) + "</body></html>";
     const fr = document.createElement("iframe");
     fr.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden";
     document.body.appendChild(fr);
     const doc = fr.contentWindow.document;
     doc.open(); doc.write(html); doc.close();
     setTimeout(() => {
-        try { fr.contentWindow.focus(); fr.contentWindow.print(); } catch (e) { showToast("印刷を始められませんでした。", "error"); }
+        try { fr.contentWindow.focus(); fr.contentWindow.print(); } catch (e) { showToast("印刷を始められませんでした", "error"); }
         setTimeout(() => fr.remove(), 2000);
     }, 200);
 }
@@ -271,21 +271,21 @@ const FAIR_CSS = `
 const FAIR_HTML = `
 <div id="fairModalOverlay" class="modal-overlay" style="display: none;">
     <div class="modal-content" style="max-width: 760px; width: 96%; max-height: 92vh; overflow-y: auto;">
-        <h4 style="color: #b45309;">📊 席の公平性レポート <span data-fairtip="席替えの記録から、前列・後列・窓側・廊下側・角・教卓の前に、何回座ったかを、生徒ごとに数えます。窓の位置は、座席表で、窓がある側の端の列を選びます。「好まれやすい席」が続いた人は、次の席替えで、その席を避けます。「いやがられやすい席」が続いた人は、その席を避けて、好まれやすい席になりやすくなります。名簿で席を決めている生徒は、動かしません。他の条件（離す・近くに置く・前と同じ席を避ける・運の貯金）が、いつも先です。"></span></h4>
+        <h4 style="color: #b45309;">📊 席の公平性レポート <span data-fairtip="席替えの記録から、前列・後列・窓側・廊下側・角・教卓の前に、何回座ったかを生徒ごとに数えます。窓の位置は座席表で窓がある側の端の列を選びます。「好まれやすい席」が続いた人は次の席替えでその席を避けます。「いやがられやすい席」が続いた人はその席を避けて、好まれやすい席になりやすくなります。名簿で席を決めている生徒は、動かしません。他の条件（離す・近くに置く・前と同じ席を避ける・運の貯金）が、いつも先です。"></span></h4>
         <div class="layout-grid-fields" style="margin: 6px 0 10px;">
             <div><label for="fairWinSelect">窓の位置</label>
                 <select id="fairWinSelect" onchange="fairSettingChanged()"><option value="none">指定しない</option><option value="left">座席表の左端の列</option><option value="right">座席表の右端の列</option></select></div>
             <div><label for="fairPeriodSelect">数える期間</label>
                 <select id="fairPeriodSelect" onchange="fairSettingChanged()"><option value="all">記録の全て</option><option value="10">直近10回</option><option value="5">直近5回</option></select></div>
         </div>
-        <p id="fairWinNote" class="config-note" style="margin: -4px 0 8px;">窓の位置を選ぶと、窓側と廊下側も数えます。</p>
+        <p id="fairWinNote" class="config-note" style="margin: -4px 0 8px;">窓の位置を選ぶと窓側と廊下側も数えます</p>
         <label class="input-label">好まれやすい席</label>
         <div id="fairFav" class="fair-chips"></div>
         <label class="input-label">いやがられやすい席</label>
         <div id="fairBad" class="fair-chips"></div>
         <div class="switch-container">
             <label class="switch"><input type="checkbox" id="fairUseToggle" onchange="fairSettingChanged()"><span class="slider"></span></label>
-            <span class="switch-label">席替えで、偏りを減らす</span>
+            <span class="switch-label">席替えで偏りを減らす</span>
         </div>
         <p id="fairInfo" class="config-note" style="margin: 10px 0 6px;"></p>
         <div id="fairBody"></div>
@@ -301,7 +301,7 @@ SekigaeApp.registerPlugin({
     id: "seat-fairness",
     name: "席の公平性レポート",
     version: "1.1",
-    description: "前列・後列・窓側・廊下側・角・教卓の前に、何回座ったかを、生徒ごとに数えて、偏りを見せます。偏りが続いた人は、次の席替えで調整できます。表のコピーと印刷ができます。席替えの履歴を使います。",
+    description: "前列・後列・窓側・廊下側・角・教卓の前に、何回座ったかを生徒ごとに数えて、偏りを見せます。偏りが続いた人は次の席替えで調整できます。表のコピーと印刷ができます。席替えの履歴を使います。",
     backupKeys: [FAIR_KEY],
     requires: ["history"],
     suggests: ["luckbank"],
@@ -314,7 +314,7 @@ SekigaeApp.registerPlugin({
         document.body.insertAdjacentHTML("beforeend", FAIR_HTML);
         document.querySelectorAll("#fairModalOverlay [data-fairtip]").forEach(el => el.replaceWith(makeInfoTip(el.dataset.fairtip)));
         app.insertInto("settings-records", '<button type="button" onclick="openFairness()" class="btn-secondary" id="btnFairness" style="margin-top: 10px;">席の公平性レポート</button>');
-        app.insertInto("guide-tools", '<li><strong>席の公平性レポート</strong>：設定の「記録・統計」の「席の公平性レポート」で、前列・後列・窓側・廊下側・角・教卓の前に、何回座ったかを、生徒ごとに見られます。「席替えで、偏りを減らす」をオンにすると、同じような席が続いた人を、次は避けます。保護者への説明には、印刷が使えます。</li>');
+        app.insertInto("guide-tools", '<li><strong>席の公平性レポート</strong>：設定の「記録・統計」の「席の公平性レポート」で、前列・後列・窓側・廊下側・角・教卓の前に、何回座ったかを生徒ごとに見られます。「席替えで偏りを減らす」をオンにすると同じような席が続いた人を、次は避けます。保護者への説明には印刷が使えます。</li>');
     }
 });
 document.addEventListener("keydown", e => {

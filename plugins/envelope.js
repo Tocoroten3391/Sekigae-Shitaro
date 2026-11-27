@@ -65,7 +65,7 @@ function envWho(p) { return (p.no ? p.no + "番 " : "") + p.name; }
 function openEnvDraw() {
     if (typeof closePopMenus === "function") closePopMenus();
     const people = envPeople();
-    if (!people.length) { showToast("座席表に、生徒がいません。名簿を入れて、席替えをしてください。", "error"); return; }
+    if (!people.length) { showToast("座席表に生徒がいません。名簿を入れて、席替えをしてください。", "error"); return; }
     envAddStyle();
     envDraw = { people: people, idx: 0, cards: [], busy: false, order: [] };
     envShowSetup();
@@ -81,10 +81,10 @@ function envShowSetup() {
     const saved = lsGet(ENV_ORDER_KEY, "number") === "random" ? "random" : "number";
     $id("envBody").innerHTML =
         '<div class="env-setup"><div class="env-big">🎁</div>' +
-        '<div style="font-size:20px;font-weight:700">' + envDraw.people.length + '人が、封筒を1つずつ選びます</div>' +
+        '<div style="font-size:20px;font-weight:700">' + envDraw.people.length + '人が封筒を1つずつ選びます</div>' +
         '<label>呼ぶ順番　<select id="envOrderSelect"><option value="number">出席番号順</option><option value="random">ランダム</option></select></label>' +
         '<button type="button" class="env-go" onclick="envStart()">はじめる</button>' +
-        '<div class="env-note">席は、席替えで先に決まっています。どの封筒を選んでも、呼ばれた人の席が出ます。席替えをやり直すと、結果も変わります。</div></div>';
+        '<div class="env-note">席は席替えで先に決まっています。どの封筒を選んでも呼ばれた人の席が出ます。席替えをやり直すと結果も変わります。</div></div>';
     $id("envOrderSelect").value = saved;
 }
 function envStart() {
@@ -172,7 +172,7 @@ function envShowEnd() {
     let map = '<div class="env-map" style="grid-template-columns: repeat(' + cols + ', 1fr); max-width: 640px;">';
     for (let i = 0; i < cols * rows; i++) map += byIdx[i] ? '<div class="env-cell">' + envEsc(byIdx[i].name.slice(0, 4)) + '</div>' : '<div class="env-cell is-none"></div>';
     map += '</div>';
-    $id("envBody").innerHTML = '<div class="env-end"><div class="env-big" style="font-size:56px">🎉</div><div style="font-size:24px;font-weight:700">みんなの席が、決まりました！</div>' + map +
+    $id("envBody").innerHTML = '<div class="env-end"><div class="env-big" style="font-size:56px">🎉</div><div style="font-size:24px;font-weight:700">みんなの席が決まりました！</div>' + map +
         '<button type="button" class="env-go" onclick="closeEnvDraw()">とじる</button></div>';
 }
 
@@ -187,7 +187,7 @@ SekigaeApp.registerPlugin({
     id: "envelope",
     name: "封筒くじ",
     version: "1.0",
-    description: "席替えの結果を、封筒を選んで開く形で、1人ずつ発表します。結果は、席替えで先に決まっていて、どの封筒を選んでも、呼ばれた人の席が出ます。",
+    description: "席替えの結果を封筒を選んで開く形で、1人ずつ発表します。結果は席替えで先に決まっていて、どの封筒を選んでも呼ばれた人の席が出ます。",
     backupKeys: [ENV_ORDER_KEY],
     searchWords: "封筒 くじ くじ引き 発表 ふうとう 抽選 盛り上がる",
     stubs: [],
@@ -196,7 +196,7 @@ SekigaeApp.registerPlugin({
         document.body.insertAdjacentHTML("beforeend", ENV_HTML);
         const more = $id("moreMenu");
         if (more) more.insertAdjacentHTML("beforeend", '<button type="button" onclick="openEnvDraw()" class="pop-item pop-item-gray" id="btnEnvDraw">封筒くじ</button>');
-        app.insertInto("guide-faq", "<li><strong>席替えの結果を、盛り上げて発表したい</strong>：席替えをした後に、「他の操作」の「封筒くじ」を押します。呼ばれた人が封筒を1つ選ぶと、その人の席が出ます。席は、席替えで先に決まっているので、どの封筒を選んでも同じです。</li>");
+        app.insertInto("guide-faq", "<li><strong>席替えの結果を盛り上げて発表したい</strong>：席替えをした後に「他の操作」の「封筒くじ」を押します。呼ばれた人が封筒を1つ選ぶと、その人の席が出ます。席は席替えで先に決まっているので、どの封筒を選んでも同じです。</li>");
     }
 });
 document.addEventListener("keydown", e => {

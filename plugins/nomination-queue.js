@@ -61,7 +61,7 @@ function nqRender() {
     if (!panel || !s.on) return;
     const list = $id("nqList"), picker = $id("nqPicker"), count = $id("nqCount");
     if (list) {
-        if (!s.list.length) list.innerHTML = '<div class="nq-empty">まだ、決めていません。下の名前を押すと、ここに入ります。</div>';
+        if (!s.list.length) list.innerHTML = '<div class="nq-empty">まだ、決めていません。下の名前を押すとここに入ります。</div>';
         else list.innerHTML = s.list.map((t, i) => {
             const st = nqStatus(t);
             const tag = st === "none" ? '<span class="nq-tag">名簿にいません</span>' : (st === "absent" ? '<span class="nq-tag">お休み</span>' : "");
@@ -76,7 +76,7 @@ function nqRender() {
     }
     if (count) {
         const n = s.list.filter(t => nqStatus(t) === "ok").length;
-        count.textContent = s.list.length ? "あと " + n + " 人（お休みの人と、名簿にいない人は、とばします）" : "";
+        count.textContent = s.list.length ? "あと " + n + " 人（お休みの人と名簿にいない人はとばします）" : "";
     }
     if (picker) {
         const students = (typeof currentStudents !== "undefined" ? currentStudents : []).filter(x => x && x.type === "STUDENT" && x.text);
@@ -99,19 +99,19 @@ function nqShuffle() {
     const a = nqState().list.slice();
     for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
     nqSetList(a);
-    if (a.length > 1) showToast("順番を、ばらばらにしました。", "success");
+    if (a.length > 1) showToast("順番をばらばらにしました", "success");
 }
 function nqClear() {
     if (!nqState().list.length) return;
     nqSetList([]);
-    showToast("順番を、からにしました。", "success");
+    showToast("順番をからにしました", "success");
 }
 function nqAddAll() {
     const s = nqState();
     const add = (typeof currentStudents !== "undefined" ? currentStudents : []).filter(x => x && x.type === "STUDENT" && x.text && !s.list.includes(x.text)).map(x => x.text);
     if (!add.length) return;
     nqSetList(s.list.concat(add));
-    showToast("全員を、名簿の順に入れました。", "success");
+    showToast("全員を名簿の順に入れました", "success");
 }
 
 function nqClick(e) {
@@ -181,13 +181,13 @@ const NQ_CSS = `
 const NQ_HTML = `
 <div class="switch-container" style="margin-top: 8px;">
     <label class="switch"><input type="checkbox" id="nqToggle" onchange="nqToggle()"><span class="slider slider-purple"></span></label>
-    <span class="switch-label" style="color: var(--lbl-purple); font-weight: bold;">指名する人を、順番に決めておく</span>
+    <span class="switch-label" style="color: var(--lbl-purple); font-weight: bold;">指名する人を順番に決めておく</span>
 </div>
 <div id="nqPanel" class="nominate-exclude-panel" hidden>
-    <div class="nominate-exclude-help">上の人から順に、指名で当たります。順番が終わると、ふだんどおりのランダムに戻ります。順番を使っていることは、指名の画面には出ません。</div>
+    <div class="nominate-exclude-help">上の人から順に指名で当たります。順番が終わるとふだんどおりのランダムに戻ります。順番を使っていることは、指名の画面には出ません。</div>
     <div id="nqList" class="nq-list"></div>
     <div id="nqCount" class="nq-count"></div>
-    <div class="nominate-exclude-help">名前を押すと、順番の最後に入ります</div>
+    <div class="nominate-exclude-help">名前を押すと順番の最後に入ります</div>
     <div id="nqPicker" class="nq-picker"></div>
     <div class="nq-tools">
         <button type="button" id="nqAddAllBtn" onclick="nqAddAll()" class="btn-secondary">全員を名簿の順に入れる</button>
@@ -200,7 +200,7 @@ SekigaeApp.registerPlugin({
     id: "nomination-queue",
     name: "指名の順番リスト",
     version: "1.0",
-    description: "指名する人を、あらかじめ順番に決めておけます。「次を指名する！」を押すたびに、上の人から当たります。",
+    description: "指名する人をあらかじめ順番に決めておけます。「次を指名する！」を押すたびに上の人から当たります。",
     backupKeys: [NQ_KEY],
     searchWords: "指名 順番 事前 決める 予約 あらかじめ 順に 順番に当てる リスト 次は誰",
     mount(app) {

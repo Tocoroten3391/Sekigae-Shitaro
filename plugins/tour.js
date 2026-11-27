@@ -4,7 +4,7 @@
 // このファイルを index.html から外すと、この機能は、まとめて使えなくなります
 // ==========================================
 const TOUR_DONE_KEY = "tour_done_v1";
-const TOUR_FORCE_KEY = "tour_force_v1";   // 「簡単」に切りかえた時に、立てる目印
+const TOUR_FORCE_KEY = "tour_force_v1";   // 「簡単」に切りかえた時に立てる目印
 
 let tourSteps = [];
 let tourIndex = -1;
@@ -27,34 +27,34 @@ function tourBuildSteps() {
     const steps = [];
     steps.push({
         sel: "#classroom",
-        title: hasRoster ? "座席表" : "はじめに、名簿を用意します",
+        title: hasRoster ? "座席表" : "はじめに名簿を用意します",
         text: hasRoster
-            ? "席替えの結果は、ここに出ます。席は、ドラッグで、手で入れ替えることもできます。"
-            : "「人数だけで始める」か「サンプルのクラスで試す」が手軽です。名簿ができると、次に進みます。",
+            ? "席替えの結果はここに出ます。席はドラッグで手で入れ替えることもできます。"
+            : "「人数だけで始める」か「サンプルのクラスで試す」が手軽です。名簿ができると次に進みます。",
         until: hasRoster ? null : tourHasRoster
     });
     steps.push({
         sel: "#btnMainShuffle",
         title: "席替えをする",
-        text: "「席替えスタート！」を押すと、席替えが始まります。押してみましょう。終わると、次に進みます。",
+        text: "「席替えスタート！」を押すと席替えが始まります。押してみましょう。終わると次に進みます。",
         until: () => tourShuffled
     });
     if ($id("btnSeatCheck")) {
         steps.push({
             sel: "#btnMoreMenu",
             title: "結果を確認する",
-            text: "席替えの後は、「他の操作」の「結果のチェック」で、前回と同じ席になっていないか、設定を守れているかを確かめられます。"
+            text: "席替えの後は「他の操作」の「結果のチェック」で、前回と同じ席になっていないか、設定を守れているかを確かめられます。"
         });
     }
     steps.push({
         sel: "#configMenuBtn",
         title: "保存する",
-        text: ($id("btnSavePng") ? "座席表は、「他の操作」の「画像で保存」「PDFで保存」で、ワンタッチで保存できます。" : "") +
-            "名簿や設定は、「設定」の「保存・書き出し」で、バックアップできます。ときどき、保存しておくと安心です。"
+        text: ($id("btnSavePng") ? "座席表は「他の操作」の「画像で保存」「PDFで保存」で、ワンタッチで保存できます。" : "") +
+            "名簿や設定は「設定」の「保存・書き出し」で、バックアップできます。ときどき、保存しておくと安心です。"
     });
     steps.push({
         sel: null,
-        title: "案内は、ここまでです",
+        title: "案内はここまでです",
         text: "わからなくなったら、「設定」の「しくみ」にある「案内ツアーをもう一度見る」を押してください。"
     });
     return steps;
@@ -110,7 +110,7 @@ function tourPlace() {
         }
     } else {
         hole.style.display = "none";
-        top = step.ask ? vh - ch - 28 : (vh - ch) / 2;   // 最初のたずねる画面は、画面の中を、ふさがないように下に出します
+        top = step.ask ? vh - ch - 28 : (vh - ch) / 2;   // 最初のたずねる画面は、画面の中をふさがないように下に出します
         left = (vw - cw) / 2;
     }
     left = Math.max(12, Math.min(left, vw - cw - 12));
@@ -177,13 +177,13 @@ function startTour() {
 function tourAskStart() {
     if (tourIndex >= 0 || $id("tourOverlay")) return;
     tourLayer();
-    tourSteps = [{ sel: null, ask: true, title: "はじめての方へ", text: "「席替え → 結果の確認 → 保存」まで、画面の上で、順に案内します。1分程で、終わります。" }];
+    tourSteps = [{ sel: null, ask: true, title: "はじめての方へ", text: "「席替え → 結果の確認 → 保存」まで画面の上で順に案内します。1分程で終わります。" }];
     tourIndex = 0;
     const card = $id("tourCard");
     card.innerHTML = '<div class="tour-title"></div><div class="tour-text"></div><div class="tour-btns"><button type="button" class="tour-skip" id="tourLater">後で</button><button type="button" class="tour-next" id="tourBegin">案内をはじめる</button></div>';
     card.querySelector(".tour-title").textContent = tourSteps[0].title;
     card.querySelector(".tour-text").textContent = tourSteps[0].text;
-    $id("tourLater").onclick = () => { tourFinish(true); showToast("案内は、「設定」の「しくみ」から、いつでも見られます。", "info"); };
+    $id("tourLater").onclick = () => { tourFinish(true); showToast("案内は「設定」の「しくみ」から、いつでも見られます", "info"); };
     $id("tourBegin").onclick = () => startTour();
     tourPlace();
     $id("tourBegin").focus({ preventScroll: true });
@@ -223,10 +223,10 @@ SekigaeApp.registerPlugin({
     id: "tour",
     name: "案内ツアー",
     version: "1.1",
-    description: "はじめて使う人に、席替えから、結果の確認、保存まで、画面の上で順に案内します。「簡単」の構成とセットで使います。",
+    description: "はじめて使う人に席替えから、結果の確認、保存まで画面の上で順に案内します。「簡単」の構成とセットで使います。",
     searchWords: "案内 ツアー 使い方 はじめて 初心者 ガイド チュートリアル 説明 かんたん",
     mount(app) {
-        app.insertInto("guide-faq", "<li data-plugin=\"tour\"><strong>使い方の案内を、もう一度見たい</strong>：設定の「しくみ」の「案内ツアーをもう一度見る」を押してください。席替えから、結果の確認、保存まで、順に案内します。</li>");
+        app.insertInto("guide-faq", "<li data-plugin=\"tour\"><strong>使い方の案内をもう一度見たい</strong>：設定の「しくみ」の「案内ツアーをもう一度見る」を押してください。席替えから、結果の確認、保存まで順に案内します。</li>");
         const st = document.createElement("style");
         st.id = "tourStyle";
         st.textContent = TOUR_CSS;

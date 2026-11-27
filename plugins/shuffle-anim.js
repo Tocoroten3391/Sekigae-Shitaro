@@ -6,7 +6,7 @@ let shuffleAnimating = false;
 
 let shuffleAnimSafetyTimer = null;
 
-let slotLockCols = new Set(); // 「slotlock」描画で、ちょうど止まった列
+let slotLockCols = new Set(); // 「slotlock」描画でちょうど止まった列
 
 function beginShuffleAnim(safetyMs) {
     shuffleAnimating = true;
@@ -517,8 +517,8 @@ function runSlotStopAnimation(onDone, finalOverride) {
             const remain = Math.max(0, AUTO_START_MS - elapsed);
             fill.style.transform = `scaleX(${remain / AUTO_START_MS})`;
             msg.textContent = remain > 0
-                ? `赤いボタンで、その列だけ止まります。あと${(remain / 1000).toFixed(1)}秒で自動ストップします。`
-                : "時間になったので、自動で止めています…";
+                ? `赤いボタンでその列だけ止まります。あと${(remain / 1000).toFixed(1)}秒で自動ストップします。`
+                : "時間になったので自動で止めています…";
             tick++;
             if (allLocked()) { finishSoon(); return; }
             tickTimer = setTimeout(step, TICK_MS);
@@ -673,7 +673,7 @@ function runSlotSeatAnimation(onDone, finalOverride) {
     const finish = () => {
         if (classroom) classroom.classList.remove("slot-spinning");
         if (sevens.jackpot) { playSlotJackpotSound(); launchConfetti(120); showToast("🎰 ラッキーセブン！7がそろいました！", "success"); }
-        else if (sevens.reach) { playSlotFinishSound(); launchConfetti(36); showToast("リーチ！7が2つ並びました。", "success"); }
+        else if (sevens.reach) { playSlotFinishSound(); launchConfetti(36); showToast("リーチ！7が2つ並びました", "success"); }
         else playSlotFinishSound();
         endShuffleAnim();
         onDone();
@@ -728,10 +728,10 @@ function runSlotSeatAnimation(onDone, finalOverride) {
 function previewShuffleAnimation(forcedType) {
     if (isAppLocked()) { showLockedToast(); return; }
     if (shuffleAnimating) return;
-    if (!currentStudents || !currentStudents.some(isRealStudentSeat)) { showToast("先に席替えをするか、名簿を用意してください。", "error"); return; }
+    if (!currentStudents || !currentStudents.some(isRealStudentSeat)) { showToast("先に席替えをするか、名簿を用意してください", "error"); return; }
     const sel = $id("animationSelect");
     let type = forcedType || (sel ? sel.value : "initial");
-    if (type === "none" || document.body.classList.contains("no-animation")) { showToast("演出なしか、全体アニメーションがOFFになっています。", "error"); return; }
+    if (type === "none" || document.body.classList.contains("no-animation")) { showToast("演出なしか、全体アニメーションがOFFになっています", "error"); return; }
     if (type === "random") type = pickRandomShuffleAnimation();
     const base = currentStudents;
     if (type === "slot") { runSlotAnimation(() => {}, base); return; }
@@ -762,6 +762,6 @@ SekigaeApp.registerPlugin({
         // 演出の一覧に、「1席ずつ止まるスロット」を足します
         const group = document.querySelector('#animationSelect optgroup[data-scope="basic"]');
         if (group && !group.querySelector('option[value="slotseat"]')) group.insertAdjacentHTML("beforeend", '<option value="slotseat">🎰 38. 1席ずつ止まるスロット</option>');
-        app.insertInto("guide-faq", "<li><strong>1席ずつ止まるスロットで、紙吹雪を出したい</strong>：席替えの演出で「1席ずつ止まるスロット」を選びます。座席表の左上から、1席ずつ名前が止まります。出席番号が7・17・27…の人が、同じ行か同じ列に3人そろうと、「ラッキーセブン」で紙吹雪が出ます。隣り合う2人は「リーチ」で、小さな紙吹雪です。</li>");
+        app.insertInto("guide-faq", "<li><strong>1席ずつ止まるスロットで、紙吹雪を出したい</strong>：席替えの演出で「1席ずつ止まるスロット」を選びます。座席表の左上から、1席ずつ名前が止まります。出席番号が7・17・27…の人が同じ行か同じ列に3人そろうと、「ラッキーセブン」で紙吹雪が出ます。隣り合う2人は「リーチ」で、小さな紙吹雪です。</li>");
     }
 });

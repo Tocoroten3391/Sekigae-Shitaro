@@ -150,7 +150,7 @@ function examCardsHtml(cfg) {
 
 function examPrint() {
     const cfg = examCfg();
-    if (!examStudentIdx().length) { showToast("座席表に生徒がいません。", "error"); return; }
+    if (!examStudentIdx().length) { showToast("座席表に生徒がいません", "error"); return; }
     let area = $id("examPrintArea");
     if (!area) { area = document.createElement("div"); area.id = "examPrintArea"; document.body.appendChild(area); }
     area.innerHTML = examCardsHtml(cfg);
@@ -235,7 +235,7 @@ function examRender() {
         '<div class="exam-row"><label><input type="checkbox" data-exam-cfg="name"' + (cfg.name ? " checked" : "") + '> 名前を入れる</label>' +
         '<label><input type="checkbox" data-exam-cfg="seat"' + (cfg.seat ? " checked" : "") + '> 席（B3など）を入れる</label>' +
         '<label><input type="checkbox" data-exam-cfg="ver"' + (cfg.ver ? " checked" : "") + '> 版を入れる（②で版を出している時）</label></div>' +
-        '<div class="exam-preview">' + (n ? examCardsHtml(cfg) : '<p class="config-note">座席表に生徒がいません。</p>') + '</div>' +
+        '<div class="exam-preview">' + (n ? examCardsHtml(cfg) : '<p class="config-note">座席表に生徒がいません</p>') + '</div>' +
         '<div class="exam-row"><button type="button" data-exam="print">印刷する</button></div>' +
         '<p class="config-note" style="margin:0;">点線の枠が切り取り線です。番号の順に並んで出ます。</p>';
 }

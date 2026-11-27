@@ -4,7 +4,7 @@
 // このファイルを index.html から外すと、この機能は、まとめて使えなくなります（書いたメモは、ブラウザに残ります）
 // ==========================================
 const WISH_KEY = "seat_wishes_v1";        // { クラス名: { 生徒の目印: { w: 希望, a: 避けたい, n: 近くがいい人の目印, t: メモ } } }
-const WISH_BADGE_KEY = "seat_wish_badge";   // 座席表に、希望のしるしを出すか（はじめは、出しません）
+const WISH_BADGE_KEY = "seat_wish_badge";   // 座席表に、希望のしるしを出すか（はじめは出しません）
 const WISH_WINDOW_KEY = "seat_wish_window"; // 窓は、座席表の "left"（左側）か "right"（右側）
 const WISH_ZONES = [
     { k: "front", label: "前の席" },
@@ -134,7 +134,7 @@ function wishAddToReport(add, posOf, cols, rows) {
         if (e.t) notes.push(k + "　" + label + "　" + e.t);
     });
     if (counted > 0) {
-        if (ng.length > 0) add("warn", "座席の希望を守れていない人がいます", ng, "もう一度席替えすると、守れることがあります。席を指定している人や、他の条件を優先した場合は、守れないことがあります。");
+        if (ng.length > 0) add("warn", "座席の希望を守れていない人がいます", ng, "もう一度席替えすると守れることがあります。席を指定している人や、他の条件を優先した場合は、守れないことがあります。");
         else add("ok", "座席の希望は、" + counted + "人全て守れています", []);
     }
     if (notes.length > 0) add("info", "配慮メモのある人（" + notes.length + "人）", notes);
@@ -194,8 +194,8 @@ function wishRenderRows() {
     const mine = wishLoadAll()[wishClassName()] || {};
     const dup = wishDuplicateNames();
     const dupNote = $id("wishDupNote");
-    if (dupNote) { dupNote.hidden = dup.length === 0; dupNote.textContent = dup.length ? "同じ名前の人がいます：" + dup.join("、") + "。同じ名前の人には、同じ希望が当てはまります。" : ""; }
-    if (keys.length === 0) { box.innerHTML = '<p class="wish-empty">名簿が、まだありません。先に名簿を用意してください。</p>'; wishRenderStale([]); return; }
+    if (dupNote) { dupNote.hidden = dup.length === 0; dupNote.textContent = dup.length ? "同じ名前の人がいます：" + dup.join("、") + "。同じ名前の人には同じ希望が当てはまります。" : ""; }
+    if (keys.length === 0) { box.innerHTML = '<p class="wish-empty">名簿がまだありません。先に名簿を用意してください。</p>'; wishRenderStale([]); return; }
     box.innerHTML = keys.map(k => {
         const e = mine[k] || {};
         return '<div class="wish-row" data-key="' + wishEsc(k) + '">' +
@@ -226,7 +226,7 @@ function wishDeleteStale(key) {
     delete entries[key];
     wishSaveClass(entries);
     wishRenderStale(wishStudentKeys());
-    showToast(key + "さんの分を、消しました。", "success");
+    showToast(key + "さんの分を消しました。", "success");
 }
 
 function openWishModal() {
@@ -270,7 +270,7 @@ function saveWishModal() {
     if (typeof updateSeatCheckButton === "function") updateSeatCheckButton();
     closeWishModal();
     const n = Object.values(entries).filter(e => e.w || e.a || e.n).length;
-    showToast("座席の希望を保存しました。" + (n ? "次の席替えから、" + n + "人分を、守るようにします。" : ""), "success");
+    showToast("座席の希望を保存しました。" + (n ? "次の席替えから、" + n + "人分を守るようにします。" : ""), "success");
 }
 
 function clearWishAll() {
@@ -279,7 +279,7 @@ function clearWishAll() {
     wishRenderRows();
     wishDecorate();
     if (typeof updateSeatCheckButton === "function") updateSeatCheckButton();
-    showToast("希望と配慮メモを、全て消しました。", "success");
+    showToast("希望と配慮メモを全て消しました", "success");
 }
 
 const WISH_CSS = `
@@ -308,12 +308,12 @@ const WISH_HTML = `
 <div data-plugin="seat-wishes" id="wishModalOverlay" class="modal-overlay" style="display: none;">
     <div class="modal-content" style="max-width: 640px; width: 95%;">
         <h4 style="color: var(--lbl-green);">座席の希望・配慮メモ</h4>
-        <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 12px; line-height: 1.6;">「前の席がいい」「窓側は避けたい」などを選ぶと、席替えの時に、できるだけ守ります。条件が多いと、守れないこともあります。守れているかは、「他の操作」の「結果のチェック」で確かめられます。</p>
+        <p style="font-size: 12px; color: var(--text-sub); margin: -8px 0 12px; line-height: 1.6;">「前の席がいい」「窓側は避けたい」などを選ぶと席替えの時にできるだけ守ります。条件が多いと守れないこともあります。守れているかは「他の操作」の「結果のチェック」で確かめられます。</p>
         <div class="wish-top">
-            <label for="wishWindowSide" class="wish-top-label">窓は、座席表の</label>
+            <label for="wishWindowSide" class="wish-top-label">窓は座席表の</label>
             <select id="wishWindowSide"><option value="left">左側</option><option value="right">右側</option></select>
         </div>
-        <div class="wish-badge-row"><span>席に、希望のしるしを出す<span id="wishBadgeInfoSlot"></span></span><label class="switch"><input type="checkbox" id="wishBadgeToggle"><span class="slider"></span></label></div>
+        <div class="wish-badge-row"><span>席に希望のしるしを出す<span id="wishBadgeInfoSlot"></span></span><label class="switch"><input type="checkbox" id="wishBadgeToggle"><span class="slider"></span></label></div>
         <div id="wishDupNote" class="wish-dup" hidden></div>
         <div id="wishRows"></div>
         <div id="wishStale" class="wish-stale" hidden></div>
@@ -329,20 +329,20 @@ SekigaeApp.registerPlugin({
     id: "seat-wishes",
     name: "座席の希望・配慮メモ",
     version: "1.3",
-    description: "生徒ごとに、前の席・後ろの席・窓側・廊下側の希望と、配慮メモを書けます。席替えで、希望をできるだけ守ります。",
+    description: "生徒ごとに前の席・後ろの席・窓側・廊下側の希望と、配慮メモを書けます。席替えで希望をできるだけ守ります。",
     backupKeys: [WISH_KEY, WISH_WINDOW_KEY, WISH_BADGE_KEY],
     suggests: ["seatcheck"],
     searchWords: "希望 配慮 前の席 後ろの席 窓側 廊下側 避けたい 視力 メモ 座席 お願い 事情",
     afterRender() { wishDecorate(); },
     mount(app) {
-        app.insertInto("guide-faq", "<li data-plugin=\"seat-wishes\"><strong>「前の席がいい」など、希望を守りたい</strong>：設定の「席替えのルール」の「座席の希望・配慮メモ」に書くと、席替えで、できるだけ守ります。守れているかは、「他の操作」の「結果のチェック」で確かめられます。</li>");
+        app.insertInto("guide-faq", "<li data-plugin=\"seat-wishes\"><strong>「前の席がいい」など、希望を守りたい</strong>：設定の「席替えのルール」の「座席の希望・配慮メモ」に書くと席替えでできるだけ守ります。守れているかは「他の操作」の「結果のチェック」で確かめられます。</li>");
         const st = document.createElement("style");
         st.id = "seatWishesStyle";
         st.textContent = WISH_CSS;
         document.head.appendChild(st);
         document.body.insertAdjacentHTML("beforeend", WISH_HTML);
         const bslot = $id("wishBadgeInfoSlot");
-        if (bslot && typeof makeInfoTip === "function") bslot.appendChild(makeInfoTip("座席表の画面は、生徒にも見えます。しるしは、小さな絵だけで、中身は出ません（マウスを合わせた時だけ、先生に見えます）。見せたくない時は、オフのままにしてください。"));
+        if (bslot && typeof makeInfoTip === "function") bslot.appendChild(makeInfoTip("座席表の画面は生徒にも見えます。しるしは小さな絵だけで中身は出ません（マウスを合わせた時だけ、先生に見えます）。見せたくない時はオフのままにしてください。"));
         app.insertInto("settings-rules", '<button type="button" onclick="openWishModal()" class="btn-secondary" id="btnWishModal" style="margin-top: 10px;" data-plugin="seat-wishes">座席の希望・配慮メモ</button>');
     }
 });

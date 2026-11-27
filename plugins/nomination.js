@@ -88,7 +88,7 @@ function resetNominatedHistory(showMsg = true) {
     clearNominationUndo();
     document.querySelectorAll('.seat').forEach(s => s.classList.remove('is-nominated', 'is-already-nominated')); 
     updateNominationProgress();
-    if (showMsg) showToast("指名履歴をリセットしました。", "success"); 
+    if (showMsg) showToast("指名履歴をリセットしました", "success"); 
 }
 
 // ==========================================
@@ -122,9 +122,9 @@ function updateNominationUndoUi() {
 
 function undoLastNomination() {
     if (isAppLocked() && !getLockOptions().allowNominate) { showLockedToast(); return; }
-    if (isNominating || rSpinning) { showToast("演出が終わってから、押してください。", "error"); return; }
+    if (isNominating || rSpinning) { showToast("演出が終わってから、押してください", "error"); return; }
     const u = nominationUndoStack.pop();
-    if (!u) { showToast("取り消せる指名がありません。", "error"); updateNominationUndoUi(); return; }
+    if (!u) { showToast("取り消せる指名がありません", "error"); updateNominationUndoUi(); return; }
     closePopMenus();
     const key = u.hist && u.hist.key ? u.hist.key : getCleanStudentKey(u.text);
     if (u.hist && u.hist.key) {
@@ -198,7 +198,7 @@ function pickSeatWeightedByHistory(seats) {
 function handleExcludeToggle() { 
     const toggle = $id("nominateExcludeToggle");
     if (toggle && toggle.checked) {
-        showToast("重複させないモードをONにしました。", "success"); 
+        showToast("重複させないモードをONにしました", "success"); 
     } else { 
         showToast("重複させないモードをOFFにしました。履歴もリセットしました。", "success"); 
         nominatedHistoryList = []; 
@@ -298,7 +298,7 @@ function nominationBuzzerShow(text) {
 
 function pickRandomStudent() {
   if (isNominating) return; 
-  if (!currentStudents || currentStudents.length === 0) { showToast("座席表が空っぽの時は指名できません。", "error"); return; }
+  if (!currentStudents || currentStudents.length === 0) { showToast("座席表が空っぽの時は指名できません", "error"); return; }
   
   const isNominationMode = document.body.classList.contains("nomination-active");
   const excludeToggle = $id("nominateExcludeToggle");
@@ -322,7 +322,7 @@ function pickRandomStudent() {
     }
   });
   
-  if (allActiveSeats.length === 0) { showToast("全員お休みか、座席に誰もいません。", "error"); return; }
+  if (allActiveSeats.length === 0) { showToast("全員お休みか、座席に誰もいません", "error"); return; }
   
   let finalLuckySeat = null;
   let roulettePool = allActiveSeats;
@@ -371,7 +371,7 @@ function pickRandomStudent() {
         const totalCount = currentStudents.filter(s => s && s.type === "STUDENT" && s.text !== "" && !s.isAbsent).length;
         showToast(`🎯 指名：【 ${parts.name} 】 さんです。一巡まであと ${totalCount - nominatedHistoryList.length} 人です。`, "success");
       } else {
-        showToast(`🎯 指名：【 ${parts.name} 】 さんです。`, "success");
+        showToast(`🎯 指名：【 ${parts.name} 】 さんです`, "success");
       }
       updateNominationProgress();
       nominationBuzzerSound();
@@ -407,7 +407,7 @@ function pickRandomStudent() {
       const remaining = totalCount - nominatedHistoryList.length;
       showToast(`🎯 指名：【 ${displayName} 】 さんです。一巡まであと ${remaining} 人です。`, "success");
     } else {
-      showToast(`🎯 指名：【 ${displayName} 】 さんです。`, "success");
+      showToast(`🎯 指名：【 ${displayName} 】 さんです`, "success");
     }
     updateNominationProgress();
     nominationWinSound();
@@ -479,7 +479,7 @@ function pickRandomStudent() {
         const remaining = totalCount - nominatedHistoryList.length;
         showToast(`🎯 指名：【 ${displayName} 】 さんです。一巡まであと ${remaining} 人です。`, "success");
       } else {
-        showToast(`🎯 指名：【 ${displayName} 】 さんです。`, "success");
+        showToast(`🎯 指名：【 ${displayName} 】 さんです`, "success");
       }
       updateNominationProgress();
       nominationWinSound();
@@ -498,7 +498,7 @@ function pickRandomStudent() {
 }
 
 function enterNominationMode() {
-  if (currentStudents.length === 0) { showToast("座席表が空っぽの時は指名モードに入れません。", "error"); return; }
+  if (currentStudents.length === 0) { showToast("座席表が空っぽの時は指名モードに入れません", "error"); return; }
   const configContainer = $id("configContainer");
   if (configContainer) configContainer.classList.remove("open");
   const configMenuBtn = $id("configMenuBtn");
@@ -516,7 +516,7 @@ function enterNominationMode() {
   const nameDisplay = $id("nominateNameDisplay");
   if (nameDisplay) { nameDisplay.textContent = "誰に当たるでしょうか？"; nameDisplay.className = "nominate-name-display"; }
   updateNominationProgress();
-  showToast("指名モードを起動しました。", "success");
+  showToast("指名モードを起動しました", "success");
 }
 
 function exitNominationMode() {
@@ -525,7 +525,7 @@ function exitNominationMode() {
   const exitBtn = $id("btnExitNomination");
   if (exitBtn) exitBtn.style.display = "none";
   document.querySelectorAll('.seat').forEach(s => { s.classList.remove('is-nominated', 'is-shuffling-nominate'); });
-  showToast("通常モードに戻しました。", "success");
+  showToast("通常モードに戻しました", "success");
 }
 
 const RANDOM_SCOPE_KEY = "random_anim_scope";
@@ -548,7 +548,7 @@ function onRandomScopeChange() {
     if (!sel) return;
     lsSet(RANDOM_SCOPE_KEY, sel.value);
     refreshFavAnimUI();
-    showToast(sel.value === "all" ? "毎回ランダムは、全ての演出から選びます。" : `毎回ランダムは、「${RANDOM_SCOPE_LABELS[sel.value]}」から選びます。`, "success");
+    showToast(sel.value === "all" ? "毎回ランダムは全ての演出から選びます。" : `毎回ランダムは「${RANDOM_SCOPE_LABELS[sel.value]}」から選びます。`, "success");
 }
 
 // ---- 本体への登録（必須：オン・オフの切り替えはできません） ----
@@ -567,8 +567,8 @@ SekigaeApp.registerPlugin({
             row.insertAdjacentHTML("afterend", '<div class="switch-container" style="margin-top: 8px;"><label class="switch"><input type="checkbox" id="nominateBuzzerToggle" onchange="toggleNominationBuzzer()"><span class="slider slider-purple"></span></label><span class="switch-label" id="nominateBuzzerLabel" style="color: var(--lbl-purple); font-weight: bold;">早押しボタン風にする</span></div>');
             const t = $id("nominateBuzzerToggle");
             t.checked = nominationBuzzerOn();
-            if (typeof makeInfoTip === "function") $id("nominateBuzzerLabel").appendChild(makeInfoTip("ルーレット演出の代わりに、少し間を置いて「ピンポーン！」と鳴り、画面が光って、指名された人が大きく出ます。焦らし演出がONの時は、間が長くなります。ルーレット演出を飛ばす設定がONの時は、間なしで、すぐ鳴ります。"));
+            if (typeof makeInfoTip === "function") $id("nominateBuzzerLabel").appendChild(makeInfoTip("ルーレット演出の代わりに、少し間を置いて「ピンポーン！」と鳴り、画面が光って、指名された人が大きく出ます。焦らし演出がONの時は、間が長くなります。ルーレット演出を飛ばす設定がONの時は、間なしですぐ鳴ります。"));
         }
-        app.insertInto("guide-faq", "<li><strong>指名を、クイズ番組の早押しのようにしたい</strong>：設定の「指名」の「詳しい設定」で、「早押しボタン風にする」をONにします。少し間を置いて「ピンポーン！」と鳴り、画面が光って、指名された人が大きく出ます。大きく出た画面は、押すと閉じます。</li>");
+        app.insertInto("guide-faq", "<li><strong>指名をクイズ番組の早押しのようにしたい</strong>：設定の「指名」の「詳しい設定」で、「早押しボタン風にする」をONにします。少し間を置いて「ピンポーン！」と鳴り、画面が光って、指名された人が大きく出ます。大きく出た画面は押すと閉じます。</li>");
     }
 });

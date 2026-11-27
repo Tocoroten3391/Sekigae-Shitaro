@@ -123,7 +123,7 @@ function renumberEditorRows() {
     rosterEditorRows.forEach(r => { r.no = r.name.trim() ? String(n++) : ""; });
     renderRosterEditor();
     commitRosterEditorState();
-    showToast("名前のある行に、上から順に番号をつけ直しました。", "success");
+    showToast("名前のある行に上から順に番号をつけ直しました", "success");
 }
 function sortEditorRowsByReading() {
     const keyOf = r => (r.furi || r.name || "").trim();
@@ -134,7 +134,7 @@ function sortEditorRowsByReading() {
     renumberEditorRows();
 }
 function clearEditorRows() {
-    if (rosterEditorRows.some(r => r.name.trim()) && !confirm("表の中身を、全て消します。よろしいですか？")) return;
+    if (rosterEditorRows.some(r => r.name.trim()) && !confirm("表の中身を全て消します。よろしいですか？")) return;
     rosterEditorRows = [];
     for (let i = 1; i <= 5; i++) rosterEditorRows.push(makeEditorRow(i, "", "", ""));
     renderRosterEditor();
@@ -167,7 +167,7 @@ function onRosterEditorPaste(ev, startIdx) {
     rosterEditorRows.forEach(r => { if (r.name.trim() && !r.no) r.no = String(n); n++; });
     renderRosterEditor();
     commitRosterEditorState();
-    showToast(`${lines.length}行を、表に入れました。`, "success");
+    showToast(`${lines.length}行を表に入れました`, "success");
 }
 function getRosterEditorList() {
     const named = rosterEditorRows.filter(r => r.name.trim());
@@ -182,7 +182,7 @@ function updateRosterEditorCheck() {
     const list = getRosterEditorList();
     ul.innerHTML = "";
     if (go) go.disabled = list.length === 0;
-    if (list.length === 0) { sum.textContent = "名前を入れてください。"; sum.className = "rp-summary"; return; }
+    if (list.length === 0) { sum.textContent = "名前を入れてください"; sum.className = "rp-summary"; return; }
     // 表では、ふりがなが別の欄なので、姓と名の間の空白の注意は出さない
     const issues = analyzeRosterStrings(list).filter(i => !i.title.startsWith("名前に空白が入っている行"));
     const warn = issues.filter(i => i.level === "warn").length;
@@ -215,7 +215,7 @@ function applyRosterEditor() {
     });
     if (setCount > 0 && lsGet("furigana_show", null) === null) furiganaShow = true;
     saveFurigana();
-    applyRosterList(list, `${list.length}人の名簿にしました。` + (setCount ? `ふりがな${setCount}人分も、保存しました。` : ""));
+    applyRosterList(list, `${list.length}人の名簿にしました。` + (setCount ? `ふりがな${setCount}人分も保存しました。` : ""));
     closeRosterEditor();
 }
 function downloadTextFile(name, text, mime) {
@@ -233,7 +233,7 @@ function downloadRosterTemplate() {
 }
 function exportRosterEditor(kind) {
     const named = rosterEditorRows.filter(r => r.name.trim());
-    if (named.length === 0) { showToast("書き出せる名簿がありません。", "error"); return; }
+    if (named.length === 0) { showToast("書き出せる名簿がありません", "error"); return; }
     const list = getRosterEditorList();
     const base = ($id("presetNameInput") && $id("presetNameInput").value.trim()) || "名簿";
     if (kind === "txt") {
@@ -296,7 +296,7 @@ function analyzeRosterStrings(list) {
     const byNo = {};
     parts.forEach(p => { if (p.no === null) return; (byNo[p.no] = byNo[p.no] || []).push(p); });
     const dupNos = Object.keys(byNo).filter(k => byNo[k].length > 1).map(Number).sort((a, b) => a - b);
-    if (dupNos.length) items.push({ level: "warn", title: `同じ番号があります：${joinTop(dupNos.map(n => `${n}番`), 8)}`, detail: "番号のない行は、並んだ順の番号になります。そのせいで重なることもあります。" });
+    if (dupNos.length) items.push({ level: "warn", title: `同じ番号があります：${joinTop(dupNos.map(n => `${n}番`), 8)}`, detail: "番号のない行は並んだ順の番号になります。そのせいで重なることもあります。" });
 
     const spaced = parts.filter(p => /\s/.test(clean(p.name)));
     if (spaced.length) items.push({ level: "warn", title: `名前に空白が入っている行があります：${joinTop(spaced.map(p => clean(p.name)), 4)}`, detail: "ふりがなが続いていないか、確認してください。姓と名の間の空白なら、そのままで構いません。" });
@@ -311,7 +311,7 @@ function analyzeRosterStrings(list) {
             const have = new Set(nos);
             const missing = [];
             for (let i = 1; i <= max; i++) if (!have.has(i)) missing.push(`${i}番`);
-            if (missing.length) items.push({ level: "info", title: `番号が飛んでいます：${joinTop(missing, 8)}`, detail: "転校などで、欠番があるなら、そのままで構いません。" });
+            if (missing.length) items.push({ level: "info", title: `番号が飛んでいます：${joinTop(missing, 8)}`, detail: "転校などで欠番があるなら、そのままで構いません。" });
         }
     }
     return items;
@@ -343,7 +343,7 @@ function updateRosterPasteCheck() {
     }
     const issues = analyzeRosterStrings(list);
     const warn = issues.filter(i => i.level === "warn").length;
-    sum.textContent = `${list.length}人を読み取りました。` + (skippedHeader ? "見出しの行は、飛ばしました。" : "") + (warn ? `　注意が${warn}件あります。` : "　おかしな所は見つかりませんでした。");
+    sum.textContent = `${list.length}人を読み取りました。` + (skippedHeader ? "見出しの行は飛ばしました。" : "") + (warn ? `　注意が${warn}件あります。` : "　おかしな所は見つかりませんでした。");
     sum.className = "rp-summary " + (warn ? "is-warn" : "is-ok");
     issues.forEach(i => {
         const li = document.createElement("li");
@@ -603,7 +603,7 @@ function updateRosterMapCheck() {
     pv.innerHTML = "";
     if (go) go.disabled = people.length === 0;
     if (people.length === 0) {
-        sum.textContent = "名前の列を選んでください。";
+        sum.textContent = "名前の列を選んでください";
         sum.className = "rp-summary is-warn";
         return;
     }

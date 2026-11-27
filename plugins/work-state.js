@@ -160,15 +160,15 @@ function closeCacheRestoreModal() {
 
 function restoreFromCacheEntry(index) {
     const entry = loadWorkHistory()[index];
-    if (!entry || !entry.state) { showToast("その状態は見つかりませんでした。", "error"); return; }
-    saveSeatHistory(); // 「元に戻す」ボタンで、復元前の状態にも戻せるようにする
+    if (!entry || !entry.state) { showToast("その状態は見つかりませんでした", "error"); return; }
+    saveSeatHistory(); // 「元に戻す」ボタンで復元前の状態にも戻せるようにする
     try {
         applyWorkSnapshot(entry.state);
         closeCacheRestoreModal();
-        showToast(`${formatWorkTime(entry.at)} の状態をキャッシュから復元しました。`, "success");
+        showToast(`${formatWorkTime(entry.at)} の状態をキャッシュから復元しました`, "success");
     } catch (error) {
         console.error(error);
-        showToast("キャッシュからの復元に失敗しました。", "error");
+        showToast("キャッシュからの復元に失敗しました", "error");
     }
 }
 

@@ -19,7 +19,7 @@ const PRESET_BUILTIN = [
       on: ["second-screen", "display-scale", "announce", "timer", "program-timer", "roulette", "nomination-balance", "absent", "seatcheck", "preview", "roomlayout", "seat-export", "settings-extras", "menu-groups"] },
     { id: "speak", name: "指名・発表", icon: "🎤", note: "指名や発表が中心の授業の構成です。指名の偏り防止、ルーレット、タイマー、画面のテンキー、拡張画面が入っています。",
       on: ["nomination-balance", "roulette", "timer", "softkeypad", "absent", "announce", "second-screen", "display-scale", "seatnote"] },
-    { id: "full", name: "フル", icon: "🧰", note: "入っている機能を、全てオンにします。", on: null }
+    { id: "full", name: "フル", icon: "🧰", note: "入っている機能を全てオンにします。", on: null }
 ];
 
 function presetEsc(t) { return String(t).replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch])); }
@@ -54,24 +54,24 @@ function presetApply(id) {
     if (!p) return;
     const off = presetOffListOf(p);
     const before = presetCurrentOff();
-    if (presetSameSet(off, before)) { showToast("今の構成と、同じです。", "info"); return; }
+    if (presetSameSet(off, before)) { showToast("今の構成と同じです", "info"); return; }
     presetTargets().forEach(pl => SekigaeApp.setEnabled(pl.id, !off.includes(pl.id)));
     // 「かんたん」は、案内ツアーとセットです。次に読み込んだ時に、案内をはじめるか、たずねます
     if (p.id === "easy") { lsSet("tour_force_v1", "1"); try { localStorage.removeItem("tour_done_v1"); } catch (e) { /* 何もしない */ } }
     renderPresetBox();
     SekigaeApp.renderPluginList();
     const on = presetTargets().length - off.length;
-    if (confirm("「" + p.name + "」に切りかえます（機能は " + on + " 個がオン）。\n反映するには、再読み込みが必要です。今再読み込みしますか？")) {
+    if (confirm("「" + p.name + "」に切りかえます（機能は " + on + " 個がオン）。\n反映するには再読み込みが必要です。今再読み込みしますか？")) {
         SekigaeApp.reloadNow();
     } else {
-        showToast("「" + p.name + "」を選びました。再読み込みの後に、反映されます。", "success");
+        showToast("「" + p.name + "」を選びました。再読み込みの後に反映されます。", "success");
     }
 }
 function presetSaveCurrent() {
-    const name = (prompt("今の構成に、名前を付けます。\n例：5年1組用") || "").trim();
+    const name = (prompt("今の構成に名前を付けます。\n例：5年1組用") || "").trim();
     if (!name) return;
     const list = presetLoadCustom();
-    if (list.length >= 8) { showToast("保存できる構成は、最大8個までです。", "error"); return; }
+    if (list.length >= 8) { showToast("保存できる構成は最大8個までです", "error"); return; }
     list.push({ id: "pc_" + Date.now().toString(36), name: name.slice(0, 20), off: presetCurrentOff() });
     presetSaveCustom(list);
     renderPresetBox();
@@ -96,12 +96,12 @@ const PRESET_IO_HTML = `
     <div class="modal-content" style="max-width: 520px; width: 95%;">
         <h4 style="color: var(--uis-head, #0891b2);" id="presetIoTitle">構成の書き出し・読み込み</h4>
         <div id="presetIoExport">
-            <p class="config-note" data-keep="1" style="margin: -6px 0 10px;">選んだ構成を、ファイルにして保存します。そのファイルを、学年のほかの先生に渡すと、同じ構成を読み込めます。</p>
+            <p class="config-note" data-keep="1" style="margin: -6px 0 10px;">選んだ構成をファイルにして保存します。そのファイルを学年のほかの先生に渡すと、同じ構成を読み込めます。</p>
             <div id="presetIoChoices"></div>
             <div class="modal-btn-row"><button type="button" class="btn-secondary" onclick="presetDoExport()">${presetIco("📤")} 書き出す</button></div>
         </div>
         <div id="presetIoImport">
-            <p class="config-note" data-keep="1" style="margin: -6px 0 10px;">書き出した構成のファイル（.json）を選びます。読み込んでも、すぐには切りかわりません。内容を見てから、「保存する」か「この構成に切りかえる」を選べます。</p>
+            <p class="config-note" data-keep="1" style="margin: -6px 0 10px;">書き出した構成のファイル（.json）を選びます。読み込んでもすぐには切りかわりません。内容を見てから、「保存する」か「この構成に切りかえる」を選べます。</p>
             <input type="file" id="presetIoFile" accept=".json,application/json" style="display: none;" onchange="presetReadFile(this)">
             <div class="modal-btn-row"><button type="button" class="btn-secondary" onclick="document.getElementById('presetIoFile').click()">${presetIco("📥")} ファイルをえらぶ</button></div>
             <div id="presetIoPreview"></div>
@@ -131,7 +131,7 @@ function presetRenderExportChoices() {
     const same = presetMatchName();
     let h = row("now", "今の構成", "機能 " + (total - cur.length) + " / " + total + " 個がオン" + (same ? "　（「" + same + "」と同じ）" : ""), true);
     custom.forEach(p => { h += row("c:" + p.id, p.name, "保存した構成　機能 " + (total - presetOffListOf(p).length) + " 個がオン", false); });
-    if (custom.length > 1) h += row("all", "保存した構成を、全てまとめて", custom.length + "個を、1つのファイルにします", false);
+    if (custom.length > 1) h += row("all", "保存した構成を全てまとめて", custom.length + "個を、1つのファイルにします", false);
     $id("presetIoChoices").innerHTML = h;
 }
 function presetFileConfig(name, off) {
@@ -168,7 +168,7 @@ function presetDoExport() {
 // ファイルの中身を確かめて、この端末で使える形にします（形が違うときは error を返します）
 function presetParseFile(obj) {
     if (!obj || obj.kind !== PRESET_FILE_KIND || !Array.isArray(obj.configs)) return { error: "席替えし太郎の構成ファイルでは、ないようです。" };
-    if (typeof obj.format === "number" && obj.format > 1) return { error: "新しい形式のファイルです。席替えし太郎を、新しい版にしてから、読み込んでください。" };
+    if (typeof obj.format === "number" && obj.format > 1) return { error: "新しい形式のファイルです。席替えし太郎を新しい版にしてから、読み込んでください。" };
     const installed = new Set(presetTargets().map(p => p.id));
     const idOk = x => typeof x === "string" && /^[A-Za-z0-9_-]{1,60}$/.test(x);
     const list = v => Array.isArray(v) ? Array.from(new Set(v.filter(idOk))).slice(0, 300) : [];
@@ -185,14 +185,14 @@ function presetParseFile(obj) {
             missing: on.filter(id => !installed.has(id) && !PRESET_SELF.includes(id))     // この端末に入っていない機能
         };
     }).filter(Boolean);
-    if (!configs.length) return { error: "ファイルの中に、読み込める構成が、ありませんでした。" };
+    if (!configs.length) return { error: "ファイルの中に読み込める構成がありませんでした。" };
     return { configs: configs, names: names };
 }
 function presetReadFile(input) {
     const f = input.files && input.files[0];
     input.value = "";
     if (!f) return;
-    if (f.size > 300 * 1024) { showToast("ファイルが大きすぎます。構成のファイルでは、ないようです。", "error"); return; }
+    if (f.size > 300 * 1024) { showToast("ファイルが大きすぎます。構成のファイルではないようです。", "error"); return; }
     const fr = new FileReader();
     fr.onload = () => {
         let obj = null;
@@ -202,7 +202,7 @@ function presetReadFile(input) {
         presetImported = r;
         presetRenderImportPreview();
     };
-    fr.onerror = () => showToast("ファイルを読めませんでした。", "error");
+    fr.onerror = () => showToast("ファイルを読めませんでした", "error");
     fr.readAsText(f);
 }
 function presetRenderImportPreview() {
@@ -212,7 +212,7 @@ function presetRenderImportPreview() {
     let h = '<div class="divider-line" style="margin: 12px 0;"></div>';
     configs.forEach((c, i) => {
         h += '<div class="preset-io-item"><div><strong>' + presetEsc(c.name) + '</strong><small>　機能 ' + c.on.length + ' 個がオン</small></div>';
-        if (c.missing.length) h += '<p class="config-note" data-keep="1" style="margin: 4px 0;">この端末に入っていない機能：' + c.missing.map(id => presetEsc(names[id] || id)).join("、") + '（これらは、オンになりません）</p>';
+        if (c.missing.length) h += '<p class="config-note" data-keep="1" style="margin: 4px 0;">この端末に入っていない機能：' + c.missing.map(id => presetEsc(names[id] || id)).join("、") + '（これらはオンになりません）</p>';
         h += '<div class="preset-row" style="margin-top: 6px;"><button type="button" class="btn-secondary preset-io-btn" onclick="presetImportApply(' + i + ')">この構成に切りかえる</button>' +
             '<button type="button" class="btn-secondary preset-io-btn" onclick="presetImportSave(' + i + ')">' + presetIco("💾") + ' 保存する</button></div></div>';
     });
@@ -225,7 +225,7 @@ function presetImportSave(i, quiet) {
     if (!c) return false;
     const list = presetLoadCustom();
     if (list.some(p => p.name === c.name && presetSameSet(p.off, c.off))) { if (!quiet) showToast("「" + c.name + "」は、すでに保存されています。", "info"); return true; }
-    if (list.length >= PRESET_MAX) { if (!quiet) showToast("保存できる構成は、最大" + PRESET_MAX + "個までです。いらないものを削除してください。", "error"); return false; }
+    if (list.length >= PRESET_MAX) { if (!quiet) showToast("保存できる構成は最大" + PRESET_MAX + "個までです。いらないものを削除してください。", "error"); return false; }
     let name = c.name, n = 2;
     while (list.some(p => p.name === name)) { name = c.name.slice(0, 16) + "（" + n + "）"; n++; }
     list.push({ id: "pc_" + Date.now().toString(36) + i, name: name, off: c.off.slice() });
@@ -239,7 +239,7 @@ function presetImportSaveAll() {
     let ok = 0;
     presetImported.configs.forEach((c, i) => { if (presetImportSave(i, true)) ok++; });
     const left = presetImported.configs.length - ok;
-    showToast(ok + "個を保存しました。" + (left ? "あと" + left + "個は、上限（" + PRESET_MAX + "個）のため、保存できませんでした。" : ""), left ? "info" : "success");
+    showToast(ok + "個を保存しました。" + (left ? "あと" + left + "個は上限（" + PRESET_MAX + "個）のため、保存できませんでした。" : ""), left ? "info" : "success");
 }
 // この構成に切りかえる（ファイルにない機能は、そのままにします）
 function presetImportApply(i) {
@@ -251,13 +251,13 @@ function presetImportApply(i) {
         if (c.off.includes(pl.id)) SekigaeApp.setEnabled(pl.id, false);
         else if (c.on.includes(pl.id)) SekigaeApp.setEnabled(pl.id, true);
     });
-    if (presetSameSet(before, presetCurrentOff())) { showToast("今の構成と、同じです。", "info"); return; }
+    if (presetSameSet(before, presetCurrentOff())) { showToast("今の構成と同じです", "info"); return; }
     renderPresetBox();
     SekigaeApp.renderPluginList();
     closePresetIo();
     const on = presetTargets().length - presetCurrentOff().length;
-    if (confirm("「" + c.name + "」に切りかえます（機能は " + on + " 個がオン）。\n反映するには、再読み込みが必要です。今再読み込みしますか？")) SekigaeApp.reloadNow();
-    else showToast("「" + c.name + "」を選びました。再読み込みの後に、反映されます。", "success");
+    if (confirm("「" + c.name + "」に切りかえます（機能は " + on + " 個がオン）。\n反映するには再読み込みが必要です。今再読み込みしますか？")) SekigaeApp.reloadNow();
+    else showToast("「" + c.name + "」を選びました。再読み込みの後に反映されます。", "success");
 }
 document.addEventListener("keydown", e => {
     const o = $id("presetIoOverlay");
@@ -310,7 +310,7 @@ SekigaeApp.registerPlugin({
     id: "plugin-presets",
     name: "構成プリセット",
     version: "1.5",
-    description: "使う機能の組み合わせを、ワンタッチで切りかえます。「簡単」「授業用」「年度はじめ」「電子黒板」「指名・発表」「フル」の他、今の構成に名前を付けて保存できます。保存した構成は、ファイルに書き出して、学年のほかの先生に配れます。もらったファイルは、読み込めます。切りかえは、再読み込みの後に反映されます。",
+    description: "使う機能の組み合わせを、ワンタッチで切りかえます。「簡単」「授業用」「年度はじめ」「電子黒板」「指名・発表」「フル」の他、今の構成に名前を付けて保存できます。保存した構成はファイルに書き出して、学年のほかの先生に配れます。もらったファイルは読み込めます。切りかえは再読み込みの後に反映されます。",
     backupKeys: [PRESET_KEY],
     searchWords: "構成 プリセット かんたん 授業用 フル 機能 まとめて 切りかえ プラグイン 軽く 配る 書き出し 読み込み ファイル 共有 エクスポート インポート 学年",
     mount(app) {
@@ -324,7 +324,7 @@ SekigaeApp.registerPlugin({
         // 一覧が描きなおされる（個別にオン・オフした）たびに、「いまの構成」の表示も、直します
         const orig = app.renderPluginList.bind(app);
         app.renderPluginList = function () { orig(); renderPresetBox(); };
-        app.insertInto("guide-tools", '<li><strong>構成プリセット</strong>：設定の「機能・プラグイン」の「プラグインの設定」を開くと、上にある「簡単」「授業用」「フル」を押すと、使う機能の組み合わせを、まとめて切りかえます。画面の部品が減るので、少し軽くなります。今の構成に名前を付けて、保存もできます。保存した構成は、「構成を書き出す」でファイルにして、学年のほかの先生に渡せます。もらったファイルは、「構成を読み込む」で、保存するか、そのまま切りかえられます。</li>');
+        app.insertInto("guide-tools", '<li><strong>構成プリセット</strong>：設定の「機能・プラグイン」の「プラグインの設定」を開くと上にある「簡単」「授業用」「フル」を押すと使う機能の組み合わせを、まとめて切りかえます。画面の部品が減るので少し軽くなります。今の構成に名前を付けて、保存もできます。保存した構成は「構成を書き出す」でファイルにして、学年のほかの先生に渡せます。もらったファイルは「構成を読み込む」で、保存するか、そのまま切りかえられます。</li>');
     },
     ready() { renderPresetBox(); }
 });

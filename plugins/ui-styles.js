@@ -7,12 +7,12 @@ const UIS_KEY = "ui_style";
 const UIS_CHOICES = [
     { v: "a", label: "シンプル（白とブルーの、落ち着いた画面）" },
     { v: "b", label: "黒板（黒板と机の、教室らしい画面）" },
-    { v: "classic", label: "クラシック（もとの画面。絵文字は、線のアイコンになります）" }
+    { v: "classic", label: "クラシック（もとの画面。絵文字は線のアイコンになります）" }
 ];
 const UIS_NOTES = {
-    classic: "このプラグインを入れる前の、もとの画面です。ボタンや見出しの絵文字は、線のアイコンになります。広い画面でも、上の帯と、設定の1列表示は、そのままです。",
-    a: "上の帯と操作ボタンを整えて、左にツールバーを置きます。指名中の画面も、このスタイルになります。設定は、左に分類、右に内容の2列で開きます。色は、選んでいるテーマ（ダークなど）に合わせます。",
-    b: "画面の上を黒板、ボタンをチョーク受け、座席を机の見た目にして、左にツールバーを置きます。指名中の画面も、このスタイルになります。設定は、左に分類、右に内容の2列で開きます。色は、このスタイルの色に固定されます。"
+    classic: "このプラグインを入れる前の、もとの画面です。ボタンや見出しの絵文字は、線のアイコンになります。広い画面でも上の帯と設定の1列表示はそのままです。",
+    a: "上の帯と操作ボタンを整えて、左にツールバーを置きます。指名中の画面もこのスタイルになります。設定は左に分類、右に内容の2列で開きます。色は選んでいるテーマ（ダークなど）に合わせます。",
+    b: "画面の上を黒板、ボタンをチョーク受け、座席を机の見た目にして、左にツールバーを置きます。指名中の画面もこのスタイルになります。設定は左に分類、右に内容の2列で開きます。色はこのスタイルの色に固定されます。"
 };
 
 // 色の用意（A）：テーマの色が、そのまま使えるように、style.css より前に置きます
@@ -1546,7 +1546,7 @@ function uisClassMenuToggle() {
     const live = names.filter(n => !(presets[n] && presets[n].archived));
     const old = names.filter(n => presets[n] && presets[n].archived);
     live.forEach(n => menu.appendChild(mk(n)));
-    if (!names.length) { const d = document.createElement("div"); d.className = "uis-cm-head"; d.style.fontWeight = "600"; d.textContent = "保存されたクラスはありません。"; menu.appendChild(d); }
+    if (!names.length) { const d = document.createElement("div"); d.className = "uis-cm-head"; d.style.fontWeight = "600"; d.textContent = "保存されたクラスはありません"; menu.appendChild(d); }
     if (old.length) {
         const det = document.createElement("details");
         det.open = old.includes(cur);
@@ -1646,7 +1646,7 @@ function uisTick() {
         uisSetHtml(foot, "<span>" + l + "</span><span>" + r + "</span>");
     }
     const line = $id("uisBoardLine");
-    if (line) uisSetHtml(line, st.today > 0 ? "きょうの席替え　<b>" + st.today + "回目</b>" + (st.changed !== null ? "　前回から" + st.changed + "席が変わります" : "") : "きょうは、まだ席替えをしていません");
+    if (line) uisSetHtml(line, st.today > 0 ? "きょうの席替え　<b>" + st.today + "回目</b>" + (st.changed !== null ? "　前回から" + st.changed + "席が変わります" : "") : "きょうはまだ席替えをしていません");
     uisEnsureButtons();
     uisRibbonBuild();
     uisMusicRibbonBuild();
@@ -1888,7 +1888,7 @@ function uisNomSync() {
         const items = list ? list.slice(-24).map(t => { const q = typeof nominationNameParts === "function" ? nominationNameParts(t) : { no: "", name: String(t) }; return (q.no ? q.no + " " : "") + q.name; }) : uisNomSeen.slice(-24).map(t => t.replace(/^(\d+)番\s*/, "$1 "));
         const chips = items.map((t, i, a) => "<span" + (i === a.length - 1 ? ' class="is-last"' : "") + ">" + esc(t) + "</span>").join("");
         const cnt = useApp ? pr.done + " / " + pr.total + "人" : uisNomSeen.length + "回";
-        uisSetHtml(hist, '<div class="uis-nh-head"><span>指名済み</span><span>' + cnt + '</span></div><div class="uis-nh-bar"><i style="width:' + pct + '%"></i></div><div class="uis-nh-chips">' + chips + '</div><div class="uis-nh-note">欠席の人は自動で飛ばします。</div>');
+        uisSetHtml(hist, '<div class="uis-nh-head"><span>指名済み</span><span>' + cnt + '</span></div><div class="uis-nh-bar"><i style="width:' + pct + '%"></i></div><div class="uis-nh-chips">' + chips + '</div><div class="uis-nh-note">欠席の人は自動で飛ばします</div>');
     }
     const hd = $id("uisNomHeader");
     if (hd) {
@@ -1942,14 +1942,14 @@ function uisEmojiSync() {
 
 // ---------- 設定の画面：左の分類を選ぶと、右にカードが並びます
 const UIS_CFG_DESC = {
-    class: "クラスの切り替えと、保存・削除をします。", rosterio: "名簿を作ったり、読み込んだり、書き出したりします。", year: "進級や年度がわりの作業をします。",
+    class: "クラスの切り替えと保存・削除をします。", rosterio: "名簿を作ったり、読み込んだり、書き出したりします。", year: "進級や年度がわりの作業をします。",
     layout: "座席の行と列、並べ方を決めます。", seatview: "座席の大きさや、文字の見え方を選びます。", rules: "席替えの抽選のしかたを決めます。",
     groups: "班の作り方を決めます。", groupview: "班の色や、見え方を選びます。",
     anim: "席替えの演出を選びます。", nominate: "指名のしかたを決めます。", records: "席替えの記録や、統計を見ます。",
-    title: "画面のタイトルを変えます。", theme: "テーマの色や、背景を選びます。", display: "表示モードと、画面の部品を切り替えます。", perf: "動きを軽くします。",
+    title: "画面のタイトルを変えます。", theme: "テーマの色や、背景を選びます。", display: "表示モードと画面の部品を切り替えます。", perf: "動きを軽くします。",
     timerview: "タイマーの見え方を選びます。", alarm: "アラームとチャイムの音を決めます。", timerx: "タイマーの特別な機能です。",
     backup: "クラスのデータを守ります。", cloud: "スプレッドシートと連携します。", export: "印刷や、画像・PDFの保存をします。",
-    plugins: "使う機能を、入れたり外したりします。", lock: "ロックと、管理者用の設定です。", keypad: "入力を助ける機能です。"
+    plugins: "使う機能を入れたり外したりします。", lock: "ロックと管理者用の設定です。", keypad: "入力を助ける機能です。"
 };
 let uisCfgGroup = "";
 let uisCfgLastActive = null;
@@ -2139,14 +2139,14 @@ function onUiStyleChange() {
     lsSet(UIS_KEY, sel.value);
     uisApply();
     uisSyncSettingsLayout(sel.value);
-    showToast("画面スタイルを変えました。", "success");
+    showToast("画面スタイルを変えました", "success");
 }
 
 SekigaeApp.registerPlugin({
     id: "ui-styles",
     name: "画面スタイル",
     version: "3.46",
-    description: "画面全体の見た目を、「シンプル」「黒板」「クラシック」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
+    description: "画面全体の見た目を「シンプル」「黒板」「クラシック」から選べます。広い画面では、UI改良案と同じ並びになります。席替えや指名のしくみは変わりません。",
     backupKeys: [UIS_KEY],
     searchWords: "画面 スタイル デザイン 見た目 シンプル すっきり 黒板 チョーク 机 モダン 切り替え 雰囲気",
     mount(app) {

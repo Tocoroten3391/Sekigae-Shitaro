@@ -5,7 +5,7 @@
 // ==========================================
 const NB_SPEECH_KEY = "speech_log_v1";     // { クラス名: { 生徒の目印: 発言の回数 } }
 const NB_SET_KEY = "nom_balance_v1";       // { mode: "off"／"fair"／"strict", speech: 発言も数えるか, badge: 座席表に回数を出すか }
-let nbSpeechMode = false;                   // 発言モード（座席を押すと、発言を数える）
+let nbSpeechMode = false;                   // 発言モード（座席を押すと発言を数える）
 let nbUndo = [];                            // 発言を数えた記録（取り消し用）
 let nbSort = "few";
 
@@ -83,13 +83,13 @@ function nbUndoLast() {
     const last = nbUndo.pop();
     if (!last) return;
     nbAddSpeech(last.key, -last.delta, true);
-    showToast("発言の記録を、1つ取り消しました。", "success");
+    showToast("発言の記録を、1つ取り消しました", "success");
 }
 function nbSetSpeechMode(on) {
     nbSpeechMode = !!on;
     document.body.classList.toggle("nb-speech-mode", nbSpeechMode);
     nbUpdateBar();
-    if (nbSpeechMode) { closeNomBalance(); showToast("🗣️ 発言モードです。座席を押すと、発言を1回数えます。", "success"); }
+    if (nbSpeechMode) { closeNomBalance(); showToast("🗣️ 発言モードです。座席を押すと発言を1回数えます。", "success"); }
 }
 // 発言モードの間は、座席を押しても、ふだんの画面は開かず、発言を数えます
 function nbSeatClick(e) {
@@ -111,7 +111,7 @@ function nbUpdateBar() {
         bar = document.createElement("div");
         bar.id = "nbBar";
         bar.className = "nb-bar";
-        bar.innerHTML = '<span>🗣️ 発言モード：座席を押すと、発言を数えます</span><button type="button" class="nb-bar-btn" id="nbBarUndo" onclick="nbUndoLast()">↩️ 取り消す</button><button type="button" class="nb-bar-btn" onclick="nbSetSpeechMode(false)">終わる</button>';
+        bar.innerHTML = '<span>🗣️ 発言モード：座席を押すと発言を数えます</span><button type="button" class="nb-bar-btn" id="nbBarUndo" onclick="nbUndoLast()">↩️ 取り消す</button><button type="button" class="nb-bar-btn" onclick="nbSetSpeechMode(false)">終わる</button>';
         document.body.appendChild(bar);
     }
     bar.hidden = false;
@@ -171,7 +171,7 @@ function nbRows() {
     rows.forEach(r => { r.total = nbTotal(r.st.key, map); });
     if (nbSort === "few") rows.sort((a, b) => a.total - b.total || (parseInt(a.st.no, 10) || 999) - (parseInt(b.st.no, 10) || 999));
     else if (nbSort === "many") rows.sort((a, b) => b.total - a.total);
-    return rows;   // 「seat」の時は、座席表の順のままです
+    return rows;   // 「seat」の時は座席表の順のままです
 }
 function nbRenderModal() {
     const body = $id("nbList");
@@ -190,16 +190,16 @@ function nbRenderModal() {
             '<span class="nb-num">指名 ' + r.nom + "</span>" +
             (s.speech ? '<span class="nb-sp"><button type="button" class="nb-pm" data-k="' + nbEsc(r.st.key) + '" onclick="nbAddSpeech(this.dataset.k, -1)" aria-label="発言を1つ減らす">−</button><span class="nb-num">発言 ' + r.sp + '</span><button type="button" class="nb-pm" data-k="' + nbEsc(r.st.key) + '" onclick="nbAddSpeech(this.dataset.k, 1)" aria-label="発言を1つ増やす">＋</button></span>' : "") +
             "</div>";
-    }).join("") : '<p class="config-note" data-keep="1">名簿を読み込むと、ここに出ます。</p>';
+    }).join("") : '<p class="config-note" data-keep="1">名簿を読み込むとここに出ます</p>';
     $id("nbResetSpeech").style.display = Object.keys(nbSpeechMap()).length ? "" : "none";
 }
 function nbResetSpeech() {
-    if (!confirm("このクラスの、発言の回数を、全て0に戻します。指名の回数は、変わりません。よろしいですか？")) return;
+    if (!confirm("このクラスの、発言の回数を全て0に戻します。指名の回数は変わりません。よろしいですか？")) return;
     nbSpeechSet({});
     nbUndo = [];
     nbDecorate();
     nbRenderModal();
-    showToast("発言の回数を、0に戻しました。", "success");
+    showToast("発言の回数を、0に戻しました", "success");
 }
 
 const NB_CSS = `
@@ -226,7 +226,7 @@ body.nb-speech-mode #classroom .seat { cursor: pointer; outline: 2px dashed rgba
 const NB_HTML = `
 <div id="nbModalOverlay" class="modal-overlay" style="display: none;">
     <div class="modal-content" style="max-width: 640px; width: 95%; max-height: 92vh; overflow-y: auto;">
-        <h4 style="color: #0369a1;">🗣️ 発言・指名のバランス <span data-nbtip="指名された回数と、発言した回数を、生徒ごとに数えます。「回数が少ない人を優先」にすると、指名で、まだ当たっていない人が、当たりやすくなります。「回数が一番少ない人から」にすると、一番少ない人だけから選びます。発言は、「発言モード」で、座席を押すと数えられます。このクラスの記録として残ります。"></span></h4>
+        <h4 style="color: #0369a1;">🗣️ 発言・指名のバランス <span data-nbtip="指名された回数と発言した回数を生徒ごとに数えます。「回数が少ない人を優先」にすると指名でまだ当たっていない人が、当たりやすくなります。「回数が一番少ない人から」にすると一番少ない人だけから選びます。発言は「発言モード」で、座席を押すと数えられます。このクラスの記録として残ります。"></span></h4>
         <div class="layout-grid-fields" style="margin: 6px 0 10px;">
             <div><label for="nbModeSelect">指名で選ぶ人</label>
                 <select id="nbModeSelect" onchange="nbSettingChanged()"><option value="off">ふだんどおり</option><option value="fair">回数が少ない人を優先</option><option value="strict">回数が一番少ない人から</option></select></div>
@@ -235,11 +235,11 @@ const NB_HTML = `
         </div>
         <div class="switch-container">
             <label class="switch"><input type="checkbox" id="nbSpeechToggle" onchange="nbSettingChanged()"><span class="slider"></span></label>
-            <span class="switch-label">発言の回数も、数に入れる</span>
+            <span class="switch-label">発言の回数も数に入れる</span>
         </div>
         <div class="switch-container" style="margin-top: 8px;">
             <label class="switch"><input type="checkbox" id="nbBadgeToggle" onchange="nbSettingChanged()"><span class="slider"></span></label>
-            <span class="switch-label">座席表に、回数を小さく出す</span>
+            <span class="switch-label">座席表に回数を小さく出す</span>
         </div>
         <div class="modal-btn-row" style="justify-content: flex-start; margin: 10px 0 6px;">
             <button type="button" class="btn-save" onclick="nbSetSpeechMode(true)">🗣️ 発言モードにする</button>
@@ -264,7 +264,7 @@ function nbRenderStatsTab(data) {
         const nom = ((data.nom[name] || {}).count) || 0, sp = map[name] || 0;
         return { name: name, nom: nom, sp: sp, total: nom + (s.speech && !data.isArchive ? sp : 0) };
     }).sort((a, b) => a.total - b.total);
-    if (!rows.length) { body.innerHTML = '<p class="stats-empty">名簿にまだ誰もいません。</p>'; return; }
+    if (!rows.length) { body.innerHTML = '<p class="stats-empty">名簿にまだ誰もいません</p>'; return; }
     const max = Math.max(1, ...rows.map(r => r.total));
     const zero = rows.filter(r => r.total === 0);
     const avg = rows.reduce((a, r) => a + r.total, 0) / rows.length;
@@ -279,7 +279,7 @@ SekigaeApp.registerPlugin({
     id: "nomination-balance",
     name: "発言・指名の偏り防止",
     version: "1.1",
-    description: "指名された回数と、発言した回数を数えて、まだ当たっていない人を、先に指名できます。座席を押して発言を数える「発言モード」、座席表に回数を小さく出す表示、記録・統計の「偏り」タブがあります。",
+    description: "指名された回数と発言した回数を数えて、まだ当たっていない人を、先に指名できます。座席を押して発言を数える「発言モード」、座席表に回数を小さく出す表示、記録・統計の「偏り」タブがあります。",
     backupKeys: [NB_SPEECH_KEY, NB_SET_KEY],
     searchWords: "発言 指名 偏り 回数 当たっていない 公平 平等 まだ当たってない 発表 数える",
     statsTabs: [{
@@ -287,7 +287,7 @@ SekigaeApp.registerPlugin({
         label: "🗣️ 偏り",
         hideReset: true,
         hideCsv: true,
-        paneHtml: '<p style="font-size: 12px; color: var(--text-sub); margin: 0 0 10px; line-height: 1.6;">指名と発言の回数が、偏っていないかを確かめます。回数が少ない人が、上に出ます。</p><div id="nbStatsBody" class="stats-summary-body"></div>',
+        paneHtml: '<p style="font-size: 12px; color: var(--text-sub); margin: 0 0 10px; line-height: 1.6;">指名と発言の回数が偏っていないかを確かめます。回数が少ない人が上に出ます。</p><div id="nbStatsBody" class="stats-summary-body"></div>',
         render: data => nbRenderStatsTab(data)
     }],
     mount(app) {
@@ -298,7 +298,7 @@ SekigaeApp.registerPlugin({
         document.body.insertAdjacentHTML("beforeend", NB_HTML);
         document.querySelectorAll("#nbModalOverlay [data-nbtip]").forEach(el => el.replaceWith(makeInfoTip(el.dataset.nbtip)));
         app.insertInto("settings-records", '<button type="button" onclick="openNomBalance()" class="btn-secondary" id="btnNomBalance" style="margin-top: 10px;">発言・指名のバランス</button>');
-        app.insertInto("guide-tools", '<li><strong>発言・指名のバランス</strong>：設定の「記録・統計」の「発言・指名のバランス」で、指名と発言の回数が見られます。「回数が少ない人を優先」にすると、まだ当たっていない人が、指名で当たりやすくなります。「発言モード」では、座席を押すだけで、発言を数えられます。</li>');
+        app.insertInto("guide-tools", '<li><strong>発言・指名のバランス</strong>：設定の「記録・統計」の「発言・指名のバランス」で、指名と発言の回数が見られます。「回数が少ない人を優先」にするとまだ当たっていない人が、指名で当たりやすくなります。「発言モード」では座席を押すだけで発言を数えられます。</li>');
         // 指名する人を選ぶところを、包みます
         if (nbOrigPick) window.pickSeatWeightedByHistory = nbPick;
         // 指名の記録が増えたら、座席表の回数も、新しくします

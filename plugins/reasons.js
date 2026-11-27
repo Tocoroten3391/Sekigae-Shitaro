@@ -48,7 +48,7 @@ function openMemoListModal() {
     });
 
     if (count === 0) {
-        body.innerHTML = '<p class="stats-empty">固定理由のメモはまだありません。座席設定で「固定理由」を入力すると、ここに一覧表示されます。</p>';
+        body.innerHTML = '<p class="stats-empty">固定理由のメモはまだありません。座席設定で「固定理由」を入力するとここに一覧表示されます。</p>';
     }
     const countEl = $id("memoListCount");
     if (countEl) countEl.textContent = count > 0 ? `${count}件` : "";
@@ -140,7 +140,7 @@ function removeWagamamaTag(targetIdx) {
     let displayName = cleanName.replace(/\[休\]/g, "").replace(/[（\(].*?[）\)]/g, ""); 
     if (displayName.includes(".")) displayName = displayName.split(".")[1].trim(); 
     
-    showToast(`${displayName} のわがまま指定を解除しました。`, "success"); 
+    showToast(`${displayName} のわがまま指定を解除しました`, "success"); 
     openWagamamaModal(); 
     onLayoutChange(); 
 }

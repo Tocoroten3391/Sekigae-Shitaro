@@ -48,15 +48,15 @@ function refreshFavAnimUI() {
     const sum = $id("animFavSummary");
     if (sum) {
         sum.textContent = names.length > 0
-            ? `お気に入り${names.length}個：${names.join("、")}。「お気に入りからランダム」では、この中から選びます。`
-            : "お気に入りにした演出だけを、ランダムで出せます。まだ選んでいません。選ぶまでは、全部の演出から選びます。";
+            ? `お気に入り${names.length}個：${names.join("、")}。「お気に入りからランダム」ではこの中から選びます。`
+            : "お気に入りにした演出だけを、ランダムで出せます。まだ選んでいません。選ぶまでは全部の演出から選びます。";
     }
     const clr = $id("animFavClearBtn");
     if (clr) clr.style.display = names.length > 0 ? "" : "none";
 }
 function toggleFavAnim() {
     const sel = $id("animationSelect");
-    if (!sel || sel.value === "none" || sel.value === "random") { showToast("お気に入りにする演出を、先に選んでください。", "error"); return; }
+    if (!sel || sel.value === "none" || sel.value === "random") { showToast("お気に入りにする演出を、先に選んでください", "error"); return; }
     let favs = getFavAnims();
     const was = favs.includes(sel.value);
     favs = was ? favs.filter(v => v !== sel.value) : favs.concat(sel.value);
@@ -68,7 +68,7 @@ function toggleFavAnim() {
 function clearFavAnims() {
     saveFavAnims([]);
     refreshFavAnimUI();
-    showToast("お気に入りを全て外しました。", "success");
+    showToast("お気に入りを全て外しました", "success");
 }
 
 // ---- マイ演出（演出・速さ・効果音のセットに名前を付けて保存）
@@ -95,7 +95,7 @@ function saveMyAnim() {
     const nameInput = $id("myAnimName");
     if (!animSel) return;
     const name = (nameInput ? nameInput.value : "").trim();
-    if (!name) { showToast("マイ演出の名前を入力してください。", "error"); return; }
+    if (!name) { showToast("マイ演出の名前を入力してください", "error"); return; }
     const snd = $id("shuffleSoundToggle");
     const spd = $id("animSpeedSelect");
     const item = { id: "", name: name, type: animSel.value, speed: parseFloat(spd ? spd.value : "1") || 1, sound: !!(snd && snd.checked) };
@@ -125,7 +125,7 @@ function applyMyAnim() {
     const snd = $id("shuffleSoundToggle");
     if (snd) { snd.checked = !!p.sound; lsSet("shuffle_sound", String(!!p.sound)); }
     refreshFavAnimUI();
-    showToast(`マイ演出「${p.name}」に切り替えました。`, "success");
+    showToast(`マイ演出「${p.name}」に切り替えました`, "success");
 }
 function deleteMyAnim() {
     const sel = $id("myAnimSelect");
@@ -136,7 +136,7 @@ function deleteMyAnim() {
     if (!confirm(`マイ演出「${target.name}」を削除します。よろしいですか？`)) return;
     saveMyAnims(list.filter(p => p.id !== id));
     refreshMyAnimUI("");
-    showToast("マイ演出を削除しました。", "success");
+    showToast("マイ演出を削除しました", "success");
 }
 
 // ==========================================
@@ -162,7 +162,7 @@ function renderAnimGallery() {
     if (!dock || !sel || galleryKind !== "anim") return;
     const keep = dock.scrollTop;
     const cur = sel.value, favs = getFavAnims();
-    let html = galleryHead("演出を一覧で試す", "名前を押すと、今の席で試せます。✔ で、その演出にします。★ で、お気に入りに入れます。");
+    let html = galleryHead("演出を一覧で試す", "名前を押すと今の席で試せます。✔ で、その演出にします。★ で、お気に入りに入れます。");
     html += '<div class="gal-body">';
     Array.from(sel.children).forEach(g => {
         if (g.tagName !== "OPTGROUP") return;
@@ -229,7 +229,7 @@ function renderThemeGallery() {
     const dock = $id("galleryDock"), sel = $id("themeSelect");
     if (!dock || !sel || galleryKind !== "theme") return;
     const keep = dock.scrollTop;
-    let html = galleryHead("テーマを一覧で見る", "押すと、すぐに着せ替わります。");
+    let html = galleryHead("テーマを一覧で見る", "押すとすぐに着せ替わります。");
     html += '<div class="gal-body">';
     Array.from(sel.children).forEach(g => {
         if (g.tagName !== "OPTGROUP") return;

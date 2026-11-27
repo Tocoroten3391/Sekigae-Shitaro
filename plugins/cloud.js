@@ -44,7 +44,7 @@ function openHistoryModal() {
     const gInput = $id("gasUrlInput");
     const url = gInput ? gInput.value.trim() : "";
     const presetName = getSelectedPresetName() || ($id("presetNameInput") ? $id("presetNameInput").value.trim() : "");
-    if (!url || !presetName) { showToast("URLとクラス名が必要です。", "error"); return; }
+    if (!url || !presetName) { showToast("URLとクラス名が必要です", "error"); return; }
 
     const overlay = $id("historyModalOverlay");
     const body = $id("historyListBody");
@@ -56,7 +56,7 @@ function openHistoryModal() {
     sendServerRequest(url, { action: "history", presetName: presetName }, "handleHistoryList", function(res) {
         if (!body) return;
         if (!res || !res.found || !res.items || res.items.length === 0) {
-            body.innerHTML = '<p style="color: var(--text-sub); font-size: 13px; padding: 8px 0;">まだ保存履歴がありません。</p>';
+            body.innerHTML = '<p style="color: var(--text-sub); font-size: 13px; padding: 8px 0;">まだ保存履歴がありません</p>';
             return;
         }
         body.innerHTML = res.items.map(item => `
@@ -78,7 +78,7 @@ function restoreHistoryItem(historyId) {
     sendServerRequest(url, { action: "loadHistoryItem", presetName: presetName, historyId: historyId }, "handleHistoryItemResult", function(res) {
         if (applySpreadsheetResult(res)) {
             updateStatus("connected", "接続完了");
-            showToast(`${formatRelativeTime(res.savedAt)}の座席を復元しました。`, "success");
+            showToast(`${formatRelativeTime(res.savedAt)}の座席を復元しました`, "success");
             closeHistoryModal();
         } else {
             gasFail("E-SHEET-02", { action: "loadHistoryItem", detail: "この履歴は見つかりませんでした" });
@@ -124,8 +124,8 @@ function saveToSpecialSlot(slotIndex) {
     const gInput = $id("gasUrlInput");
     const url = gInput ? gInput.value.trim() : "";
     const presetName = getSelectedPresetName() || ($id("presetNameInput") ? $id("presetNameInput").value.trim() : "");
-    if (!url || !presetName) { showToast("URLとクラス名が必要です。", "error"); return; }
-    if (currentStudents.length === 0) { showToast("座席データがありません。", "error"); return; }
+    if (!url || !presetName) { showToast("URLとクラス名が必要です", "error"); return; }
+    if (currentStudents.length === 0) { showToast("座席データがありません", "error"); return; }
 
     pendingSpecialSlotIndex = slotIndex;
     const titleEl = $id("slotNameModalTitle");
@@ -151,7 +151,7 @@ function confirmSlotNameAndSave() {
     const gInput = $id("gasUrlInput");
     const url = gInput ? gInput.value.trim() : "";
     const presetName = getSelectedPresetName() || ($id("presetNameInput") ? $id("presetNameInput").value.trim() : "");
-    if (!url || !presetName) { showToast("URLとクラス名が必要です。", "error"); return; }
+    if (!url || !presetName) { showToast("URLとクラス名が必要です", "error"); return; }
 
     const cSel = $id("columnSelect");
     const rSel = $id("rowSelect");
@@ -171,7 +171,7 @@ function confirmSlotNameAndSave() {
     }, "handleSaveSpecial", function(res) {
         if (res && res.success) {
             updateStatus("connected", "接続完了");
-            showToast(`枠${slotIndex}に保存しました。`, "success");
+            showToast(`枠${slotIndex}に保存しました`, "success");
             renderSpecialSlots();
         } else {
             gasFail("E-SHEET-04", { action: "saveSpecial", detail: "返事に success がありませんでした" });
@@ -189,10 +189,10 @@ function restoreSpecialSlot(slotIndex) {
     sendServerRequest(url, { action: "loadSpecial", presetName: presetName, slotIndex: slotIndex }, "handleLoadSpecial", function(res) {
         if (applySpreadsheetResult(res)) {
             updateStatus("connected", "接続完了");
-            showToast(`「${res.label}」を復元しました。`, "success");
+            showToast(`「${res.label}」を復元しました`, "success");
             closeHistoryModal();
         } else {
-            showToast("この枠はまだ空です。", "error");
+            showToast("この枠はまだ空です", "error");
         }
     });
 }
@@ -208,8 +208,8 @@ function toggleAutoSync() {
     const toggle = $id("autoSyncToggle");
     const enabled = toggle ? toggle.checked : false;
     localStorage.setItem("auto_sync_enabled", enabled ? "true" : "false");
-    if (enabled) { startAutoSync(); showToast("自動同期をONにしました。", "success"); } 
-    else { stopAutoSync(); showToast("自動同期をOFFにしました。", "success"); }
+    if (enabled) { startAutoSync(); showToast("自動同期をONにしました", "success"); } 
+    else { stopAutoSync(); showToast("自動同期をOFFにしました", "success"); }
 }
 
 // ---- 本体への登録 ----

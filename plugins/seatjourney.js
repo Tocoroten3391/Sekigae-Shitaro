@@ -67,9 +67,9 @@ function openSeatJourney() {
     if (typeof closePopMenus === "function") closePopMenus();
     // 席替え履歴プラグインがないと、旅の記録が残りません。理由が分かるように、知らせます
     const hist = SekigaeApp.plugins.some(p => p.id === "history");
-    if (!hist) { showToast("座席の旅には、席替え履歴プラグイン（history.js）が必要です。plugins フォルダに入れて、index.html に読み込む行を足してください。", "error"); return; }
-    if (!SekigaeApp.isEnabled("history")) { showToast("座席の旅には、席替え履歴プラグインが必要です。設定の「プラグイン」で、席替え履歴をオンにしてください。", "error"); return; }
-    if (typeof seatTimeline === "undefined" || !seatTimeline.length) { showToast("席替えの履歴が、まだありません。席替えをすると、旅の記録が残ります。", "info"); return; }
+    if (!hist) { showToast("座席の旅には席替え履歴プラグイン（history.js）が必要です。plugins フォルダに入れて、index.html に読み込む行を足してください。", "error"); return; }
+    if (!SekigaeApp.isEnabled("history")) { showToast("座席の旅には席替え履歴プラグインが必要です。設定の「プラグイン」で、席替え履歴をオンにしてください。", "error"); return; }
+    if (typeof seatTimeline === "undefined" || !seatTimeline.length) { showToast("席替えの履歴がまだありません。席替えをすると旅の記録が残ります。", "info"); return; }
     const keys = sjStudentKeys();
     if (!keys.length) { showToast("生徒がいません。名簿を入れてください。", "error"); return; }
     sjAddStyle();
@@ -96,7 +96,7 @@ function renderSeatJourney() {
     sjSteps = steps;
     const body = $id("sjBody"), stats = $id("sjStats");
     if (!steps.length) {
-        body.innerHTML = '<div class="sj-empty">この生徒が座っていた記録が、ありません。</div>';
+        body.innerHTML = '<div class="sj-empty">この生徒が座っていた記録が、ありません</div>';
         stats.textContent = "";
         $id("sjPlay").disabled = true;
         return;
@@ -152,7 +152,7 @@ function renderSeatJourney() {
     const repSeat = steps.find(s => s.x + "," + s.y === repKey);
     stats.innerHTML = sjEsc(sjPrettyName(key)) + ' さんは、' + steps.length + '回の席替えで、' + distinct + 'か所の席に座りました。<br>' +
         '前の列は' + front + '回、後ろの列は' + back + '回です。' +
-        (maxRep >= 2 ? '<br>一番多かった席は、' + sjEsc(repSeat.label) + 'の' + maxRep + '回です。' : '<br>同じ席に座ったことは、ありません。') +
+        (maxRep >= 2 ? '<br>一番多かった席は、' + sjEsc(repSeat.label) + 'の' + maxRep + '回です。' : '<br>同じ席に座ったことはありません。') +
         '<br>今の席は、' + sjEsc(last.label) + 'です。';
 }
 
@@ -192,7 +192,7 @@ SekigaeApp.registerPlugin({
     requires: ["history"],   // 前提のプラグイン（無いと使えません）
     name: "座席の旅",
     version: "1.3",
-    description: "一人の生徒が、これまでどの席に座ってきたかを、座席表の上に線でつないで見せます。席替え履歴プラグインの記録を使います。",
+    description: "一人の生徒がこれまでどの席に座ってきたかを、座席表の上に線でつないで見せます。席替え履歴プラグインの記録を使います。",
     backupKeys: [SJ_WINDOW_KEY],
     searchWords: "座席の旅 履歴 軌跡 たどる 過去の席 ルート 地図",
     stubs: [],
@@ -201,7 +201,7 @@ SekigaeApp.registerPlugin({
         document.body.insertAdjacentHTML("beforeend", SJ_HTML);
         const more = $id("moreMenu");
         if (more) more.insertAdjacentHTML("beforeend", '<button type="button" onclick="openSeatJourney()" class="pop-item pop-item-gray" id="btnSeatJourney">座席の旅</button>');
-        app.insertInto("guide-faq", "<li><strong>一人の生徒が、どの席に座ってきたかを見たい</strong>：「他の操作」の「座席の旅」を押します。生徒を選ぶと、これまでの席が、番号つきの線でつながります。「旅をたどる」を押すと、古い順に動きます。席替え履歴プラグインの記録を使うので、履歴プラグインがオフだと、使えません。</li>");
+        app.insertInto("guide-faq", "<li><strong>一人の生徒がどの席に座ってきたかを見たい</strong>：「他の操作」の「座席の旅」を押します。生徒を選ぶとこれまでの席が番号つきの線でつながります。「旅をたどる」を押すと古い順に動きます。席替え履歴プラグインの記録を使うので、履歴プラグインがオフだと、使えません。</li>");
     }
 });
 document.addEventListener("keydown", e => {

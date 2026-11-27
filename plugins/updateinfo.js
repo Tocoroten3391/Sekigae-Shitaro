@@ -28,7 +28,7 @@ function changelogSource() { return CHANGELOG_JSON_URL || CHANGELOG_GAS_URL; }
 function showLocalChangelog() {
     const body = $id("updateInfoBody");
     if (typeof LOCAL_CHANGELOG === "undefined" || !LOCAL_CHANGELOG.length) {
-        if (body) body.innerHTML = '<p style="color: var(--text-sub); font-size: 13px;">更新情報を取得できませんでした。</p>';
+        if (body) body.innerHTML = '<p style="color: var(--text-sub); font-size: 13px;">更新情報を取得できませんでした</p>';
         return;
     }
     renderUpdateInfoModal(sortChangelogEntriesDesc(LOCAL_CHANGELOG));
@@ -157,7 +157,7 @@ function updHowtoHtml() {
     const last = typeof getBackupLastAt === "function" ? getBackupLastAt() : 0;
     const lastTxt = last ? `最後のバックアップ：${typeof formatBackupDate === "function" ? formatBackupDate(last) : new Date(last).toLocaleDateString()}` : "まだ、バックアップを取っていません。";
     const steps = web
-        ? ["「バックアップを開く」で、今のデータを書き出して、とっておきます。", "このページを、再読み込みします。新しい版が、自動で入ります。", "変わらない時は、もう一度、再読み込みします。"]
+        ? ["「バックアップを開く」で、今のデータを書き出して、とっておきます。", "このページを再読み込みします。新しい版が自動で入ります。", "変わらない時はもう一度、再読み込みします。"]
         : ["「バックアップを開く」で、今のデータを書き出して、とっておきます。", "「最新バージョンはこちら」で、新しい版のzipをダウンロードして、展開します。", "展開してできたファイルを、今使っているフォルダに上書きして、アプリを開き直します。"];
     return `<details class="upd-howto"><summary>更新のしかた</summary><ol>${steps.map(t => `<li>${t}</li>`).join("")}</ol>
         <div class="upd-howto-last${last ? "" : " is-warn"}">${updEsc(lastTxt)}</div>
@@ -176,7 +176,7 @@ function updSnoozeFor(days) {
     d.setDate(d.getDate() + days);
     try { localStorage.setItem(UPD_SNOOZE_KEY, JSON.stringify({ until: d.getTime(), ver: latestKnownChangelogVersion })); } catch (e) { /* 何もしない */ }
     closeNewUpdateModal();
-    showToast(days === 1 ? "今日は、もう知らせません。明日、また知らせます。" : `${days}日後に、また知らせます。`, "success");
+    showToast(days === 1 ? "今日はもう知らせません。明日、また知らせます。" : `${days}日後にまた知らせます。`, "success");
 }
 function updSnoozeAsk() {
     if (typeof presetDialog !== "function") { updSnoozeFor(3); return; }
@@ -208,12 +208,12 @@ function renderNewUpdateModal(latestEntry, allSorted) {
     const SHOW = 5;
     const multi = newer.length > 1;
     let html = newer.slice(0, SHOW).map(e => {
-        const list = updBulletsHtml(e) || '<p class="upd-none">この版の説明は、ありません。</p>';
+        const list = updBulletsHtml(e) || '<p class="upd-none">この版の説明はありません</p>';
         return multi
             ? `<div class="upd-ver"><div class="upd-ver-head"><span class="upd-ver-no">Ver.${updEsc(e.version)}</span><span class="upd-ver-date">${updEsc(formatChangelogDate(e.date))}</span></div>${list}</div>`
             : list;
     }).join("");
-    if (newer.length > SHOW) html += `<p class="upd-more">ほか ${newer.length - SHOW}回分の更新は、「更新履歴を見る」で見られます。</p>`;
+    if (newer.length > SHOW) html += `<p class="upd-more">ほか ${newer.length - SHOW}回分の更新は「更新履歴を見る」で見られます</p>`;
     notesEl.innerHTML = html;
     const howto = $id("newUpdateHowto");
     if (howto) howto.innerHTML = updHowtoHtml();
@@ -311,7 +311,7 @@ function renderUpdateInfoList() {
             ${bullets}
         </details>`;
     });
-    if (!shown) html += `<p class="upd-none">${filtering ? "あてはまる更新は、ありません。" : "更新情報は、ありません。"}</p>`;
+    if (!shown) html += `<p class="upd-none">${filtering ? "あてはまる更新はありません。" : "更新情報はありません。"}</p>`;
     else html += `<p class="upd-count-line">${filtering ? "あてはまる更新：" : "全"}${shown}件</p>`;
     body.innerHTML = html;
 }
@@ -336,7 +336,7 @@ function updNoticeMode() {
 }
 function setUpdateNoticeMode(v) {
     try { localStorage.setItem(UPD_MODE_KEY, v === "badge" ? "badge" : "popup"); } catch (e) { /* 何もしない */ }
-    showToast(v === "badge" ? "更新のお知らせは、設定ボタンの印だけにしました。" : "更新のお知らせを、ポップアップで出します。", "success");
+    showToast(v === "badge" ? "更新のお知らせは設定ボタンの印だけにしました。" : "更新のお知らせをポップアップで出します。", "success");
 }
 function updSaveSeen() { try { localStorage.setItem(UPD_SEEN_KEY, APP_VERSION); } catch (e) { /* 何もしない */ } }
 function updAnyModalOpen() {
@@ -391,7 +391,7 @@ function updCheckWhatsNew(retried) {
             ? `<div class="upd-ver"><div class="upd-ver-head"><span class="upd-ver-no">Ver.${updEsc(e.version)}</span><span class="upd-ver-date">${updEsc(formatChangelogDate(e.date))}</span></div>${list}</div>`
             : list;
     }).join("");
-    if (items.length > SHOW) html += `<p class="upd-more">ほか ${items.length - SHOW}回分は、「更新履歴を見る」で見られます。</p>`;
+    if (items.length > SHOW) html += `<p class="upd-more">ほか ${items.length - SHOW}回分は「更新履歴を見る」で見られます</p>`;
     $id("whatsNewBody").innerHTML = html;
     overlay.style.display = "flex";
     updSaveSeen();
@@ -402,7 +402,7 @@ SekigaeApp.registerPlugin({
     id: "updateinfo",
     name: "更新情報",
     version: "1.2",
-    description: "新しいバージョンの知らせを確かめます。自前のサーバーか GAS から取り、通信できない時は、アプリの中の履歴を出します。更新した後に、変わったところも見せます。",
+    description: "新しいバージョンの知らせを確かめます。自前のサーバーか GAS から取り、通信できない時はアプリの中の履歴を出します。更新した後に変わったところも見せます。",
     stubs: ["checkForAppUpdates"],
     backupKeys: [UPD_MODE_KEY],
     mount() {

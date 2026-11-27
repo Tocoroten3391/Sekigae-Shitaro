@@ -10,7 +10,7 @@ let lockIdleTimer = null;
 
 function isAppLocked() { return appLocked; }
 
-function showLockedToast() { showToast("ロック中です。解除するには、右上の「ロック解除」を押してください。", "error"); }
+function showLockedToast() { showToast("ロック中です。解除するには右上の「ロック解除」を押してください。", "error"); }
 
 function hasLockPin() { return !!lsGet("lock_pin_hash", ""); }
 
@@ -83,7 +83,7 @@ function unlockApp() {
     lsSet("lock_fail_count", "0");
     lsSet("lock_until", "0");
     applyLockState();
-    showToast("ロックを解除しました。", "success");
+    showToast("ロックを解除しました", "success");
 }
 
 function onLockButton() {
@@ -110,11 +110,11 @@ function openLockModal(mode) {
     show("lockOptionRows", mode !== "unlock");
     if (mode === "unlock") {
         if (title) title.textContent = "ロックを解除";
-        if (desc) desc.textContent = "暗証番号を入れてください。";
+        if (desc) desc.textContent = "暗証番号を入れてください";
         if (ok) ok.textContent = "🔓 解除する";
     } else if (mode === "setup") {
         if (title) title.textContent = "ロックの暗証番号を決める";
-        if (desc) desc.textContent = "はじめに、解除用の暗証番号を決めてください。4〜8桁の数字にしてください。忘れないようにしてください。";
+        if (desc) desc.textContent = "はじめに解除用の暗証番号を決めてください。4〜8桁の数字にしてください。忘れないようにしてください。";
         if (ok) ok.textContent = "🔒 設定してロックする";
     } else {
         if (title) title.textContent = "ロックの設定";
@@ -163,7 +163,7 @@ async function submitLockModal() {
             lsSet("lock_fail_count", "0");
             lockModalError("5回続けて間違えました。30秒たってから、もう一度お試しください。");
         } else {
-            lockModalError(`暗証番号が違います。あと${5 - fails}回で、しばらく試せなくなります。`);
+            lockModalError(`暗証番号が違います。あと${5 - fails}回でしばらく試せなくなります。`);
         }
         const f = $id("lockPinInput"); if (f) { f.value = ""; f.focus(); }
         return;
@@ -191,7 +191,7 @@ async function submitLockModal() {
     closeLockModal();
     applyLockState();
     if (wasSetup) lockApp();
-    else showToast("ロックの設定を保存しました。", "success");
+    else showToast("ロックの設定を保存しました", "success");
 }
 
 // 自動ロック：しばらく何も操作がなかったら、ロックする
@@ -227,5 +227,5 @@ SekigaeApp.registerPlugin({
     name: "ロック",
     version: "1.0",
     required: true,
-    description: "暗証番号を入れるまで、席替えや設定の変更ができなくなります。"
+    description: "暗証番号を入れるまで席替えや設定の変更ができなくなります。"
 });

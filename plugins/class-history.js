@@ -84,7 +84,7 @@ function chistDiff(p, cur) {
 
 function chistOpen() {
     const name = typeof getSelectedPresetName === "function" ? getSelectedPresetName() : "";
-    if (!name || !readPresetsSafe()[name]) { showToast("履歴を見たいクラスを、選んでください。", "error"); return; }
+    if (!name || !readPresetsSafe()[name]) { showToast("履歴を見たいクラスを選んでください", "error"); return; }
     const list = chistAll()[name] || [];
     const cur = readPresetsSafe()[name];
     const body = document.createElement("div");
@@ -111,7 +111,7 @@ function chistOpen() {
         const d = chistDiff(e.p, cur);
         const dd = document.createElement("div");
         dd.className = "chist-diff";
-        dd.textContent = d.length ? "今との違い：" + d.join("、") : "今と、同じ内容です";
+        dd.textContent = d.length ? "今との違い：" + d.join("、") : "今と同じ内容です";
         main.appendChild(dd);
         row.appendChild(main);
         const b = document.createElement("button");
@@ -129,7 +129,7 @@ function chistOpen() {
     });
     presetDialog({
         title: `クラス「${name}」の保存履歴`,
-        message: list.length ? "戻したい状態の「戻す」を押してください。今の状態も、履歴に残ります。" : "",
+        message: list.length ? "戻したい状態の「戻す」を押してください。今の状態も履歴に残ります。" : "",
         bodyEl: body,
         buttons: [{ label: "閉じる", value: "close", cls: "btn-secondary", primary: true }]
     }, () => {});
@@ -141,7 +141,7 @@ function chistConfirmRestore(name, idx) {
     if (!e) return;
     presetDialog({
         title: "この状態に戻しますか？",
-        message: `クラス「${name}」を、${chistWhen(e.t)}より前の状態（${chistSummary(e.p)}）に戻します。今の状態は、履歴に残るので、あとから戻せます。画面で変えて、まだ保存していない内容は、消えます。`,
+        message: `クラス「${name}」を、${chistWhen(e.t)}より前の状態（${chistSummary(e.p)}）に戻します。今の状態は履歴に残るのであとから戻せます。画面で変えて、まだ保存していない内容は、消えます。`,
         buttons: [
             { label: "やめる", value: "cancel", cls: "btn-secondary" },
             { label: "戻す", value: "ok", cls: "btn-connect is-primary", primary: true }
@@ -160,10 +160,10 @@ function chistRestore(name, idx) {
     const keep = {};
     ["archived", "pinned", "lastUsed", "csettings"].forEach(k => { if (cur[k] !== undefined) keep[k] = cur[k]; });
     presets[name] = { ...keep, ...chistContent(e.p) };
-    savePresetsObject(presets);   // ここで、今の状態が、履歴に残ります
+    savePresetsObject(presets);   // ここで、今の状態が履歴に残ります
     loadPreset(name);
     if (typeof updatePresetRadioButtons === "function") updatePresetRadioButtons();
-    showToast(`クラス「${name}」を、${chistWhen(e.t)}より前の状態に戻しました。`, "success");
+    showToast(`クラス「${name}」を、${chistWhen(e.t)}より前の状態に戻しました`, "success");
 }
 
 const CHIST_CSS = `

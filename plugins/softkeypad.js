@@ -47,7 +47,7 @@ function onSoftKeypadShuffleChange() {
     lsSet("softkeypad_shuffle", s.value);
     const d = skpPad();
     if (d && skpInput) skpArrangeDigits(skpInput);
-    showToast(s.value === "off" ? "テンキーの数字は、ふだんの並びにしました。" : (s.value === "pin" ? "暗証番号の時だけ、数字をバラバラにします。" : "テンキーの数字を、いつもバラバラにします。"), "success");
+    showToast(s.value === "off" ? "テンキーの数字はふだんの並びにしました。" : (s.value === "pin" ? "暗証番号の時だけ、数字をバラバラにします。" : "テンキーの数字をいつもバラバラにします。"), "success");
 }
 function skpBuild() {
     let d = skpPad();
@@ -169,8 +169,8 @@ function onSoftKeypadToggle() {
     const t = $id("softKeypadToggle");
     if (!t) return;
     lsSet(SOFTKEYPAD_KEY, t.checked ? "1" : "0");
-    if (t.checked) { document.querySelectorAll('input[type="number"], input[type="time"], input[inputmode="numeric"]').forEach(skpMark); showToast("数字を入れる欄を押すと、画面のテンキーが出ます。", "success"); }
-    else { skpHide(); skpUnmarkAll(); showToast("画面のテンキーは出さないようにしました。", "success"); }
+    if (t.checked) { document.querySelectorAll('input[type="number"], input[type="time"], input[inputmode="numeric"]').forEach(skpMark); showToast("数字を入れる欄を押すと、画面のテンキーが出ます", "success"); }
+    else { skpHide(); skpUnmarkAll(); showToast("画面のテンキーは出さないようにしました", "success"); }
 }
 function setupSoftKeypad() {
     if (skpSetupDone) return;

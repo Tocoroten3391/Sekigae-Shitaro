@@ -37,7 +37,7 @@ function updateFuriganaMenuLabel() {
 function toggleFuriganaFromMenu() {
     if (isAppLocked()) { showLockedToast(); return; }
     if (!furiganaShow && Object.keys(furiganaMap).length === 0) {
-        showToast("ふりがなが、まだ入っていません。設定の「ふりがなの設定」で入れてください。", "error");
+        showToast("ふりがながまだ入っていません。設定の「ふりがなの設定」で入れてください。", "error");
         return;
     }
     furiganaShow = !furiganaShow;
@@ -86,7 +86,7 @@ function harvestFuriganaFromRoster(list, notify) {
     if (lsGet("furigana_show", null) === null) { furiganaShow = true; turnedOn = true; } // はじめて取り込めた時は、表示もONにする
     saveFurigana();
     if (notify) {
-        showToast(`名簿のフリガナ${found}人分を、ふりがなとして取り込みました。` + (turnedOn ? "座席表にも表示します。" : ""), "success");
+        showToast(`名簿のフリガナ${found}人分をふりがなとして取り込みました。` + (turnedOn ? "座席表にも表示します。" : ""), "success");
     }
     return found;
 }
@@ -135,7 +135,7 @@ function updateFuriganaCount() {
 function applyFuriganaBulk() {
     const bulk = $id("furiganaBulkInput");
     const text = bulk ? bulk.value : "";
-    if (!text.trim()) { showToast("貼り付ける内容が空です。", "error"); return; }
+    if (!text.trim()) { showToast("貼り付ける内容が空です", "error"); return; }
     const keys = getRosterNameKeys();
     const keySet = new Set(keys);
     const noSpace = new Map(keys.map(k => [k.replace(/\s+/g, ""), k]));
@@ -191,6 +191,6 @@ SekigaeApp.registerPlugin({
     id: "furigana",
     name: "ふりがな",
     version: "1.1",
-    description: "名前の上に、読みがなを小さく出します。大きさを選べて、「他の操作」から表示を切り替えられます。",
+    description: "名前の上に読みがなを小さく出します。大きさを選べて、「他の操作」から表示を切り替えられます。",
     stubs: ["extractFuriganaFromRosterText", "getFuriganaFor", "harvestFuriganaFromRoster", "loadFurigana", "saveFurigana"]
 });

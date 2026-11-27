@@ -373,10 +373,10 @@ function ssRender() {
     const chips = list => list.map(w => '<button type="button" class="ss-chip btn-compact" data-q="' + ssEsc(w) + '">' + ssEsc(w) + "</button>").join("");
     if (!ssTerms.length) {
         const rec = ssLoadRecent();
-        panel.innerHTML = '<div class="ss-head"><span class="ss-count">さがしたい言葉を入れてください。ひらがなでも、カタカナでも探せます。</span></div>' +
+        panel.innerHTML = '<div class="ss-head"><span class="ss-count">さがしたい言葉を入れてください。ひらがなでもカタカナでも探せます。</span></div>' +
             (rec.length ? '<div class="ss-sub">最近の検索</div><div class="ss-chips">' + chips(rec) + "</div>" : "") +
             '<div class="ss-sub">よく使う言葉</div><div class="ss-chips">' + chips(SS_SUGGEST) + "</div>" +
-            '<p class="ss-hint">「/」キーを押すと、いつでもここに移れます。</p>';
+            '<p class="ss-hint">「/」キーを押すといつでもここに移れます</p>';
         return;
     }
     const head = '<div class="ss-head"><span class="ss-count">「' + ssEsc(q) + "」の結果　" + ssResults.length + '件</span><button type="button" class="ss-clear btn-compact" data-act="clear">検索を解除</button></div>';
@@ -499,7 +499,7 @@ async function ssGo(it) {
         return;
     }
     if (it.where === "dialog") {
-        if (!(await ssOpenDialog(it.overlayId))) { showToast("ダイアログを開けませんでした。", "error"); return; }
+        if (!(await ssOpenDialog(it.overlayId))) { showToast("ダイアログを開けませんでした", "error"); return; }
         await ssWait(220);
         ssReveal(ssAlive(it.el) ? it.el : ssFindAgain(it));
         return;
@@ -551,7 +551,7 @@ SekigaeApp.registerPlugin({
     id: "settings-search",
     name: "設定の検索",
     version: "1.1",
-    description: "設定のさがすを、項目ごとの検索に強化します。ひらがな・カタカナのちがいを無視して、設定、ダイアログの中のボタン、プラグイン、使い方まで探せます。結果を押すと、その場所に移って光らせます。「/」キーで、いつでも検索に移れます。",
+    description: "設定のさがすを項目ごとの検索に強化します。ひらがな・カタカナのちがいを無視して、設定、ダイアログの中のボタン、プラグイン、使い方まで探せます。結果を押すとその場所に移って光らせます。「/」キーでいつでも検索に移れます。",
     searchWords: "検索 さがす 探す けんさく ひらがな カタカナ 表記ゆれ ショートカット キーボード 結果 ジャンプ",
     mount(app) {
         const st = document.createElement("style");
@@ -615,6 +615,6 @@ SekigaeApp.registerPlugin({
             });
         }
 
-        app.insertInto("guide-tools", '<li><strong>設定の検索</strong>：設定の一番上の「設定をさがす」に言葉を入れると、設定、ダイアログの中のボタン、プラグイン、使い方から、項目ごとに探せます。ひらがなでも、カタカナでも探せます。結果を押すと、その場所に移って光ります。「/」キーを押すと、いつでも検索に移れます。上下の矢印で選び、Enterで移ります。</li>');
+        app.insertInto("guide-tools", '<li><strong>設定の検索</strong>：設定の一番上の「設定をさがす」に言葉を入れると設定、ダイアログの中のボタン、プラグイン、使い方から、項目ごとに探せます。ひらがなでもカタカナでも探せます。結果を押すとその場所に移って光ります。「/」キーを押すといつでも検索に移れます。上下の矢印で選び、Enterで移ります。</li>');
     }
 });

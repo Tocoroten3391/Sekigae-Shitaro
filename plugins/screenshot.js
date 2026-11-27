@@ -190,7 +190,7 @@ function shotFileName() {
 function shotSave() {
     if (!shotLast) return;
     shotLast.toBlob(b => {
-        if (!b) { if (typeof showToast === "function") showToast("画像を保存できませんでした。", "error"); return; }
+        if (!b) { if (typeof showToast === "function") showToast("画像を保存できませんでした", "error"); return; }
         const a = document.createElement("a");
         a.href = URL.createObjectURL(b);
         a.download = shotFileName();
@@ -204,7 +204,7 @@ function shotCopy() {
         try {
             if (!b || !navigator.clipboard || typeof ClipboardItem === "undefined") throw new Error("noclip");
             await navigator.clipboard.write([new ClipboardItem({ "image/png": b })]);
-            if (typeof showToast === "function") showToast("画像をコピーしました。", "success");
+            if (typeof showToast === "function") showToast("画像をコピーしました", "success");
         } catch (e) {
             if (typeof showToast === "function") showToast("コピーできませんでした。「画像を保存」を使ってください。", "error");
         }
