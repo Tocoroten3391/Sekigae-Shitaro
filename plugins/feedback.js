@@ -11,6 +11,8 @@ const FB_RELAY_URL = "https://sekigae-feedback.tocoroten3391.workers.dev";   // 
 const FB_REPO = "Tocoroten3391/Sekigae-Shitaro_Apps";
 const FB_DRAFT_KEY = "feedback_draft_v1";
 const FB_SENT_KEY = "feedback_sent_v1";
+const FB_SEEN_KEY = "feedback_seen_v1";       // 見た時点の状況（新しい返信の印を出すために使います）
+const FB_CHECK_KEY = "feedback_checked_at_v1"; // 最後に自動で確かめた時刻
 const FB_MAX_IMAGES = 3;
 const FB_IMG_MAX_BYTES = 420000;   // 1枚の大きさの上限（中継役は500000まで受け付けます）
 const FB_KINDS = [
@@ -338,6 +340,13 @@ const FB_CSS = `
 #fbOverlay .fb-done-title { font-size: 17px; font-weight: 800; margin-bottom: 8px; }
 #fbOverlay .fb-sent { list-style: none; margin: 6px 0; padding: 0; font-size: 13px; }
 #fbOverlay .fb-sent li { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 6px 0; border-bottom: 1px solid var(--seat-border); }
+#fbOverlay .fb-state { flex-basis: 100%; font-size: 12.5px; color: var(--text-sub); }
+#fbOverlay .fb-st { padding: 1px 8px; border-radius: 999px; border: 1px solid var(--seat-border); color: var(--text-main); }
+#fbOverlay .fb-st-done { background: #ecfdf5; color: #065f46; border-color: #6ee7b7; }
+#fbOverlay .fb-st-wontfix { background: #f3f4f6; color: #374151; }
+#fbOverlay .fb-new { display: inline-block; margin-right: 6px; padding: 1px 8px; border-radius: 999px; background: #dc2626; color: #fff; font-weight: 700; }
+#fbOverlay .fb-reply { display: block; margin-top: 3px; padding: 5px 8px; border-left: 3px solid var(--accent-color); background: var(--body-bg); color: var(--text-main); line-height: 1.6; }
+#fbOpenBtn .fb-new-dot { margin-left: 8px; padding: 1px 8px; border-radius: 999px; background: #dc2626; color: #fff; font-size: 11px; font-weight: 700; }
 #fbOverlay .modal-content .fb-row button { height: auto !important; min-height: 38px; margin: 0 !important; }
 #fbOverlay .fb-thumbs { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
 #fbOverlay .fb-thumb { width: 150px; border: 1px solid var(--seat-border); border-radius: 10px; padding: 6px; background: var(--card-bg); }
@@ -401,7 +410,7 @@ function fbRender(prefill) {
         (hasRelay ? '' : '<span style="font-size:12px;color:var(--text-sub);">（送り先を準備中です）</span>') + '</div>' +
         (sent.length ? '<h5 style="margin:14px 0 4px;font-size:14px;">送った報告</h5><ul class="fb-sent">' + sent.slice(0, 10).map(s =>
             '<li><span>#' + fbEsc(s.n) + '</span><span>' + fbEsc(s.title) + '</span><a href="' + fbEsc(s.url) + '" target="_blank" rel="noopener">開く</a><span class="fb-state" data-n="' + fbEsc(s.n) + '"></span></li>').join("") +
-            '</ul><button type="button" class="btn-secondary btn-compact" data-fb="status">状況を見る</button>' : '');
+            '</ul><button type="button" class="btn-secondary btn-compact" data-fb="status">もう一度確かめる</button>' : '');
     fbUpdateLive();
     fbRenderThumbs();
 }
@@ -416,19 +425,91 @@ function fbUpdateLive() {
         w.innerHTML = r.problems.map(p => '<div class="fb-msg fb-msg-err">' + fbEsc(p) + '</div>').join("") + r.warns.map(p => '<div class="fb-warn">' + fbEsc(p) + '</div>').join("");
     }
 }
-async function fbStatus() {
-    const els = document.querySelectorAll("#fbOverlay .fb-state");
-    for (const el of els) {
-        const n = el.dataset.n;
-        el.textContent = "確認中…";
+const FB_STATE_LABEL = { open: "受付中", done: "対応済み", wontfix: "見送り" };
+// 状況の署名：これが変わったら「新しい動きがあった」と見なします
+function fbSig(v) { return v && v.found ? v.state + ":" + (v.replies || 0) : ""; }
+// 報告の状況を集めます：まず中継役から（GitHubの回数制限に当たらず、管理者の返信も付く）、だめなら、GitHubへ直接聞きます
+async function fbFetchStatus(nums) {
+    const out = {};
+    const url = fbRelayUrl();
+    if (url && nums.length) {
+        try {
+            const ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
+            const timer = setTimeout(() => { if (ctl) ctl.abort(); }, 10000);
+            const r = await fetch(url.replace(/\/+$/, "") + "/status?n=" + nums.slice(0, 10).join(","), { signal: ctl ? ctl.signal : undefined });
+            clearTimeout(timer);
+            const d = await r.json();
+            if (d && d.ok && d.items) { nums.forEach(n => { if (d.items[n]) out[n] = d.items[n]; }); }
+        } catch (e) { /* 次の方法へ */ }
+    }
+    for (const n of nums) {
+        if (out[n]) continue;
         try {
             const r = await fetch("https://api.github.com/repos/" + FB_REPO + "/issues/" + encodeURIComponent(n), { headers: { "Accept": "application/vnd.github+json" } });
-            if (!r.ok) { el.textContent = "（確認できませんでした）"; continue; }
+            if (!r.ok) { out[n] = { found: false, error: "http_" + r.status }; continue; }
             const d = await r.json();
-            const done = d.state === "closed";
-            el.textContent = (done ? (d.state_reason === "not_planned" ? "対応しない／見送り" : "対応済み") : "受付中") + (d.comments ? "・返信 " + d.comments + " 件" : "");
-        } catch (e) { el.textContent = "（通信できませんでした）"; }
+            out[n] = { found: true, state: d.state === "closed" ? (d.state_reason === "not_planned" ? "wontfix" : "done") : "open", comments: d.comments || 0, replies: d.comments || 0, reply: "" };
+        } catch (e) { out[n] = { found: false, error: "net" }; }
     }
+    return out;
+}
+function fbStatusHtml(v) {
+    if (!v || !v.found) return "（確認できませんでした）";
+    const label = FB_STATE_LABEL[v.state] || "受付中";
+    return '<b class="fb-st fb-st-' + fbEsc(v.state) + '">' + label + '</b>' + (v.replies ? "・返信 " + v.replies + " 件" : "") +
+        (v.reply ? '<span class="fb-reply">管理者より：' + fbEsc(v.reply) + '</span>' : "");
+}
+async function fbStatus(auto) {
+    const els = Array.from(document.querySelectorAll("#fbOverlay .fb-state"));
+    if (!els.length) return;
+    els.forEach(el => { el.textContent = "確認中…"; });
+    const nums = els.map(el => el.dataset.n);
+    const got = await fbFetchStatus(nums);
+    const seen = fbLoad(FB_SEEN_KEY, {});
+    els.forEach(el => {
+        const v = got[el.dataset.n];
+        el.innerHTML = fbStatusHtml(v);
+        if (v && v.found) {
+            const sig = fbSig(v);
+            if (seen[el.dataset.n] !== undefined && seen[el.dataset.n] !== sig) el.insertAdjacentHTML("afterbegin", '<span class="fb-new">新しい動きがあります</span>');
+            seen[el.dataset.n] = sig;
+        }
+    });
+    delete seen.__new;
+    fbSave(FB_SEEN_KEY, seen);
+    fbMarkNew(false);
+}
+// 設定の「不具合・要望を送る」ボタンに、新しい動きがあるという印を付けたり消したりします
+function fbMarkNew(on) {
+    const b = $id("fbOpenBtn");
+    if (!b) return;
+    const old = b.querySelector(".fb-new-dot");
+    if (old) old.remove();
+    b.classList.toggle("fb-has-new", !!on);
+    if (on) b.insertAdjacentHTML("beforeend", '<span class="fb-new-dot">新しい動きあり</span>');
+}
+// 起動してしばらくしてから、半日に1回だけ、送った報告に新しい動きがないか確かめます
+async function fbBackgroundCheck() {
+    if (!fbRelayUrl()) return;
+    const sent = fbLoad(FB_SENT_KEY, []).slice(0, 10);
+    if (!sent.length) return;
+    const last = fbLoad(FB_CHECK_KEY, 0);
+    if (Date.now() - last < 12 * 3600 * 1000) { const seen0 = fbLoad(FB_SEEN_KEY, {}); if (seen0.__new) fbMarkNew(true); return; }
+    fbSave(FB_CHECK_KEY, Date.now());
+    const got = await fbFetchStatus(sent.map(s => String(s.n)));
+    const seen = fbLoad(FB_SEEN_KEY, {});
+    let changed = false;
+    Object.keys(got).forEach(n => {
+        const v = got[n];
+        if (!v || !v.found) return;
+        const sig = fbSig(v);
+        if (seen[n] !== undefined && seen[n] !== sig) changed = true;
+        if (seen[n] === undefined) seen[n] = sig;
+    });
+    // 見る前に変わったものを残しておくため、署名は、画面を開いて見たときに更新します
+    if (changed) seen.__new = true;
+    fbSave(FB_SEEN_KEY, seen);
+    if (changed) fbMarkNew(true);
 }
 function openFeedback(opts) {
     opts = opts || {};
@@ -437,14 +518,15 @@ function openFeedback(opts) {
     const o = $id("fbOverlay");
     if (o) o.style.display = "flex";
     const ta = $id("fbText"); if (ta) ta.focus();
+    fbStatus(true);
 }
 function closeFeedback() { fbSaveDraft(); const o = $id("fbOverlay"); if (o) o.style.display = "none"; }
 
 SekigaeApp.registerPlugin({
     id: "feedback",
     name: "不具合・要望を送る",
-    version: "1.1",
-    description: "アプリの中から不具合の報告や機能の要望を続けて何件でも送れます。スクリーンショットも付けられ、名前などは黒く塗れます。内容はGitHubで公開されます。名簿の名前などが入っていないか送る前に確認します。",
+    version: "1.2",
+    description: "アプリの中から不具合の報告や機能の要望を続けて何件でも送れます。スクリーンショットも付けられ、名前などは黒く塗れます。送った報告が対応されたか、返信が来たかも、アプリの中で見られます。内容はGitHubで公開されます。名簿の名前などが入っていないか送る前に確認します。",
     searchWords: "不具合 バグ 報告 要望 機能 リクエスト 問い合わせ 質問 フィードバック 意見 ご意見 送る",
     stubs: [],
     mount(app) {
@@ -455,6 +537,7 @@ SekigaeApp.registerPlugin({
         document.body.insertAdjacentHTML("beforeend", fbModalHtml() + fbMaskModalHtml());
         app.insertInto("settings-system", '<button type="button" id="fbOpenBtn" class="btn-secondary" style="margin-top: 10px;">不具合・要望を送る</button>');
         app.insertInto("guide-faq", "<li><strong>不具合を見つけた・こんな機能が欲しい</strong>：設定の「機能・プラグイン」にある「不具合・要望を送る」から送れます。同期のエラーが出た時は、エラーの欄の「このエラーを報告」からも送れます。内容は公開されるので生徒の名前は書かないでください。</li>");
+        setTimeout(() => { try { fbBackgroundCheck(); } catch (e) { /* 何もしない */ } }, 10000);
         document.addEventListener("click", ev => {
             const t = ev.target.closest ? ev.target.closest("#fbOpenBtn, [data-fb], [data-fb-kind]") : null;
             if (!t) return;

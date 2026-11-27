@@ -9,6 +9,7 @@
 //   シークレット  GH_TOKEN : GitHubのトークン（Issues の読み書きだけを許可したもの）
 //   （おすすめ）KV の名前空間を、名前 RATE で結びつける ← 回数の制限と、スクリーンショットの保管に使います
 //     スクリーンショットは、KV に、180日だけ置かれます（GitHub には置きません）
+//   報告の状況（受付中・対応済み・管理者の返信）は、GET /status?n=4,5 で返します（アプリの「送った報告」が使います）
 // ==========================================
 
 const LIMIT_PER_HOUR = 20;     // 1つの接続元が、1時間に送れる数
@@ -16,7 +17,11 @@ const MAX_IMAGES = 3;          // 1件に付けられる画像の数
 const MAX_IMAGE_BYTES = 500000; // 画像1枚の大きさ（アプリ側で、縮めて送ります）
 const IMAGE_TTL = 60 * 60 * 24 * 180; // 画像を置いておく日数（秒）
 const MAX_BODY = 2400000;      // 受け取れる、全体の大きさ
-const LIMIT_PER_DAY = 100;     // 全体で、1日に作る Issue の数（荒らし対策）
+const LIMIT_PER_DAY = 100;
+const STATUS_MAX = 10;         // 状況を1回で調べられる報告の数
+const STATUS_LIMIT_PER_HOUR = 120; // 1つの接続元が、1時間に状況を調べられる回数
+const STATUS_CACHE_SEC = 60;   // 同じ報告の状況を、使い回す秒数
+const REPLY_MAX = 300;         // 返信として見せる文字数     // 全体で、1日に作る Issue の数（荒らし対策）
 const KINDS = {
   bug: { label: "不具合", tag: "[不具合]" },
   idea: { label: "要望", tag: "[要望]" },
@@ -124,12 +129,70 @@ async function serveImage(env, pathname) {
   return new Response(buf, { status: 200, headers: { ...CORS, "Content-Type": "image/jpeg", "Cache-Control": "public, max-age=86400", "X-Content-Type-Options": "nosniff" } });
 }
 
+// ---- 報告の状況 ----
+const statusMemo = new Map();
+async function ghGet(env, path) {
+  return fetch("https://api.github.com/repos/" + encodeURIComponent(env.GH_OWNER) + "/" + encodeURIComponent(env.GH_REPO) + path, {
+    headers: { "Authorization": "Bearer " + env.GH_TOKEN, "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "sekigae-feedback-relay" }
+  });
+}
+// 1件の状況：受付中／対応済み／見送りと、管理者（持ち主・共同作業者）の、いちばん新しい返信。アプリから送られた報告以外は、返しません
+async function issueStatus(env, n) {
+  const memo = statusMemo.get(n);
+  if (memo && memo.until > Date.now()) return memo.v;
+  let v = { found: false };
+  const r = await ghGet(env, "/issues/" + n);
+  if (r.ok) {
+    const d = await r.json();
+    const mine = !d.pull_request && Array.isArray(d.labels) && d.labels.some(l => l && l.name === "アプリから");
+    if (mine) {
+      let replies = 0, last = null;
+      if (d.comments > 0) {
+        // コメントは古い順に返るので、最後のほうだけ取ります
+        const page = Math.max(1, Math.ceil(d.comments / 30));
+        const cr = await ghGet(env, "/issues/" + n + "/comments?per_page=30&page=" + page);
+        if (cr.ok) {
+          const cs = (await cr.json()).filter(c => ["OWNER", "MEMBER", "COLLABORATOR"].includes(c.author_association));
+          if (cs.length) last = cs[cs.length - 1];
+          replies = cs.length;
+        }
+      }
+      v = {
+        found: true,
+        state: d.state === "closed" ? (d.state_reason === "not_planned" ? "wontfix" : "done") : "open",
+        comments: d.comments || 0,
+        replies,
+        reply: last ? clean(last.body, REPLY_MAX).replace(/\s+/g, " ").trim() : "",
+        replyAt: last ? last.created_at : ""
+      };
+    }
+  } else if (r.status !== 404) {
+    return { found: false, error: "github_" + r.status };
+  }
+  statusMemo.set(n, { v, until: Date.now() + STATUS_CACHE_SEC * 1000 });
+  if (statusMemo.size > 200) statusMemo.clear();
+  return v;
+}
+async function serveStatus(request, env, url) {
+  if (!env.GH_TOKEN || !env.GH_OWNER || !env.GH_REPO) return json({ ok: false, error: "not_configured" }, 500);
+  const ip = request.headers.get("cf-connecting-ip") || "unknown";
+  if (!(await hit(env, "s:" + ip, STATUS_LIMIT_PER_HOUR, 3600))) return json({ ok: false, error: "rate_limit" }, 429);
+  const list = Array.from(new Set(String(url.searchParams.get("n") || "").split(",").map(x => parseInt(x, 10)).filter(x => x > 0 && x < 10000000))).slice(0, STATUS_MAX);
+  if (!list.length) return json({ ok: false, error: "no_numbers" }, 400);
+  const items = {};
+  for (const n of list) {
+    try { items[n] = await issueStatus(env, n); } catch (e) { items[n] = { found: false, error: "failed" }; }
+  }
+  return json({ ok: true, items });
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
     if (request.method === "GET") {
       const u = new URL(request.url);
       if (u.pathname.startsWith("/img/")) return serveImage(env, u.pathname);
+      if (u.pathname === "/status") return serveStatus(request, env, u);
       return json({ ok: true, name: "sekigae-feedback-relay", images: !!(env.IMG || env.RATE) });
     }
     if (request.method !== "POST") return json({ ok: false, error: "method" }, 405);
