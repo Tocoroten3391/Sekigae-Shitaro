@@ -47,6 +47,20 @@ function updateStatsClassNote() { const n = $id("statsClassNote"); if (n) n.text
 function updateClassStatusBar() {
     const bar = $id("classStatusBar"), txt = $id("classStatusText"), btn = $id("classStatusBtn");
     if (!bar || !txt) return;
+    // 「本物の名簿にする」ボタン：サンプルを終わって、そのまま名簿を作る画面へ進みます
+    let real = $id("classStatusRealBtn");
+    if (!$id("classTrialStyle")) {
+        const st = document.createElement("style");
+        st.id = "classTrialStyle";
+        // ボタンが増えても、「サンプルで試し中」が途中で切れないようにします
+        st.textContent = ".class-status-bar.is-trial { max-width: 480px; } .class-status-bar.is-trial #classStatusText { overflow: visible; text-overflow: clip; flex: 0 0 auto; }";
+        document.head.appendChild(st);
+    }
+    if (!real && btn) {
+        btn.insertAdjacentHTML("beforebegin", '<button type="button" id="classStatusRealBtn" class="class-status-btn" onclick="trialToRealRoster()" hidden title="サンプルを終わって、本物の名簿を作ります">本物の名簿にする</button>');
+        real = $id("classStatusRealBtn");
+    }
+    if (real) real.hidden = activeClassId !== TRIAL_CLASS_ID;
     if (activeClassId === TRIAL_CLASS_ID) {
         txt.textContent = "サンプルで試し中";
         bar.title = "サンプルのクラスで試し中です。この記録は本物のクラスには入りません。";
@@ -139,6 +153,20 @@ function endTrialFromBar() {
     if (isAppLocked()) { showLockedToast(); return; }
     if (activeClassId !== TRIAL_CLASS_ID) return;
     if (!confirm("サンプルのクラスを終わります。試した記録は消えます。よろしいですか？")) return;
+    clearTrialAndScreen();
+    showToast("サンプルのクラスを終わりました。", "success");
+}
+
+// サンプルを終わって、本物の名簿を作る画面へ進みます
+function trialToRealRoster() {
+    if (isAppLocked()) { showLockedToast(); return; }
+    if (activeClassId !== TRIAL_CLASS_ID) return;
+    if (!confirm("サンプルを終わって、本物の名簿を作ります。試した記録は消えます。よろしいですか？")) return;
+    clearTrialAndScreen();
+    if (typeof openRosterEditor === "function") openRosterEditor();
+}
+
+function clearTrialAndScreen() {
     endTrialIfActive(false);
     const sInput = $id("studentInput");
     if (sInput) sInput.value = "";
@@ -149,7 +177,6 @@ function endTrialFromBar() {
     try { localStorage.removeItem("seat_undo_v1"); } catch (error) { /* そのまま続ける */ }
     try { localStorage.removeItem(WORK_STATE_KEY); } catch (error) { /* そのまま続ける */ }
     renderClassroom("none");
-    showToast("サンプルのクラスを終わりました。", "success");
 }
 
 // ==========================================

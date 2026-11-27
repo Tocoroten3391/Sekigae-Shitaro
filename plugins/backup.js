@@ -391,6 +391,12 @@ function onBackupRemindChange() {
     showToast(v === 0 ? "バックアップのお知らせを止めました。" : "バックアップのお知らせの間隔を変えました。", "success");
 }
 
+// 初めて記録ができた時に、一度だけ、早めにバックアップをすすめます（30日待つ前に、ブラウザのデータを消してしまう人がいるため）
+function shouldRemindFirst() {
+    if (getBackupRemindDays() <= 0 || getBackupLastAt() > 0 || !hasBackupWorthyData()) return false;
+    return lsGet("backup_first_nudge", "") !== "1";
+}
+
 function shouldRemindBackup() {
     const days = getBackupRemindDays();
     if (days <= 0 || !hasBackupWorthyData()) return false;
@@ -419,6 +425,7 @@ function showBackupReminder(reason) {
     const last = getBackupLastAt();
     if (reason === "autoPermission") msg.textContent = "自動バックアップの保存先に、書き込む許可が必要です。ボタンを押すと今すぐ保存します。";
     else if (reason === "autoFail") msg.textContent = "自動バックアップを保存できませんでした。保存先のフォルダを選び直してください。";
+    else if (reason === "first") msg.textContent = "名簿や記録は、このブラウザの中にだけ残ります。ブラウザのデータを消したり、端末を替えたりすると戻せなくなるので、ファイルに書き出しておくと安心です。";
     else if (reason === "archive") msg.textContent = "学期の記録を保存しました。念のため、バックアップも取っておきませんか。";
     else if (last) msg.textContent = `前回のバックアップから${Math.floor((Date.now() - last) / DAY_MS)}日たちました。記録を守るためにファイルに書き出しておきませんか。`;
     else msg.textContent = "バックアップをまだ取っていません。記録はこのブラウザの中にだけ保存されています。ファイルに書き出しておくと安心です。";
@@ -450,7 +457,13 @@ function backupReminderStop() {
 function checkBackupReminder() {
     const bar = $id("backupReminderBar");
     if (!bar || !bar.hidden) return;
-    if (shouldRemindBackup() && canShowBackupReminderNow()) showBackupReminder("overdue");
+    if (!canShowBackupReminderNow()) return;
+    if (shouldRemindFirst()) {
+        lsSet("backup_first_nudge", "1");
+        showBackupReminder("first");
+        return;
+    }
+    if (shouldRemindBackup()) showBackupReminder("overdue");
 }
 
 function countJsonEntries(text) {

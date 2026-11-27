@@ -173,6 +173,7 @@ function setupFavoriteSettings() {
         favItems[key] = { kind: "button", el: b, star };
     });
     applyFavPlacement();
+    try { setupStartCard(sec); } catch (e) { console.error(e); }
     // 元の設定が変わった時（ほかの操作で変わった時も）、写しを合わせる
     const later = () => { clearTimeout(favRefreshTimer); favRefreshTimer = setTimeout(refreshFavMirrors, 40); };
     cc.addEventListener("click", later);
@@ -181,6 +182,68 @@ function setupFavoriteSettings() {
         new MutationObserver(recs => { if (recs.some(r => !(r.target.closest ? r.target.closest("#favSection") : r.target.parentElement && r.target.parentElement.closest("#favSection")))) later(); })
             .observe(cc, { attributes: true, attributeFilter: ["style", "class", "hidden", "disabled", "data-plugin-off"], childList: true, characterData: true, subtree: true });
     } catch (e) { /* 何もしない */ }
+}
+
+// 初めて使う人向けの案内：最初に見るとよい区分への近道を、「よく使う設定」の先頭に出します（閉じると、もう出ません）
+const START_CARD_KEY = "config_start_card_closed";
+
+function startCardWanted() {
+    try {
+        if (lsGet(START_CARD_KEY, "") === "1") return false;
+        const n = (() => { try { const v = JSON.parse(lsGet("seat_shuffler_presets", "[]")); return Array.isArray(v) ? v.length : Object.keys(v || {}).length; } catch (e) { return 0; } })();
+        return n === 0;
+    } catch (e) { return false; }
+}
+
+function setupStartCard(sec) {
+    const body = sec.querySelector(".config-section-body"), favBody = $id("favBody");
+    if (!body || !favBody || $id("startCard") || !startCardWanted()) return;
+    if (!$id("startCardStyle")) {
+        const st = document.createElement("style");
+        st.id = "startCardStyle";
+        st.textContent = `
+#startCard { margin: 0 0 12px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--accent-color); background: var(--body-bg); }
+#startCard[hidden] { display: none; }
+#startCard .sc-title { font-size: 13px; font-weight: 700; color: var(--text-main); margin: 0 0 4px; }
+#startCard .sc-note { font-size: 12px; color: var(--text-sub); margin: 0 0 8px; line-height: 1.6; }
+#startCard .sc-row { display: flex; flex-wrap: wrap; gap: 6px; }
+#configContainer #startCard .sc-row button { width: auto !important; height: 34px; margin: 0 !important; padding: 0 12px !important; border-radius: 999px !important; font-size: 13px !important; font-weight: 600; cursor: pointer; }
+#configContainer #startCard .sc-close { margin-left: auto !important; background: transparent !important; border: 0 !important; color: var(--text-sub) !important; text-decoration: underline; font-weight: 400 !important; }`;
+        document.head.appendChild(st);
+    }
+    const card = document.createElement("div");
+    card.id = "startCard";
+    card.setAttribute("role", "region");
+    card.setAttribute("aria-label", "最初に見る設定");
+    card.innerHTML = '<p class="sc-title">最初に見る設定</p>' +
+        '<p class="sc-note">まずは、次の3つを見れば始められます。他の設定は、必要になってからで大丈夫です。</p>' +
+        '<div class="sc-row">' +
+        '<button type="button" data-sc="class">① クラスと名簿</button>' +
+        '<button type="button" data-sc="rules">② 席替えのルール</button>' +
+        '<button type="button" data-sc="backup">③ バックアップ</button>' +
+        '<button type="button" data-sc="usage">使い方</button>' +
+        '<button type="button" class="sc-close" data-sc="close">この案内を閉じる</button>' +
+        '</div>';
+    body.insertBefore(card, favBody);
+    card.addEventListener("click", ev => {
+        const b = ev.target.closest ? ev.target.closest("[data-sc]") : null;
+        if (!b) return;
+        const k = b.dataset.sc;
+        if (k === "close") { lsSet(START_CARD_KEY, "1"); card.hidden = true; return; }
+        startCardJump(k === "usage" ? ".config-section.usage-section" : '.config-section[data-sec="' + k + '"]');
+    });
+}
+
+function startCardJump(selector) {
+    if (typeof clearConfigSearch === "function") clearConfigSearch();
+    const el = document.querySelector("#configContainer > " + selector);
+    if (!el) return;
+    if (typeof isConfigWide === "function" && isConfigWide() && typeof selectConfigWideSection === "function") {
+        const i = configWideSections().indexOf(el);
+        if (i >= 0) selectConfigWideSection(i);
+    }
+    if (typeof setConfigSectionCollapsed === "function") setConfigSectionCollapsed(el, false);
+    el.scrollIntoView({ block: "start" });
 }
 
 function toggleFavSetting(key) {
