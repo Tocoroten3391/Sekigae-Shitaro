@@ -1252,6 +1252,7 @@ body.app-locked .backup-reminder, body.nomination-active .backup-reminder, body.
 /* 使い方：検索欄とグループ */
 .usage-search { width: 100%; box-sizing: border-box; height: 40px; padding: 0 12px; margin: 8px 0 4px; font-size: 14px; border-radius: 10px; }
 .usage-group[hidden], .usage-guide details[hidden] { display: none; }
+.usage-guide details[data-guide-more]:has(> ul:empty) { display: none; }
 .usage-group-title { margin: 14px 0 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: var(--text-sub); text-align: left; }
 .usage-group:first-child .usage-group-title { margin-top: 4px; }
 

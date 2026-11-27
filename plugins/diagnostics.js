@@ -208,7 +208,7 @@ SekigaeApp.registerPlugin({
         document.body.insertAdjacentHTML("beforeend", DIAG_HTML);
         document.querySelectorAll("#diagModalOverlay [data-diagtip]").forEach(el => el.replaceWith(makeInfoTip(el.dataset.diagtip)));
         app.insertInto("settings-perf", '<button type="button" onclick="openDiagnostics()" class="btn-secondary" id="btnDiagnostics" style="margin-top: 10px;">動作の診断</button>');
-        app.insertInto("guide-tools", '<li><strong>動作の診断</strong>：設定の「動作の軽さ」の「動作の診断」で、この端末での、起動の時間、計算と描画の速さ、メモリの目安を測ります。動きが重い時に軽量モードなどの対処を、ボタンで試せます。</li>');
+        app.insertInto("guide-tools-items", '<li><strong>動作の診断</strong>：設定の「動作の軽さ」の「動作の診断」で、この端末での、起動の時間、計算と描画の速さ、メモリの目安を測ります。動きが重い時に軽量モードなどの対処を、ボタンで試せます。</li>');
     }
 });
 document.addEventListener("keydown", e => {

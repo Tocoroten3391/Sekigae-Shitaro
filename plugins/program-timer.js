@@ -398,7 +398,7 @@ SekigaeApp.registerPlugin({
         document.body.insertAdjacentHTML("beforeend", PT_HTML);
         document.querySelectorAll("#ptModalOverlay [data-pttip]").forEach(el => el.replaceWith(makeInfoTip(el.dataset.pttip)));
         app.insertInto("settings-timer", '<button type="button" onclick="openProgramTimer()" class="btn-secondary" id="btnProgramTimer" style="margin-top: 10px;">プログラムタイマー</button>');
-        app.insertInto("guide-tools", '<li><strong>プログラムタイマー</strong>：設定の「アラームとチャイム」の「プログラムタイマー」で、曜日ごとの時間割を登録します。決めた時刻に予鈴と始まりと終わりのチャイムが、自動で鳴ります。画面の隅には今の授業と残り時間が出ます。</li>');
+        app.insertInto("guide-tools-items", '<li><strong>プログラムタイマー</strong>：設定の「アラームとチャイム」の「プログラムタイマー」で、曜日ごとの時間割を登録します。決めた時刻に予鈴と始まりと終わりのチャイムが、自動で鳴ります。画面の隅には今の授業と残り時間が出ます。</li>');
     },
     ready() {
         ptLoad();

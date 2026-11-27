@@ -314,7 +314,7 @@ SekigaeApp.registerPlugin({
         document.body.insertAdjacentHTML("beforeend", FAIR_HTML);
         document.querySelectorAll("#fairModalOverlay [data-fairtip]").forEach(el => el.replaceWith(makeInfoTip(el.dataset.fairtip)));
         app.insertInto("settings-records", '<button type="button" onclick="openFairness()" class="btn-secondary" id="btnFairness" style="margin-top: 10px;">席の公平性レポート</button>');
-        app.insertInto("guide-tools", '<li><strong>席の公平性レポート</strong>：設定の「記録・統計」の「席の公平性レポート」で、前列・後列・窓側・廊下側・角・教卓の前に、何回座ったかを生徒ごとに見られます。「席替えで偏りを減らす」をオンにすると同じような席が続いた人を、次は避けます。保護者への説明には印刷が使えます。</li>');
+        app.insertInto("guide-tools-items", '<li><strong>席の公平性レポート</strong>：設定の「記録・統計」の「席の公平性レポート」で、前列・後列・窓側・廊下側・角・教卓の前に、何回座ったかを生徒ごとに見られます。「席替えで偏りを減らす」をオンにすると同じような席が続いた人を、次は避けます。保護者への説明には印刷が使えます。</li>');
     }
 });
 document.addEventListener("keydown", e => {

@@ -298,7 +298,7 @@ SekigaeApp.registerPlugin({
         document.body.insertAdjacentHTML("beforeend", NB_HTML);
         document.querySelectorAll("#nbModalOverlay [data-nbtip]").forEach(el => el.replaceWith(makeInfoTip(el.dataset.nbtip)));
         app.insertInto("settings-records", '<button type="button" onclick="openNomBalance()" class="btn-secondary" id="btnNomBalance" style="margin-top: 10px;">発言・指名のバランス</button>');
-        app.insertInto("guide-tools", '<li><strong>発言・指名のバランス</strong>：設定の「記録・統計」の「発言・指名のバランス」で、指名と発言の回数が見られます。「回数が少ない人を優先」にするとまだ当たっていない人が、指名で当たりやすくなります。「発言モード」では座席を押すだけで発言を数えられます。</li>');
+        app.insertInto("guide-tools-items", '<li><strong>発言・指名のバランス</strong>：設定の「記録・統計」の「発言・指名のバランス」で、指名と発言の回数が見られます。「回数が少ない人を優先」にするとまだ当たっていない人が、指名で当たりやすくなります。「発言モード」では座席を押すだけで発言を数えられます。</li>');
         // 指名する人を選ぶところを、包みます
         if (nbOrigPick) window.pickSeatWeightedByHistory = nbPick;
         // 指名の記録が増えたら、座席表の回数も、新しくします
