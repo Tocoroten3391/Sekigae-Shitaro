@@ -129,7 +129,7 @@ function buildWelcomeCardHtml() {
         <div class="welcome-actions">
             <button type="button" class="welcome-btn" onclick="welcomeStartSample()">🧪 サンプルのクラスで試す</button>
             <button type="button" class="welcome-btn" onclick="welcomeImportFile()">📄 名簿ファイルを読み込む</button>
-            <button type="button" class="welcome-btn" onclick="welcomeOpenRoster()">📝 設定から名簿を用意する</button>
+            <button type="button" class="welcome-btn" onclick="welcomeOpenRoster()">📝 名簿を作る・直す</button>
         </div>
         <ol class="welcome-steps">
             <li><strong>名簿を用意します。</strong>上のボタンですぐに始められます。</li>
@@ -168,6 +168,8 @@ function welcomeImportFile() {
 
 function welcomeOpenRoster() {
     if (isAppLocked()) { showLockedToast(); return; }
+    // 設定の区分を探さなくていいように、名簿を作る・直すメニューを、直接開きます
+    if (typeof openRosterEditor === "function") { openRosterEditor(); return; }
     const container = $id("configContainer");
     if (container && !container.classList.contains("open")) toggleConfigMenu();
     clearConfigSearch();
