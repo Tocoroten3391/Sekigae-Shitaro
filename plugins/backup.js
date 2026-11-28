@@ -394,6 +394,8 @@ function onBackupRemindChange() {
 // 初めて記録ができた時に、一度だけ、早めにバックアップをすすめます（30日待つ前に、ブラウザのデータを消してしまう人がいるため）
 function shouldRemindFirst() {
     if (getBackupRemindDays() <= 0 || getBackupLastAt() > 0 || !hasBackupWorthyData()) return false;
+    // サンプルで試している間の記録は、あとで消えるので、案内しない
+    if (typeof TRIAL_CLASS_ID !== "undefined" && typeof activeClassId !== "undefined" && activeClassId === TRIAL_CLASS_ID) return false;
     return lsGet("backup_first_nudge", "") !== "1";
 }
 
